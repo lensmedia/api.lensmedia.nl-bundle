@@ -1,5 +1,6 @@
 {
     "name": "lensmedia/api.lensmedia.nl-bundle",
+    "version": "0.0.1",
     "description": "Symfony bundle for to work with our main LENS API",
     "type": "symfony-bundle",
     "require": {
