@@ -20,6 +20,6 @@ class LensLensApiExtension extends Extension
 
         $container
             ->getDefinition(LensApi::class)
-            ->replaceArgument(2, $config);
+            ->replaceArgument(2, $config['http_client_options']);
     }
 }

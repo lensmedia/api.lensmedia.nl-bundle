@@ -7,7 +7,6 @@ use Lens\Bundle\LensApiBundle\Data\Company;
 use Lens\Bundle\LensApiBundle\Data\Dealer;
 use Lens\Bundle\LensApiBundle\Data\Personal;
 use Lens\Bundle\LensApiBundle\Data\User;
-use RuntimeException;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Uid\Ulid;
@@ -184,13 +183,6 @@ class LensApi implements HttpClientInterface
         return $this->as($data, Company::class);
     }
 
-    public function drivingSchools(array $options = []): array
-    {
-        $data = $this->get('driving-schools.json', $options)->toArray();
-
-        return $this->asArray($data, Company::class);
-    }
-
     public function drivingSchoolById(string|Ulid $drivingSchool): Company
     {
         $data = $this->get(sprintf(
@@ -254,20 +246,25 @@ class LensApi implements HttpClientInterface
         return $this->as($data, Address::class);
     }
 
-    public function nearbyDealers(Company $company): array
+    public function dealersForMap(Dealer $dealer): array
     {
-        $dealer = $this->iTheorieDealer();
+        $dealers = $this->get(sprintf(
+            'dealers/%s/map.json',
+            $this->iTheorieDealer()->id,
+        ))->toArray();
 
+        return $this->asArray($dealers, Company::class);
+    }
+
+    public function nearbyDealers(Dealer $dealer, Company $company): array
+    {
         $dealers = $this->get(sprintf(
             'dealers/%s/companies/%s/nearby.json',
             $dealer->id,
             $company->id,
         ))->toArray();
 
-        return $this->asArray(
-            $dealers,
-            Company::class,
-        );
+        return $this->asArray($dealers, Company::class);
     }
 
     /**
@@ -276,48 +273,5 @@ class LensApi implements HttpClientInterface
     public function companiesChamberOfCommerceToId(): array
     {
         return $this->get('companies/chamber-of-commerce-to-id.json')->toArray();
-    }
-
-    public function iTheorieDealer(): Dealer
-    {
-        $response = $this->get('dealers.json', [
-            'query' => ['name' => 'itheorie'],
-        ])->toArray()[0] ?? null;
-
-        if (empty($response)) {
-            throw new RuntimeException('No iTheorie dealer could be found, make sure the api has something for us!');
-        }
-
-        $response = $this->get(sprintf(
-            'dealers/%s.json',
-            $response['id'],
-        ))->toArray();
-
-        return $this->as($response, Dealer::class);
-    }
-
-    public function iTheorieDealers(): array
-    {
-        $dealers = $this->get(sprintf(
-            'dealers/%s/companies.json',
-            $this->iTheorieDealer()->id,
-        ), [
-            'query' => [
-                'pagination' => 'false',
-                'publishedAt[before]' => date('c'),
-            ],
-        ])->toArray();
-
-        return $this->asArray($dealers, Company::class);
-    }
-
-    public function iTheorieDealersForMap(): array
-    {
-        $dealers = $this->get(sprintf(
-            'dealers/%s/map.json',
-            $this->iTheorieDealer()->id,
-        ))->toArray();
-
-        return $this->asArray($dealers, Company::class);
     }
 }
