@@ -3,6 +3,8 @@
 namespace Lens\Bundle\LensApiBundle\DependencyInjection;
 
 use Lens\Bundle\LensApiBundle\LensApi;
+use Lens\Bundle\LensApiBundle\LensApiRepositoryInterface;
+use Lens\Bundle\LensApiBundle\Repository\Dealers;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;

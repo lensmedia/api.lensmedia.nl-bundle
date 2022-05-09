@@ -1,0 +1,86 @@
+<?php
+
+namespace Lens\Bundle\LensApiBundle\Repository;
+
+use Lens\Bundle\LensApiBundle\Data\User;
+use Symfony\Component\Validator\Constraints\Ulid;
+
+class UserRepository extends AbstractRepository
+{
+    public function list(array $options = []): array
+    {
+        $response = $this->api->get(
+            'users.json',
+            $options,
+        )->toArray();
+
+        return $this->api->asArray($response, User::class);
+    }
+
+    public function auth(): ?User
+    {
+        $response = $this->api->get(
+            'users/auth.json',
+        )->toArray();
+
+        return $this->api->as($response, User::class);
+    }
+
+    public function byId(Ulid|string $user): ?User
+    {
+        $response = $this->api->get(sprintf(
+            'users/%s.json',
+            $user,
+        ))->toArray();
+
+        return $this->api->as($response, User::class);
+    }
+
+    public function recoverPassword(Ulid|string $user): User
+    {
+        $response = $this->api->get(sprintf(
+            'users/%s/recover.json',
+            $user,
+        ))->toArray();
+
+        return $this->api->as($response, User::class);
+    }
+
+    /**
+     * Has returning status code for specific statuses for user
+     * recovery, useful for validators.
+     *
+     * 204 Recovery is still possible.
+     * 400 Invalid recovery token.
+     * 403 Recovery token has expired.
+     * 404 User not found.
+     */
+    public function recoverPasswordCheckStatus(Ulid|string $user, string $token): User
+    {
+        $response = $this->api->get(sprintf(
+            'users/%s/recover/%s.json',
+            $user,
+            $token,
+        ))->toArray();
+
+        return $this->api->as($response, User::class);
+    }
+
+    public function recoverUpdatePassword(Ulid|string $user, string $token, string $plainPassword): User
+    {
+        $data = [
+            'id' => $user,
+            'plainPassword' => $plainPassword,
+        ];
+
+        $response = $this->api->patch(sprintf(
+            'users/%s/recover/%s.json',
+            (string)$user,
+            $token,
+        ), [
+            'json' => $data,
+        ])->toArray();
+
+        return $this->api->as($response, User::class);
+    }
+}

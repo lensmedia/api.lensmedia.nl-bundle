@@ -3,13 +3,14 @@
 namespace Lens\Bundle\LensApiBundle\Data;
 
 use DateTimeImmutable;
+use Lens\Bundle\LensApiBundle\LensApiUtil;
 use Symfony\Component\Uid\Ulid;
-
-use function Lens\Bundle\LensApiBundle\array_any;
-use function Lens\Bundle\LensApiBundle\array_find;
 
 class Company
 {
+    public const COMPANY = 'company';
+    public const DRIVING_SCHOOL = 'driving_school';
+
     public Ulid $id;
 
     public string $type;
@@ -24,7 +25,7 @@ class Company
 
     public DateTimeImmutable $updatedAt;
 
-    public ?User $disabledBy = null;
+    public ?string $disabledBy = null;
 
     public ?string $disabledReason = null;
 
@@ -53,6 +54,9 @@ class Company
     /** @var null|DriverLicence[] */
     public ?array $driversLicences = null;
 
+    /** @var null|Result[] */
+    public ?array $results = null;
+
     public int $weight = 0; // used in searches not important for other things
 
     public function isPublished(): bool
@@ -78,7 +82,7 @@ class Company
             return false;
         }
 
-        return array_any(
+        return LensApiUtil::ArrayAny(
             static fn(Dealer $dealer) => 'itheorie' === $dealer->name,
             $this->dealers,
         );
@@ -91,7 +95,7 @@ class Company
 
     public function defaultAddress(): Address
     {
-        return array_find(
+        return LensApiUtil::ArrayFind(
             static fn(Address $address) => 'default' === $address->type,
             $this->addresses,
         );
@@ -99,7 +103,7 @@ class Company
 
     public function billingAddress(): ?Address
     {
-        return array_find(
+        return LensApiUtil::ArrayFind(
             static fn(Address $address) => 'billing' === $address->type,
             $this->addresses,
         );
@@ -107,7 +111,7 @@ class Company
 
     public function operatingAddress(): ?Address
     {
-        return array_find(
+        return LensApiUtil::ArrayFind(
             static fn(Address $address) => 'operating' === $address->type,
             $this->addresses,
         );
@@ -115,7 +119,7 @@ class Company
 
     public function directDebitPaymentMethod(): ?PaymentMethod
     {
-        return array_find(
+        return LensApiUtil::ArrayFind(
             static fn(PaymentMethod $paymentMethod) => 'debit' === $paymentMethod->type,
             $this->paymentMethods,
         );
@@ -123,7 +127,7 @@ class Company
 
     public function emailContactMethod(): ?ContactMethod
     {
-        return array_find(
+        return LensApiUtil::ArrayFind(
             static fn(ContactMethod $contactMethod) => 'email' === $contactMethod->method,
             $this->contactMethods,
         );
@@ -131,7 +135,7 @@ class Company
 
     public function workPhoneContactMethod(): ?ContactMethod
     {
-        return array_find(
+        return LensApiUtil::ArrayFind(
             static fn(ContactMethod $contactMethod) => 'phone' === $contactMethod->method
                 && $contactMethod->label === 'work',
             $this->contactMethods,
@@ -140,10 +144,24 @@ class Company
 
     public function mobilePhoneContactMethod(): ?ContactMethod
     {
-        return array_find(
+        return LensApiUtil::ArrayFind(
             static fn(ContactMethod $contactMethod) => 'phone' === $contactMethod->method
                 && $contactMethod->label === 'mobile',
             $this->contactMethods,
         );
+    }
+
+    public function disable(string $reason, ?string $user = null): void
+    {
+        $this->disabledBy = $user;
+        $this->disabledReason = $reason;
+        $this->disabledAt = new DateTimeImmutable();
+    }
+
+    public function enable(): void
+    {
+        $this->disabledBy = null;
+        $this->disabledReason = null;
+        $this->disabledAt = null;
     }
 }

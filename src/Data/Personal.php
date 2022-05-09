@@ -2,9 +2,8 @@
 
 namespace Lens\Bundle\LensApiBundle\Data;
 
+use Lens\Bundle\LensApiBundle\LensApiUtil;
 use Symfony\Component\Uid\Ulid;
-
-use function Lens\Bundle\LensApiBundle\array_find;
 
 class Personal
 {
@@ -54,7 +53,7 @@ class Personal
 
     public function emailContactMethod(): ?ContactMethod
     {
-        return array_find(
+        return LensApiUtil::ArrayFind(
             static fn(ContactMethod $contactMethod) => 'email' === $contactMethod->method,
             $this->contactMethods,
         );
