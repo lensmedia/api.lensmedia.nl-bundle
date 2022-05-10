@@ -2,6 +2,7 @@
 
 namespace Lens\Bundle\LensApiBundle\Data;
 
+use DateTimeImmutable;
 use Symfony\Component\Uid\Ulid;
 
 class Dealer
@@ -12,4 +13,9 @@ class Dealer
 
     /** @var null|Company[] */
     public ?array $companies = null;
+
+    public function __construct()
+    {
+        $this->id = new Ulid();
+    }
 }

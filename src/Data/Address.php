@@ -26,9 +26,14 @@ class Address
 
     public string $city;
 
-    public string $country;
+    public string $country = 'NL';
 
     public ?string $longitude = null;
 
     public ?string $latitude = null;
+
+    public function __construct()
+    {
+        $this->id = new Ulid();
+    }
 }

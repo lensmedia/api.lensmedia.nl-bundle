@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints\Ulid;
 
 class DealerRepository extends AbstractRepository
 {
-    public function all(array $options = []): array
+    public function list(array $options = []): array
     {
         $response = $this->api->get(
             'dealers.json',

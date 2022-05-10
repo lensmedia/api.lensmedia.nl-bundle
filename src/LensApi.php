@@ -3,7 +3,9 @@
 namespace Lens\Bundle\LensApiBundle;
 
 use Lens\Bundle\LensApiBundle\Repository\AddressRepository;
+use Lens\Bundle\LensApiBundle\Repository\AdvertisementRepository;
 use Lens\Bundle\LensApiBundle\Repository\CompanyRepository;
+use Lens\Bundle\LensApiBundle\Repository\DriversLicenseRepository;
 use Lens\Bundle\LensApiBundle\Repository\DrivingSchoolRepository;
 use Lens\Bundle\LensApiBundle\Repository\DealerRepository;
 use Lens\Bundle\LensApiBundle\Repository\PersonalRepository;
@@ -14,16 +16,29 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 use Symfony\Contracts\HttpClient\ResponseStreamInterface;
 
+/**
+ * @property-read AddressRepository $addresses
+ * @property-read AdvertisementRepository $advertisements
+ * @property-read CompanyRepository $companies
+ * @property-read DealerRepository $dealers
+ * @property-read DrivingSchoolRepository $drivingSchools
+ * @property-read DriversLicenseRepository $driversLicenses
+ * @property-read PersonalRepository $personals
+ * @property-read UserRepository $users
+ */
 class LensApi implements HttpClientInterface
 {
     private HttpClientInterface $httpClient;
 
     public AddressRepository $addresses;
+    public AdvertisementRepository $advertisements;
     public CompanyRepository $companies;
     public DealerRepository $dealers;
     public DrivingSchoolRepository $drivingSchools;
+    public DriversLicenseRepository $driversLicenses;
     public PersonalRepository $personals;
     public UserRepository $users;
+
 
     public function __construct(
         private SerializerInterface $serializer,
@@ -33,9 +48,11 @@ class LensApi implements HttpClientInterface
         $this->httpClient = $httpClient->withOptions($options);
 
         $this->addresses = new AddressRepository($this);
+        $this->advertisements = new AdvertisementRepository($this);
         $this->companies = new CompanyRepository($this);
         $this->dealers = new DealerRepository($this);
         $this->drivingSchools = new DrivingSchoolRepository($this);
+        $this->driversLicenses = new DriversLicenseRepository($this);
         $this->personals = new PersonalRepository($this);
         $this->users = new UserRepository($this);
     }

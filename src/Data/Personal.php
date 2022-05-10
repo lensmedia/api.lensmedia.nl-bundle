@@ -2,6 +2,7 @@
 
 namespace Lens\Bundle\LensApiBundle\Data;
 
+use DateTimeImmutable;
 use Lens\Bundle\LensApiBundle\LensApiUtil;
 use Symfony\Component\Uid\Ulid;
 
@@ -33,6 +34,11 @@ class Personal
 
     /** @var Remark[] */
     public array $remarks = [];
+
+    public function __construct()
+    {
+        $this->id = new Ulid();
+    }
 
     public function name(int $companyOffset = 0): ?string
     {

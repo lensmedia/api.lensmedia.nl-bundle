@@ -51,13 +51,22 @@ class Company
     /** @var null|Remark[] */
     public ?array $remarks = null;
 
-    /** @var null|DriverLicence[] */
-    public ?array $driversLicences = null;
+    /** @var null|DriversLicense[] */
+    public ?array $driversLicenses = null;
 
     /** @var null|Result[] */
     public ?array $results = null;
 
     public int $weight = 0; // used in searches not important for other things
+
+    public function __construct()
+    {
+        $this->id = new Ulid();
+
+        $this->createdAt
+            = $this->updatedAt
+            = new DateTimeImmutable();
+    }
 
     public function isPublished(): bool
     {

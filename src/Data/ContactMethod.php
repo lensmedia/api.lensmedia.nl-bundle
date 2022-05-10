@@ -2,6 +2,7 @@
 
 namespace Lens\Bundle\LensApiBundle\Data;
 
+use DateTimeImmutable;
 use Symfony\Component\Uid\Ulid;
 
 class ContactMethod
@@ -21,4 +22,9 @@ class ContactMethod
     public string $value; // +31 529 484 655
 
     public ?string $label = null;
+
+    public function __construct()
+    {
+        $this->id = new Ulid();
+    }
 }

@@ -7,6 +7,16 @@ use Symfony\Component\Validator\Constraints\Ulid;
 
 class CompanyRepository extends AbstractRepository
 {
+    public function list(array $options = []): array
+    {
+        $response = $this->api->get(
+            'companies.json',
+            $options,
+        )->toArray();
+
+        return $this->api->asArray($response, Company::class);
+    }
+
     public function byId(Ulid|string $user): ?Company
     {
         $response = $this->api->get(sprintf(

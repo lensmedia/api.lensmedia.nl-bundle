@@ -2,6 +2,7 @@
 
 namespace Lens\Bundle\LensApiBundle\Data;
 
+use DateTimeImmutable;
 use Symfony\Component\Uid\Ulid;
 
 class Remark
@@ -18,4 +19,9 @@ class Remark
     public string $level; // default
 
     public string $remark; // 31-08-2019 Online inkopen aangezet...
+
+    public function __construct()
+    {
+        $this->id = new Ulid();
+    }
 }
