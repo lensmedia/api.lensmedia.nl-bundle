@@ -2,7 +2,6 @@
 
 namespace Lens\Bundle\LensApiBundle\Data;
 
-use DateTimeImmutable;
 use Lens\Bundle\LensApiBundle\LensApiUtil;
 use Symfony\Component\Uid\Ulid;
 

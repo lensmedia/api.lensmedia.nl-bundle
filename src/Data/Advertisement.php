@@ -2,7 +2,6 @@
 
 namespace Lens\Bundle\LensApiBundle\Data;
 
-use DateTimeImmutable;
 use Symfony\Component\Uid\Ulid;
 
 class Advertisement
