@@ -2,6 +2,7 @@
 
 namespace Lens\Bundle\LensApiBundle\Data;
 
+use DateTimeImmutable;
 use DateTimeInterface;
 use Symfony\Component\Uid\Ulid;
 
@@ -68,4 +69,9 @@ class Result
     public int $reExamsSufficientManual;
 
     public int $reExamsInsufficientManual;
+
+    public function __construct()
+    {
+        $this->id = new Ulid();
+    }
 }

@@ -6,6 +6,9 @@ use Symfony\Component\Uid\Ulid;
 
 class PaymentMethod
 {
+    public const TYPE_DEBIT = 'debit';
+    public const TYPE_CREDITCARD = 'creditcard';
+
     public Ulid $id; // 01FWGBYM1VGJ9NDC5WG2SDDT56
 
     public string $type; // debit
@@ -14,5 +17,8 @@ class PaymentMethod
 
     public ?string $iban = null; // NL05RABO0345587588
 
-    public ?string $bic = null; // ABNANL2A
+    public function __construct()
+    {
+        $this->id = new Ulid();
+    }
 }

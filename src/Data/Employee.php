@@ -2,6 +2,7 @@
 
 namespace Lens\Bundle\LensApiBundle\Data;
 
+use DateTimeImmutable;
 use Symfony\Component\Uid\Ulid;
 
 class Employee
@@ -13,4 +14,9 @@ class Employee
     public ?Personal $personal = null;
 
     public ?Company $company = null;
+
+    public function __construct()
+    {
+        $this->id = new Ulid();
+    }
 }
