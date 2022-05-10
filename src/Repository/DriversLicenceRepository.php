@@ -2,9 +2,9 @@
 
 namespace Lens\Bundle\LensApiBundle\Repository;
 
-use Lens\Bundle\LensApiBundle\Data\DriversLicense;
+use Lens\Bundle\LensApiBundle\Data\DriversLicence;
 
-class DriversLicenseRepository extends AbstractRepository
+class DriversLicenceRepository extends AbstractRepository
 {
     public function list(array $options = []): array
     {
@@ -13,6 +13,6 @@ class DriversLicenseRepository extends AbstractRepository
             $options,
         )->toArray();
 
-        return $this->api->asArray($response, DriversLicense::class);
+        return $this->api->asArray($response, DriversLicence::class);
     }
 }

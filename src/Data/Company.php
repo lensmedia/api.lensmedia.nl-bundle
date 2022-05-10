@@ -51,8 +51,8 @@ class Company
     /** @var null|Remark[] */
     public ?array $remarks = null;
 
-    /** @var null|DriversLicense[] */
-    public ?array $driversLicenses = null;
+    /** @var null|DriversLicence[] */
+    public ?array $driversLicences = null;
 
     /** @var null|Result[] */
     public ?array $results = null;

@@ -4,7 +4,7 @@ namespace Lens\Bundle\LensApiBundle\Data;
 
 use Symfony\Component\Uid\Ulid;
 
-class DriversLicense
+class DriversLicence
 {
     public Ulid $id;
 
