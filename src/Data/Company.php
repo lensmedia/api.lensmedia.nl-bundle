@@ -82,7 +82,7 @@ class Company
 
     public function isDrivingSchool(): bool
     {
-        return 'driving_school' === $this->type;
+        return self::DRIVING_SCHOOL === $this->type;
     }
 
     public function isItheoryDealer(): bool
