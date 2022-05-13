@@ -19,14 +19,14 @@ class PaymentMethod
     #[Assert\Choice(choices: [
         self::TYPE_DEBIT,
     ], message: 'payment_method.type.choice')]
-    public string $type;
+    public string $type = self::TYPE_DEBIT;
 
     #[Assert\NotBlank(message: 'payment_method.account_holder.not_blank')]
-    public ?string $accountHolder = null;
+    public string $accountHolder;
 
     #[Assert\NotBlank(message: 'payment_method.iban.not_blank')]
     #[Assert\Iban(message: 'payment_method.iban.iban')]
-    public ?string $iban = null;
+    public string $iban;
 
     public function __construct()
     {

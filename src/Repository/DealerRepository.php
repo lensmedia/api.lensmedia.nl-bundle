@@ -41,15 +41,15 @@ class DealerRepository extends AbstractRepository
             return null;
         }
 
-        return $this->byId($response->id);
+        return $this->byId($response['id']);
     }
 
-    public function companies(Dealer $dealer): array
+    public function companies(Dealer $dealer, array $options = []): array
     {
         $response = $this->api->get(sprintf(
             'dealers/%s/companies.json',
-            $dealer,
-        ))->toArray();
+            $dealer->id,
+        ), $options)->toArray();
 
         return $this->api->asArray($response, Company::class);
     }
