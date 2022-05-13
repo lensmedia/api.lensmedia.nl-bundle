@@ -2,14 +2,18 @@
 
 namespace Lens\Bundle\LensApiBundle\Data;
 
-use DateTimeImmutable;
+use Lens\Bundle\LensApiBundle\Validator as Validators;
 use Symfony\Component\Uid\Ulid;
+use Symfony\Component\Validator\Constraints as Assert;
 
+#[Validators\UniqueDealer(message: 'dealer.unique_dealer')]
 class Dealer
 {
-    public Ulid $id; // 01FWGBYM1VGJ9NDC5WG2SDDT56
+    #[Assert\NotBlank(message: 'dealer.id.not_blank')]
+    public Ulid $id;
 
-    public string $name; // itheorie
+    #[Assert\NotBlank(message: 'dealer.name.not_blank')]
+    public string $name;
 
     /** @var null|Company[] */
     public ?array $companies = null;

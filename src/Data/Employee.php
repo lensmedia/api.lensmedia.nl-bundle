@@ -2,17 +2,21 @@
 
 namespace Lens\Bundle\LensApiBundle\Data;
 
-use DateTimeImmutable;
 use Symfony\Component\Uid\Ulid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class Employee
 {
-    public Ulid $id; // 01FWGBYM1VGJ9NDC5WG2SDDT56
+    #[Assert\NotBlank(message: 'employee.id.not_blank')]
+    public Ulid $id;
 
+    #[Assert\NotBlank(message: 'employee.function.not_blank')]
     public string $function;
 
+    #[Assert\Valid]
     public ?Personal $personal = null;
 
+    #[Assert\Valid]
     public ?Company $company = null;
 
     public function __construct()

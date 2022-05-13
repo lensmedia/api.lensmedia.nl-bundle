@@ -2,12 +2,13 @@
 
 namespace Lens\Bundle\LensApiBundle\Data;
 
-use DateTimeImmutable;
 use Lens\Bundle\LensApiBundle\LensApiUtil;
 use Symfony\Component\Uid\Ulid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class Personal
 {
+    #[Assert\NotBlank(message: 'personal.id.not_blank')]
     public Ulid $id;
 
     public ?string $initials = null;
@@ -18,21 +19,27 @@ class Personal
 
     public ?string $surname = null;
 
+    #[Assert\Valid]
     public ?User $user = null;
 
     /** @var ContactMethod[] */
+    #[Assert\Valid]
     public array $contactMethods = [];
 
     /** @var Address[] */
+    #[Assert\Valid]
     public array $addresses = [];
 
     /** @var Employee[] */
+    #[Assert\Valid]
     public array $companies = [];
 
     /** @var Advertisement[] */
+    #[Assert\Valid]
     public array $advertisements = [];
 
     /** @var Remark[] */
+    #[Assert\Valid]
     public array $remarks = [];
 
     public function __construct()

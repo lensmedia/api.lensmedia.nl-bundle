@@ -4,57 +4,83 @@ namespace Lens\Bundle\LensApiBundle\Data;
 
 use DateTimeImmutable;
 use Lens\Bundle\LensApiBundle\LensApiUtil;
+use Lens\Bundle\LensApiBundle\Validator as Validators;
 use Symfony\Component\Uid\Ulid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class Company
 {
     public const COMPANY = 'company';
     public const DRIVING_SCHOOL = 'driving_school';
+    public const TYPES = [
+        self::COMPANY => self::COMPANY,
+        self::DRIVING_SCHOOL => self::DRIVING_SCHOOL,
+    ];
 
+    #[Assert\NotBlank(message: 'company.id.not_blank')]
     public Ulid $id;
 
-    public string $type;
+    #[Assert\NotBlank(message: 'company.type.not_blank')]
+    #[Assert\Choice(choices: self::TYPES, message: 'company.type.choice')]
+    public string $type = self::COMPANY;
 
+    #[Validators\ChamberOfCommerce(message: 'company.chamber_of_commerce.chamber_of_commerce')]
     public ?string $chamberOfCommerce = null;
 
-    public ?string $name = null;
+    #[Assert\NotBlank(message: 'company.name.not_blank')]
+    public string $name;
 
+    #[Validators\Cbr(message: 'company.cbr.cbr')]
     public ?string $cbr = null;
 
+    #[Assert\NotBlank(message: 'company.created_at.not_blank')]
+    #[Assert\DateTime(message: 'company.created_at.datetime')]
     public DateTimeImmutable $createdAt;
 
+    #[Assert\NotBlank(message: 'company.updated_at.not_blank')]
+    #[Assert\DateTime(message: 'company.updated_at.datetime')]
     public DateTimeImmutable $updatedAt;
 
     public ?string $disabledBy = null;
 
     public ?string $disabledReason = null;
 
+    #[Assert\DateTime(message: 'company.disabled_at.datetime')]
     public ?DateTimeImmutable $disabledAt = null;
 
+    #[Assert\DateTime(message: 'company.enabled_at.datetime')]
     public ?DateTimeImmutable $publishedAt = null;
 
     /** @var null|Address[] */
+    #[Assert\Valid]
     public ?array $addresses = null;
 
     /** @var null|ContactMethod[] */
+    #[Assert\Valid]
     public ?array $contactMethods = null;
 
     /** @var null|Employee[] */
+    #[Assert\Valid]
     public ?array $employees = null;
 
     /** @var null|Dealer[] */
+    #[Assert\Valid]
     public ?array $dealers = null;
 
     /** @var null|PaymentMethod[] */
+    #[Assert\Valid]
     public ?array $paymentMethods = null;
 
     /** @var null|Remark[] */
+    #[Assert\Valid]
     public ?array $remarks = null;
 
     /** @var null|DriversLicence[] */
+    #[Assert\Valid]
     public ?array $driversLicences = null;
 
     /** @var null|Result[] */
+    #[Assert\Valid]
     public ?array $results = null;
 
     public int $weight = 0; // used in searches not important for other things

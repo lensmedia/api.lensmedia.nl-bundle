@@ -14,6 +14,11 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->arrayNode('features')
+                    ->children()
+                        ->booleanNode('form_exclusion_extension')->defaultFalse()->end()
+                    ->end()
+                ->end()
                 ->arrayNode('http_client_options')
                     ->children()
                         ->scalarNode('base_uri')
