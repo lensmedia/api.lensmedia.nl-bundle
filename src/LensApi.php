@@ -39,6 +39,7 @@ class LensApi implements HttpClientInterface
     public PersonalRepository $personals;
     public UserRepository $users;
 
+
     public function __construct(
         private SerializerInterface $serializer,
         HttpClientInterface $httpClient,

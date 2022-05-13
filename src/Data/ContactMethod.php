@@ -2,6 +2,7 @@
 
 namespace Lens\Bundle\LensApiBundle\Data;
 
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Uid\Ulid;
 
 class ContactMethod
@@ -13,12 +14,25 @@ class ContactMethod
     public const PERSON = 'person';
     public const SOCIAL = 'social';
     public const CUSTOM = 'custom';
+    public const METHODS = [
+        self::UNDEFINED,
+        self::PHONE,
+        self::EMAIL,
+        self::WEBSITE,
+        self::PERSON,
+        self::SOCIAL,
+        self::CUSTOM,
+    ];
 
-    public Ulid $id; // 01FWGBYM1VGJ9NDC5WG2SDDT56
+    #[Assert\NotBlank(message: 'contact_method.id.not_blank')]
+    public Ulid $id;
 
-    public string $method; // phone
+    #[Assert\NotBlank(message: 'contact_method.type.not_blank')]
+    #[Assert\Choice(choices: self::METHODS, message: 'contact_method.type.choice')]
+    public string $method = self::UNDEFINED;
 
-    public string $value; // +31 529 484 655
+    #[Assert\NotBlank(message: 'contact_method.value.not_blank')]
+    public string $value;
 
     public ?string $label = null;
 

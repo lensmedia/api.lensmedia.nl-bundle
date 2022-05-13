@@ -3,19 +3,30 @@
 namespace Lens\Bundle\LensApiBundle\Data;
 
 use Symfony\Component\Uid\Ulid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class PaymentMethod
 {
     public const TYPE_DEBIT = 'debit';
-    public const TYPE_CREDITCARD = 'creditcard';
+    public const TYPES = [
+        self::TYPE_DEBIT => self::TYPE_DEBIT,
+    ];
 
-    public Ulid $id; // 01FWGBYM1VGJ9NDC5WG2SDDT56
+    #[Assert\NotBlank(message: 'payment_method.id.not_blank')]
+    public Ulid $id;
 
-    public string $type; // debit
+    #[Assert\NotBlank(message: 'payment_method.type.not_blank')]
+    #[Assert\Choice(choices: [
+        self::TYPE_DEBIT,
+    ], message: 'payment_method.type.choice')]
+    public string $type = self::TYPE_DEBIT;
 
-    public ?string $accountHolder = null; // Autorijschool Kruidhof
+    #[Assert\NotBlank(message: 'payment_method.account_holder.not_blank')]
+    public string $accountHolder;
 
-    public ?string $iban = null; // NL05RABO0345587588
+    #[Assert\NotBlank(message: 'payment_method.iban.not_blank')]
+    #[Assert\Iban(message: 'payment_method.iban.iban')]
+    public string $iban;
 
     public function __construct()
     {

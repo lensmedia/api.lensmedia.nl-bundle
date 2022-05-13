@@ -36,6 +36,19 @@ class UserRepository extends AbstractRepository
         return $this->api->as($response, User::class);
     }
 
+    public function byUsername(string $username): ?User
+    {
+        $response = $this->api->get('users.json', [
+            'query' => ['username' => $username],
+        ])->toArray()[0] ?? null;
+
+        if (!$response) {
+            return null;
+        }
+
+        return $this->byId($response['id']);
+    }
+
     public function recoverPassword(Ulid|string $user): User
     {
         $response = $this->api->get(sprintf(
