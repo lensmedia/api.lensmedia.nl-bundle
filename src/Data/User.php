@@ -28,9 +28,9 @@ class User
     public ?string $plainPassword = null;
 
     /**
-     * @Assert\NotBlank('user.roles.not_blank')
+     * @Assert\NotBlank(message="user.roles.not_blank")
      * @Assert\All({
-     *     @Assert\Choice(message: 'user.roles.choice', choices: User::ROLES)
+     *     @Assert\Choice(choices=User::ROLES, message="user.roles.choice")
      * })
      */
     public array $roles = [self::ROLE_USER];
