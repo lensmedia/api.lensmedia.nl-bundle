@@ -7,9 +7,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class PaymentMethod
 {
-    public const TYPE_DEBIT = 'debit';
+    public const DEBIT = 'debit';
     public const TYPES = [
-        self::TYPE_DEBIT => self::TYPE_DEBIT,
+        self::DEBIT => self::DEBIT,
     ];
 
     #[Assert\NotBlank(message: 'payment_method.id.not_blank')]
@@ -17,9 +17,9 @@ class PaymentMethod
 
     #[Assert\NotBlank(message: 'payment_method.type.not_blank')]
     #[Assert\Choice(choices: [
-        self::TYPE_DEBIT,
+        self::DEBIT,
     ], message: 'payment_method.type.choice')]
-    public string $type = self::TYPE_DEBIT;
+    public string $type = self::DEBIT;
 
     #[Assert\NotBlank(message: 'payment_method.account_holder.not_blank')]
     public string $accountHolder;

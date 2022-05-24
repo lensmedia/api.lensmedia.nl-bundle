@@ -85,6 +85,7 @@ class Company
 
     // These are custom query returned properties
     public ?int $weight = null;
+
     public ?string $distance = null;
 
     public function __construct()
@@ -137,7 +138,7 @@ class Company
         }
 
         return LensApiUtil::ArrayFind(
-            static fn(Address $address) => 'default' === $address->type,
+            static fn(Address $address) => Address::DEFAULT === $address->type,
             $this->addresses,
         );
     }
@@ -149,7 +150,21 @@ class Company
         }
 
         return LensApiUtil::ArrayFind(
-            static fn(Address $address) => 'billing' === $address->type,
+            static fn(Address $address) =>
+                Address::BILLING === $address->type,
+            $this->addresses,
+        );
+    }
+
+    public function shippingAddress(): ?Address
+    {
+        if (!$this->addresses) {
+            return null;
+        }
+
+        return LensApiUtil::ArrayFind(
+            static fn(Address $address) =>
+                Address::SHIPPING === $address->type,
             $this->addresses,
         );
     }
@@ -161,7 +176,8 @@ class Company
         }
 
         return LensApiUtil::ArrayFind(
-            static fn(Address $address) => 'operating' === $address->type,
+            static fn(Address $address) =>
+                Address::OPERATING === $address->type,
             $this->addresses,
         );
     }
@@ -173,7 +189,8 @@ class Company
         }
 
         return LensApiUtil::ArrayFind(
-            static fn(PaymentMethod $paymentMethod) => 'debit' === $paymentMethod->type,
+            static fn(PaymentMethod $paymentMethod) =>
+                Paymentmethod::DEBIT === $paymentMethod->type,
             $this->paymentMethods,
         );
     }
@@ -185,7 +202,8 @@ class Company
         }
 
         return LensApiUtil::ArrayFind(
-            static fn(ContactMethod $contactMethod) => 'email' === $contactMethod->method,
+            static fn(ContactMethod $contactMethod) =>
+                ContactMethod::EMAIL === $contactMethod->method,
             $this->contactMethods,
         );
     }
@@ -197,7 +215,8 @@ class Company
         }
 
         return LensApiUtil::ArrayFind(
-            static fn(ContactMethod $contactMethod) => 'phone' === $contactMethod->method
+            static fn(ContactMethod $contactMethod) =>
+                ContactMethod::PHONE === $contactMethod->method
                 && $contactMethod->label === 'work',
             $this->contactMethods,
         );
@@ -210,7 +229,8 @@ class Company
         }
 
         return LensApiUtil::ArrayFind(
-            static fn(ContactMethod $contactMethod) => 'phone' === $contactMethod->method
+            static fn(ContactMethod $contactMethod) =>
+                ContactMethod::PHONE === $contactMethod->method
                 && $contactMethod->label === 'mobile',
             $this->contactMethods,
         );
