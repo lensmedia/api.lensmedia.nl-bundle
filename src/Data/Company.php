@@ -130,8 +130,12 @@ class Company
         return $this->employees[$index]?->personal;
     }
 
-    public function defaultAddress(): Address
+    public function defaultAddress(): ?Address
     {
+        if (!$this->addresses) {
+            return null;
+        }
+
         return LensApiUtil::ArrayFind(
             static fn(Address $address) => 'default' === $address->type,
             $this->addresses,
@@ -140,6 +144,10 @@ class Company
 
     public function billingAddress(): ?Address
     {
+        if (!$this->addresses) {
+            return null;
+        }
+
         return LensApiUtil::ArrayFind(
             static fn(Address $address) => 'billing' === $address->type,
             $this->addresses,
@@ -148,6 +156,10 @@ class Company
 
     public function operatingAddress(): ?Address
     {
+        if (!$this->addresses) {
+            return null;
+        }
+
         return LensApiUtil::ArrayFind(
             static fn(Address $address) => 'operating' === $address->type,
             $this->addresses,
@@ -156,6 +168,10 @@ class Company
 
     public function directDebitPaymentMethod(): ?PaymentMethod
     {
+        if (!$this->contactMethods) {
+            return null;
+        }
+
         return LensApiUtil::ArrayFind(
             static fn(PaymentMethod $paymentMethod) => 'debit' === $paymentMethod->type,
             $this->paymentMethods,
@@ -164,6 +180,10 @@ class Company
 
     public function emailContactMethod(): ?ContactMethod
     {
+        if (!$this->contactMethods) {
+            return null;
+        }
+
         return LensApiUtil::ArrayFind(
             static fn(ContactMethod $contactMethod) => 'email' === $contactMethod->method,
             $this->contactMethods,
@@ -172,6 +192,10 @@ class Company
 
     public function workPhoneContactMethod(): ?ContactMethod
     {
+        if (!$this->contactMethods) {
+            return null;
+        }
+
         return LensApiUtil::ArrayFind(
             static fn(ContactMethod $contactMethod) => 'phone' === $contactMethod->method
                 && $contactMethod->label === 'work',
@@ -181,6 +205,10 @@ class Company
 
     public function mobilePhoneContactMethod(): ?ContactMethod
     {
+        if (!$this->contactMethods) {
+            return null;
+        }
+
         return LensApiUtil::ArrayFind(
             static fn(ContactMethod $contactMethod) => 'phone' === $contactMethod->method
                 && $contactMethod->label === 'mobile',
