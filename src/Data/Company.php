@@ -83,7 +83,9 @@ class Company
     #[Assert\Valid]
     public ?array $results = null;
 
-    public int $weight = 0; // used in searches not important for other things
+    // These are custom query returned properties
+    public ?int $weight = null;
+    public ?string $distance = null;
 
     public function __construct()
     {
