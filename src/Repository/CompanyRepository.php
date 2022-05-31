@@ -17,6 +17,17 @@ class CompanyRepository extends AbstractRepository
         return $this->api->asArray($response, Company::class);
     }
 
+    public function search(string $terms): array
+    {
+        $response = $this->api->get('companies/search.json', [
+            'query' => [
+                'q' => $terms,
+            ],
+        ])->toArray();
+
+        return $this->api->asArray($response, Company::class);
+    }
+
     public function byId(Ulid|string $user): ?Company
     {
         $response = $this->api->get(sprintf(
