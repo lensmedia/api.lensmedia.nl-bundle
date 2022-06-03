@@ -5,6 +5,7 @@ namespace Lens\Bundle\LensApiBundle\Form\Type;
 use Lens\Bundle\LensApiBundle\Data\Personal;
 use Lens\Bundle\LensApiBundle\Data\User;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -17,9 +18,9 @@ class UserType extends AbstractType
     {
         $builder->add('username', TextType::class);
 
-        $builder->add('roles', UserRoleType::class);
+        $builder->add('plainPassword', PasswordType::class);
 
-        $builder->add('disabledAt', DateTimeCheckboxType::class);
+        $builder->add('roles', UserRoleType::class);
 
         if (!$this->isParent($options, Personal::class)) {
             $builder->add('personal', PersonalType::class, [
@@ -28,6 +29,8 @@ class UserType extends AbstractType
                 'parent' => User::class,
             ]);
         }
+
+        $builder->add('disabledAt', DateTimeCheckboxType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
