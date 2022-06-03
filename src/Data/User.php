@@ -64,4 +64,9 @@ class User
             = $this->updatedAt
             = new DateTimeImmutable();
     }
+
+    public function displayName(): string
+    {
+        return $this->personal?->displayName() ?? $this->username;
+    }
 }

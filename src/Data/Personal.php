@@ -47,18 +47,14 @@ class Personal
         $this->id = new Ulid();
     }
 
-    public function name(int $companyOffset = 0): ?string
+    public function displayName(): ?string
     {
         if (!empty($this->nickname)) {
             return $this->nickname;
         }
 
-        if (!empty($this->initials) || !empty($this->surname)) {
+        if (!empty($this->initials) && !empty($this->surname)) {
             return $this->initials.' '.$this->surname;
-        }
-
-        if (!empty($this->companies[$companyOffset]->company->name)) {
-            return $this->companies[$companyOffset]->company->name;
         }
 
         return null;
