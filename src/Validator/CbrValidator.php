@@ -26,7 +26,7 @@ class CbrValidator extends ConstraintValidator
         if (!preg_match('~^\d{4}[a-z]\d$~i', $value)) {
             $this->context
                 ->buildViolation($constraint->message)
-                ->setParameters(['{{ cbr }}' => $value])
+                ->setParameters(['{{ value }}' => $value])
                 ->addViolation();
         }
     }

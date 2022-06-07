@@ -7,12 +7,12 @@ use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
-class ChamberOfCommerceValidator extends ConstraintValidator
+class InitialsValidator extends ConstraintValidator
 {
     public function validate($value, Constraint $constraint): void
     {
-        if (!($constraint instanceof ChamberOfCommerce)) {
-            throw new UnexpectedTypeException($constraint, ChamberOfCommerce::class);
+        if (!($constraint instanceof Initials)) {
+            throw new UnexpectedTypeException($constraint, Initials::class);
         }
 
         if ((null === $value) || ('' === $value)) {
@@ -23,7 +23,7 @@ class ChamberOfCommerceValidator extends ConstraintValidator
             throw new UnexpectedValueException($value, 'string');
         }
 
-        if (!preg_match('~^\d{8}$~', $value)) {
+        if (!preg_match(Initials::PATTERN, $value)) {
             $this->context
                 ->buildViolation($constraint->message)
                 ->setParameters(['{{ value }}' => $value])

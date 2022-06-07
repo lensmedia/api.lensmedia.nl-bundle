@@ -7,6 +7,13 @@ use Symfony\Component\Validator\Constraints\Ulid;
 
 class UserRepository extends AbstractRepository
 {
+    public function auth(): ?User
+    {
+        $response = $this->api->get('users/auth.json')->toArray();
+
+        return $this->api->as($response, User::class);
+    }
+
     public function list(array $options = []): array
     {
         $response = $this->api->get(
@@ -17,14 +24,20 @@ class UserRepository extends AbstractRepository
         return $this->api->asArray($response, User::class);
     }
 
-    public function auth(): ?User
+    public function search(string $terms, array $options = []): array
     {
-        $response = $this->api->get(
-            'users/auth.json',
-        )->toArray();
+        $options = array_merge($options, [
+            'query' => [
+                'q' => $terms,
+            ],
+        ]);
 
-        return $this->api->as($response, User::class);
+        $users = $this->api->get('users/search.json', $options)
+            ->toArray();
+
+        return $this->api->asArray($users, User::class);
     }
+
 
     public function byId(Ulid|string $user): ?User
     {

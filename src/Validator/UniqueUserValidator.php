@@ -32,7 +32,7 @@ class UniqueUserValidator extends ConstraintValidator
 
         if ($user->username === $value->username && $user->id !== $value->id) {
             $this->context->buildViolation($constraint->message)
-                ->setParameter('{{ username }}', $value->username)
+                ->setParameter('{{ value }}', $value->username)
                 ->addViolation();
         }
     }

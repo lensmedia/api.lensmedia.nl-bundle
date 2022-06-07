@@ -29,7 +29,7 @@ class UniqueDealerValidator extends ConstraintValidator
         foreach ($dealers as $dealer) {
             if ($dealer->name === $value->name && $dealer->id !== $value->id) {
                 $this->context->buildViolation($constraint->message)
-                    ->setParameter('{{ name }}', $value->name)
+                    ->setParameter('{{ value }}', $value->name)
                     ->addViolation();
 
                 break;
