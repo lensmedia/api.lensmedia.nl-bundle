@@ -3,6 +3,7 @@
 namespace Lens\Bundle\LensApiBundle\Data;
 
 use Lens\Bundle\LensApiBundle\LensApiUtil;
+use Lens\Bundle\LensApiBundle\Validator\Initials;
 use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -11,6 +12,7 @@ class Personal
     #[Assert\NotBlank(message: 'personal.id.not_blank')]
     public Ulid $id;
 
+    #[Initials(message: 'personal.initials.initials')]
     public ?string $initials = null;
 
     public ?string $nickname = null;
