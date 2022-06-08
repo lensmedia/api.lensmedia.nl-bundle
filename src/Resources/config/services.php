@@ -8,6 +8,9 @@ use Lens\Bundle\LensApiBundle\Form\Type\CompanyType;
 use Lens\Bundle\LensApiBundle\Form\Type\DealerChoiceType;
 use Lens\Bundle\LensApiBundle\Form\Type\DriversLicenceChoiceType;
 use Lens\Bundle\LensApiBundle\LensApi;
+use Lens\Bundle\LensApiBundle\Validator\UniqueAdvertisementValidator;
+use Lens\Bundle\LensApiBundle\Validator\UniqueDealerValidator;
+use Lens\Bundle\LensApiBundle\Validator\UniqueUserValidator;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -47,5 +50,20 @@ return static function (ContainerConfigurator $container) {
         ->set(ExclusionExtension::class)
         ->args([false])
         ->tag('form.type_extension', ['priority' => -4096])
+
+        ->set(UniqueAdvertisementValidator::class)
+        ->args([
+            service(LensApi::class),
+        ])
+
+        ->set(UniqueDealerValidator::class)
+        ->args([
+            service(LensApi::class),
+        ])
+
+        ->set(UniqueUserValidator::class)
+        ->args([
+            service(LensApi::class),
+        ])
     ;
 };
