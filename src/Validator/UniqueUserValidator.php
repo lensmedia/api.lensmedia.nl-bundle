@@ -2,7 +2,6 @@
 
 namespace Lens\Bundle\LensApiBundle\Validator;
 
-use Lens\Bundle\LensApiBundle\Data\User;
 use Lens\Bundle\LensApiBundle\LensApi;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -17,11 +16,11 @@ class UniqueUserValidator extends ConstraintValidator
 
     public function validate($value, Constraint $constraint): void
     {
-        if (!$constraint instanceof UniqueDealer) {
-            throw new UnexpectedTypeException($constraint, UniqueDealer::class);
+        if (!$constraint instanceof UniqueUser) {
+            throw new UnexpectedTypeException($constraint, UniqueUser::class);
         }
 
-        if (!$value instanceof User) {
+        if (null === $value || '' === $value) {
             return;
         }
 
@@ -30,9 +29,9 @@ class UniqueUserValidator extends ConstraintValidator
             return;
         }
 
-        if ($user->username === $value->username && $user->id !== $value->id) {
+        if ($user->username === $value) {
             $this->context->buildViolation($constraint->message)
-                ->setParameter('{{ value }}', $value->username)
+                ->setParameter('{{ value }}', $value)
                 ->addViolation();
         }
     }

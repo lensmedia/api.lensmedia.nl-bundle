@@ -15,7 +15,7 @@ class ChamberOfCommerceValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, ChamberOfCommerce::class);
         }
 
-        if ((null === $value) || ('' === $value)) {
+        if (null === $value || '' === $value) {
             return;
         }
 

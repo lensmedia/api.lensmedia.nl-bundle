@@ -21,6 +21,10 @@ class UniqueDealerValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, UniqueDealer::class);
         }
 
+        if (null === $value || '' === $value) {
+            return;
+        }
+
         if (!$value instanceof Dealer) {
             return;
         }

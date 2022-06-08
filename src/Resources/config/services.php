@@ -52,16 +52,19 @@ return static function (ContainerConfigurator $container) {
         ->tag('form.type_extension', ['priority' => -4096])
 
         ->set(UniqueAdvertisementValidator::class)
+        ->tag('validator.constraint_validator')
         ->args([
             service(LensApi::class),
         ])
 
         ->set(UniqueDealerValidator::class)
+        ->tag('validator.constraint_validator')
         ->args([
             service(LensApi::class),
         ])
 
         ->set(UniqueUserValidator::class)
+        ->tag('validator.constraint_validator')
         ->args([
             service(LensApi::class),
         ])

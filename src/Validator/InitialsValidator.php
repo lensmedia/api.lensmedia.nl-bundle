@@ -15,7 +15,7 @@ class InitialsValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, Initials::class);
         }
 
-        if ((null === $value) || ('' === $value)) {
+        if (null === $value || '' === $value) {
             return;
         }
 

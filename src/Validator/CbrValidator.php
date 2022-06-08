@@ -15,7 +15,7 @@ class CbrValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, Cbr::class);
         }
 
-        if ((null === $value) || ('' === $value)) {
+        if (null === $value || '' === $value) {
             return;
         }
 

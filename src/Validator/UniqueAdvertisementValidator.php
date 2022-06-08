@@ -21,6 +21,10 @@ class UniqueAdvertisementValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, UniqueAdvertisement::class);
         }
 
+        if (null === $value || '' === $value) {
+            return;
+        }
+
         if (!$value instanceof Advertisement) {
             return;
         }
