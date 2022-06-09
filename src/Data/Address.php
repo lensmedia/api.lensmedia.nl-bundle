@@ -60,9 +60,4 @@ class Address
         max: 180,
     )]
     public ?string $latitude = null;
-
-    public function __construct()
-    {
-        $this->id = new Ulid();
-    }
 }

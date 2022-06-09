@@ -11,6 +11,7 @@ use Lens\Bundle\LensApiBundle\Repository\DealerRepository;
 use Lens\Bundle\LensApiBundle\Repository\PersonalRepository;
 use Lens\Bundle\LensApiBundle\Repository\UserRepository;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
@@ -84,6 +85,12 @@ class LensApi implements HttpClientInterface
 
     public function post(string $url, array $options = []): ResponseInterface
     {
+        if (is_object($options['json'])) {
+            $options['json'] = $this->serializer->normalize($options['json'], null, [
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true
+            ]);
+        }
+
         return $this->request('POST', $url, $options);
     }
 

@@ -17,9 +17,4 @@ class Dealer
 
     /** @var null|Company[] */
     public ?array $companies = null;
-
-    public function __construct()
-    {
-        $this->id = new Ulid();
-    }
 }

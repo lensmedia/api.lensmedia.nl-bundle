@@ -35,9 +35,4 @@ class ContactMethod
     public string $value;
 
     public ?string $label = null;
-
-    public function __construct()
-    {
-        $this->id = new Ulid();
-    }
 }

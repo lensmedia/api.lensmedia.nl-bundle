@@ -17,9 +17,4 @@ class Advertisement
 
     /** @var Personal[] */
     public array $personal = [];
-
-    public function __construct()
-    {
-        $this->id = new Ulid();
-    }
 }

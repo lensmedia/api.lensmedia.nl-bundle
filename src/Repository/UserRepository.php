@@ -3,6 +3,7 @@
 namespace Lens\Bundle\LensApiBundle\Repository;
 
 use Lens\Bundle\LensApiBundle\Data\User;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Validator\Constraints\Ulid;
 
 class UserRepository extends AbstractRepository
@@ -10,6 +11,15 @@ class UserRepository extends AbstractRepository
     public function auth(): ?User
     {
         $response = $this->api->get('users/auth.json')->toArray();
+
+        return $this->api->as($response, User::class);
+    }
+
+    public function new(User $user): User
+    {
+        $response = $this->api->post('users.jsonld', [
+            'json' => $user,
+        ])->toArray();
 
         return $this->api->as($response, User::class);
     }

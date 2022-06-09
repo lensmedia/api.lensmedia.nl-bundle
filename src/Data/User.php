@@ -2,7 +2,6 @@
 
 namespace Lens\Bundle\LensApiBundle\Data;
 
-use DateTimeImmutable;
 use DateTimeInterface;
 use Lens\Bundle\LensApiBundle\Validator as Validators;
 use Symfony\Component\Uid\Ulid;
@@ -55,15 +54,6 @@ class User
 
     #[Assert\Valid]
     public ?Personal $personal = null;
-
-    public function __construct()
-    {
-        $this->id = new Ulid();
-
-        $this->createdAt
-            = $this->updatedAt
-            = new DateTimeImmutable();
-    }
 
     public function displayName(): string
     {

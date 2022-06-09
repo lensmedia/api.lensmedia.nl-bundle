@@ -120,9 +120,4 @@ class Result
     #[Assert\NotBlank(message: 'result.re_exams_insufficient_manual.not_blank')]
     #[Assert\Type(type: 'integer', message: 'result.re_exams_insufficient_manual.type')]
     public int $reExamsInsufficientManual = 0;
-
-    public function __construct()
-    {
-        $this->id = new Ulid();
-    }
 }

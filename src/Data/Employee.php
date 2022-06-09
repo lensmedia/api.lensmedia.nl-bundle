@@ -18,9 +18,4 @@ class Employee
 
     #[Assert\Valid]
     public ?Company $company = null;
-
-    public function __construct()
-    {
-        $this->id = new Ulid();
-    }
 }

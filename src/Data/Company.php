@@ -88,15 +88,6 @@ class Company
 
     public ?string $distance = null;
 
-    public function __construct()
-    {
-        $this->id = new Ulid();
-
-        $this->createdAt
-            = $this->updatedAt
-            = new DateTimeImmutable();
-    }
-
     public function isPublished(): bool
     {
         return $this->publishedAt !== null
