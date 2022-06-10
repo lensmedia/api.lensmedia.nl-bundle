@@ -3,7 +3,7 @@
 namespace Lens\Bundle\LensApiBundle\Repository;
 
 use Lens\Bundle\LensApiBundle\Data\Address;
-use Symfony\Component\Validator\Constraints\Ulid;
+use Symfony\Component\Uid\Ulid;
 
 class AddressRepository extends AbstractRepository
 {

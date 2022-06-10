@@ -3,8 +3,7 @@
 namespace Lens\Bundle\LensApiBundle\Repository;
 
 use Lens\Bundle\LensApiBundle\Data\User;
-use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
-use Symfony\Component\Validator\Constraints\Ulid;
+use Symfony\Component\Uid\Ulid;
 
 class UserRepository extends AbstractRepository
 {
@@ -17,7 +16,7 @@ class UserRepository extends AbstractRepository
 
     public function new(User $user): User
     {
-        $response = $this->api->post('users.jsonld', [
+        $response = $this->api->post('users.json', [
             'json' => $user,
         ])->toArray();
 
@@ -26,10 +25,7 @@ class UserRepository extends AbstractRepository
 
     public function list(array $options = []): array
     {
-        $response = $this->api->get(
-            'users.json',
-            $options,
-        )->toArray();
+        $response = $this->api->get('users.json', $options)->toArray();
 
         return $this->api->asArray($response, User::class);
     }
@@ -42,8 +38,7 @@ class UserRepository extends AbstractRepository
             ],
         ]);
 
-        $users = $this->api->get('users/search.json', $options)
-            ->toArray();
+        $users = $this->api->get('users/search.json', $options)->toArray();
 
         return $this->api->asArray($users, User::class);
     }
@@ -113,9 +108,7 @@ class UserRepository extends AbstractRepository
             'users/%s/recover/%s.json',
             (string)$user,
             $token,
-        ), [
-            'json' => $data,
-        ])->toArray();
+        ), ['json' => $data])->toArray();
 
         return $this->api->as($response, User::class);
     }

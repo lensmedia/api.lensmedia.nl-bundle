@@ -8,10 +8,7 @@ class AdvertisementRepository extends AbstractRepository
 {
     public function list(array $options = []): array
     {
-        $response = $this->api->get(
-            'advertisements.json',
-            $options,
-        )->toArray();
+        $response = $this->api->get('advertisements.json', $options)->toArray();
 
         return $this->api->asArray($response, Advertisement::class);
     }

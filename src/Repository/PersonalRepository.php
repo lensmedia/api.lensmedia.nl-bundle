@@ -3,16 +3,13 @@
 namespace Lens\Bundle\LensApiBundle\Repository;
 
 use Lens\Bundle\LensApiBundle\Data\Personal;
-use Symfony\Component\Validator\Constraints\Ulid;
+use Symfony\Component\Uid\Ulid;
 
 class PersonalRepository extends AbstractRepository
 {
     public function list(array $options = []): array
     {
-        $response = $this->api->get(
-            'personals.json',
-            $options,
-        )->toArray();
+        $response = $this->api->get('personals.json', $options)->toArray();
 
         return $this->api->asArray($response, Personal::class);
     }
@@ -24,9 +21,6 @@ class PersonalRepository extends AbstractRepository
             $personal,
         ))->toArray();
 
-        return $this->api->as(
-            $response,
-            Personal::class,
-        );
+        return $this->api->as($response, Personal::class);
     }
 }

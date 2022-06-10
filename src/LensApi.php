@@ -2,6 +2,7 @@
 
 namespace Lens\Bundle\LensApiBundle;
 
+use Exception;
 use Lens\Bundle\LensApiBundle\Repository\AddressRepository;
 use Lens\Bundle\LensApiBundle\Repository\AdvertisementRepository;
 use Lens\Bundle\LensApiBundle\Repository\CompanyRepository;
@@ -10,6 +11,7 @@ use Lens\Bundle\LensApiBundle\Repository\DrivingSchoolRepository;
 use Lens\Bundle\LensApiBundle\Repository\DealerRepository;
 use Lens\Bundle\LensApiBundle\Repository\PersonalRepository;
 use Lens\Bundle\LensApiBundle\Repository\UserRepository;
+use RuntimeException;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -87,7 +89,7 @@ class LensApi implements HttpClientInterface
     {
         if (is_object($options['json'])) {
             $options['json'] = $this->serializer->normalize($options['json'], null, [
-                AbstractObjectNormalizer::SKIP_NULL_VALUES => true
+                AbstractObjectNormalizer::SKIP_NULL_VALUES => true,
             ]);
         }
 

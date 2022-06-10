@@ -4,16 +4,13 @@ namespace Lens\Bundle\LensApiBundle\Repository;
 
 use Lens\Bundle\LensApiBundle\Data\Company;
 use Lens\Bundle\LensApiBundle\Data\Dealer;
-use Symfony\Component\Validator\Constraints\Ulid;
+use Symfony\Component\Uid\Ulid;
 
 class DealerRepository extends AbstractRepository
 {
     public function list(array $options = []): array
     {
-        $response = $this->api->get(
-            'dealers.json',
-            $options,
-        )->toArray();
+        $response = $this->api->get('dealers.json', $options)->toArray();
 
         return $this->api->asArray($response, Dealer::class);
     }

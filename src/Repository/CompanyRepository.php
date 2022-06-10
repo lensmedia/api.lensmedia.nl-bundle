@@ -3,7 +3,7 @@
 namespace Lens\Bundle\LensApiBundle\Repository;
 
 use Lens\Bundle\LensApiBundle\Data\Company;
-use Symfony\Component\Validator\Constraints\Ulid;
+use Symfony\Component\Uid\Ulid;
 
 class CompanyRepository extends AbstractRepository
 {
@@ -46,7 +46,6 @@ class CompanyRepository extends AbstractRepository
      */
     public function chamberOfCommerceToId(): array
     {
-        return $this->api->get('companies/chamber-of-commerce-to-id.json')
-            ->toArray();
+        return $this->api->get('companies/chamber-of-commerce-to-id.json')->toArray();
     }
 }

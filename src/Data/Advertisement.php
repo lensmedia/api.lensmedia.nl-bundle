@@ -16,5 +16,5 @@ class Advertisement
     public string $type;
 
     /** @var Personal[] */
-    public array $personal = [];
+    public array $personals = [];
 }
