@@ -21,11 +21,16 @@ class CbrType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults([
-            'attr' => ['pattern' => '\d{4}[a-zA-Z]\d'],
-            'constraints' => [
-                new Cbr(),
-            ],
+        $resolver->setDefault('attr', function (OptionsResolver $resolver) {
+            $resolver->setDefaults([
+                'class' => null,
+                'placeholder' => null,
+                'pattern' => '\d{4}[a-zA-Z]\d',
+            ]);
+        });
+
+        $resolver->setDefault('constraints', [
+            new Cbr(),
         ]);
     }
 

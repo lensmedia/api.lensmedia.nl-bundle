@@ -8,9 +8,10 @@ use Symfony\Component\Validator\Constraint;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 class Initials extends Constraint
 {
-    public const PATTERN = '~^(\p{Lu}\p{Ll}*\.)+$~u';
+    public const PATTERN_HTML = '(\p{Lu}\p{Ll}*\.)+';
+    public const PATTERN = '/^'.self::PATTERN_HTML.'$/u';
 
-    public string $message = 'Invalid initials format "{{ value }}" use eg; "A.", "A.B." or "A.Chr.".';
+    public string $message = 'Invalid initials format "{{ value }}" use eg; "A.", "A.B." or "A.B.Chr.".';
 
     public function __construct(
         mixed $options = null,

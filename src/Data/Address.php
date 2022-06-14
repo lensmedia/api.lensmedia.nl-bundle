@@ -48,16 +48,16 @@ class Address
     #[Assert\Range(
         minMessage: 'address.longitude.range.min',
         maxMessage: 'address.longitude.range.max',
-        min: -90,
-        max: 90,
+        min: Coords::LONGITUDE_MIN,
+        max: Coords::LONGITUDE_MAX,
     )]
     public ?string $longitude = null;
 
     #[Assert\Range(
         minMessage: 'address.latitude.range.min',
         maxMessage: 'address.latitude.range.max',
-        min: -180,
-        max: 180,
+        min: Coords::LATITUDE_MIN,
+        max: Coords::LATITUDE_MAX,
     )]
     public ?string $latitude = null;
 }

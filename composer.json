@@ -11,7 +11,8 @@
         "symfony/framework-bundle": "^6.0",
         "symfony/form": "^6.0",
         "symfony/validator": "^6.0",
-        "symfony/security-core": "^6.0"
+        "symfony/security-core": "^6.0",
+        "brick/math": "^0.9.3"
     },
     "autoload": {
         "psr-4": {

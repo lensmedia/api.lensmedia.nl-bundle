@@ -16,6 +16,7 @@ class RemarkType extends AbstractType
 
         $builder->add('remark', TextareaType::class);
     }
+
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

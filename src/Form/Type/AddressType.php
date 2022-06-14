@@ -3,6 +3,7 @@
 namespace Lens\Bundle\LensApiBundle\Form\Type;
 
 use Lens\Bundle\LensApiBundle\Data\Address;
+use Lens\Bundle\LensApiBundle\Data\Coords;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -34,6 +35,9 @@ class AddressType extends AbstractType
             'required' => false,
             'attr' => [
                 'inputmode' => 'numeric',
+                'step' => '0.000001',
+                'min' => Coords::LONGITUDE_MIN,
+                'max' => Coords::LONGITUDE_MAX,
             ],
         ]);
 
@@ -41,6 +45,9 @@ class AddressType extends AbstractType
             'required' => false,
             'attr' => [
                 'inputmode' => 'numeric',
+                'step' => '0.000001',
+                'min' => Coords::LONGITUDE_MIN,
+                'max' => Coords::LONGITUDE_MAX,
             ],
         ]);
     }
