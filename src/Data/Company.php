@@ -117,6 +117,18 @@ class Company
         );
     }
 
+    public function isTheoryBookDealer(): bool
+    {
+        if (empty($this->dealers)) {
+            return false;
+        }
+
+        return LensApiUtil::ArrayAny(
+            static fn(Dealer $dealer) => 'theorieboek' === $dealer->name,
+            $this->dealers,
+        );
+    }
+
     public function personal(int $index = 0): ?Personal
     {
         return $this->employees[$index]?->personal;
@@ -195,6 +207,19 @@ class Company
         return LensApiUtil::ArrayFind(
             static fn(ContactMethod $contactMethod) =>
                 ContactMethod::EMAIL === $contactMethod->method,
+            $this->contactMethods,
+        );
+    }
+
+    public function websiteContactMethod(): ?ContactMethod
+    {
+        if (!$this->contactMethods) {
+            return null;
+        }
+
+        return LensApiUtil::ArrayFind(
+            static fn(ContactMethod $contactMethod) =>
+                ContactMethod::WEBSITE === $contactMethod->method,
             $this->contactMethods,
         );
     }
