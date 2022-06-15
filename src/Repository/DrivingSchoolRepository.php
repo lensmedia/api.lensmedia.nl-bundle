@@ -7,6 +7,13 @@ use Symfony\Component\Uid\Ulid;
 
 class DrivingSchoolRepository extends AbstractRepository
 {
+    public function list(array $options = []): array
+    {
+        $response = $this->api->get('driving-schools.json', $options)->toArray();
+
+        return $this->api->asArray($response, Company::class);
+    }
+
     public function byId(string|Ulid $drivingSchool): Company
     {
         $response = $this->api->get(sprintf(
@@ -20,8 +27,8 @@ class DrivingSchoolRepository extends AbstractRepository
     public function byChamberOfCommerce(string $chamberOfCommerce): ?Company
     {
         $response = $this->api->get('driving-schools.json', [
-                'query' => ['chamberOfCommerce' => $chamberOfCommerce],
-            ])->toArray()[0] ?? null;
+            'query' => ['chamberOfCommerce' => $chamberOfCommerce],
+        ])->toArray()[0] ?? null;
 
         if (!$response) {
             return null;
