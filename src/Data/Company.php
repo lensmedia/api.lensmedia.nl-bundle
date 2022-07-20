@@ -105,7 +105,7 @@ class Company
         return self::DRIVING_SCHOOL === $this->type;
     }
 
-    public function isItheoryDealer(): bool
+    public function isItheorieDealer(): bool
     {
         if (empty($this->dealers)) {
             return false;
@@ -117,7 +117,7 @@ class Company
         );
     }
 
-    public function isTheoryBookDealer(): bool
+    public function isTheorieboekDealer(): bool
     {
         if (empty($this->dealers)) {
             return false;
