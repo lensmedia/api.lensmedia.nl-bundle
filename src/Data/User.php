@@ -2,6 +2,7 @@
 
 namespace Lens\Bundle\LensApiBundle\Data;
 
+use DateTimeImmutable;
 use DateTimeInterface;
 use Lens\Bundle\LensApiBundle\Validator as Validators;
 use Symfony\Component\Uid\Ulid;
@@ -12,6 +13,9 @@ class User
 {
     public const AUTH_NOT_FOUND = '6b4281f6-9bf3-4e67-9e31-cf31723ab714';
     public const AUTH_INVALID_PASSWORD = 'f85765a3-df36-40e8-b9f7-5e532ef5a9a0';
+    public const AUTH_USER_BLOCKED = '80d61237-ce0f-441f-8379-95b7790e128a';
+
+    public const RECOVERY_TIMEOUT = '+3 hours';
 
     public const ROLE_ADMIN = 'ROLE_ADMIN';
     public const ROLE_USER = 'ROLE_USER';
@@ -58,5 +62,20 @@ class User
     public function displayName(): string
     {
         return $this->personal?->displayName() ?? $this->username;
+    }
+
+    public function enable(): void
+    {
+        $this->disabledAt = null;
+    }
+
+    public function disable(): void
+    {
+        $this->disabledAt = new DateTimeImmutable();
+    }
+
+    public function isDisabled(): bool
+    {
+        return null !== $this->disabledAt;
     }
 }

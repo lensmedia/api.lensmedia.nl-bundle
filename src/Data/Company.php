@@ -88,16 +88,40 @@ class Company
 
     public ?string $distance = null;
 
-    public function isPublished(): bool
+    public function enable(): void
     {
-        return $this->publishedAt !== null
-            && new DateTimeImmutable() > $this->publishedAt;
+        $this->disabledBy = null;
+        $this->disabledReason = null;
+        $this->disabledAt = null;
+    }
+
+    public function disable(string $reason, ?string $user = null): void
+    {
+        $this->disabledBy = $user;
+        $this->disabledReason = $reason;
+        $this->disabledAt = new DateTimeImmutable();
     }
 
     public function isDisabled(): bool
     {
         return $this->disabledAt !== null
             && new DateTimeImmutable() > $this->disabledAt;
+    }
+
+    public function publish(): void
+    {
+        $this->publishedAt = new DateTimeImmutable();
+    }
+
+    public function unPublish(): void
+    {
+        $this->publishedAt = null;
+    }
+
+    public function isPublished(): bool
+    {
+        return $this->publishedAt !== null
+            && new DateTimeImmutable() > $this->publishedAt;
     }
 
     public function isDrivingSchool(): bool
@@ -250,19 +274,5 @@ class Company
                 && $contactMethod->label === 'mobile',
             $this->contactMethods,
         );
-    }
-
-    public function disable(string $reason, ?string $user = null): void
-    {
-        $this->disabledBy = $user;
-        $this->disabledReason = $reason;
-        $this->disabledAt = new DateTimeImmutable();
-    }
-
-    public function enable(): void
-    {
-        $this->disabledBy = null;
-        $this->disabledReason = null;
-        $this->disabledAt = null;
     }
 }
