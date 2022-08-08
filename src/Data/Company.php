@@ -105,7 +105,7 @@ class Company
     public function isDisabled(): bool
     {
         return $this->disabledAt !== null
-            && new DateTimeImmutable() > $this->disabledAt;
+            && new DateTimeImmutable() >= $this->disabledAt;
     }
 
     public function publish(): void
@@ -121,7 +121,7 @@ class Company
     public function isPublished(): bool
     {
         return $this->publishedAt !== null
-            && new DateTimeImmutable() > $this->publishedAt;
+            && new DateTimeImmutable() >= $this->publishedAt;
     }
 
     public function isDrivingSchool(): bool
