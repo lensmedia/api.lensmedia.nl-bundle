@@ -165,7 +165,8 @@ class Company
         }
 
         return LensApiUtil::ArrayFind(
-            static fn(Address $address) => Address::DEFAULT === $address->type,
+            static fn(Address $address) =>
+                Address::DEFAULT === $address->type,
             $this->addresses,
         );
     }

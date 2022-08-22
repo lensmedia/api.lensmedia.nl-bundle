@@ -3,7 +3,11 @@
 namespace Lens\Bundle\LensApiBundle\Repository;
 
 use Lens\Bundle\LensApiBundle\Data\User;
+use Symfony\Component\HttpClient\Exception\ClientException;
+use Symfony\Component\HttpClient\Exception\ServerException;
 use Symfony\Component\Uid\Ulid;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class UserRepository extends AbstractRepository
 {
@@ -86,15 +90,13 @@ class UserRepository extends AbstractRepository
      * 403 Recovery token has expired.
      * 404 User not found.
      */
-    public function recoverPasswordCheckStatus(Ulid|string $user, string $token): User
+    public function recoverPasswordCheckStatus(Ulid|string $user, string $token): ResponseInterface
     {
-        $response = $this->api->get(sprintf(
+        return $this->api->get(sprintf(
             'users/%s/recover/%s.json',
             $user,
             $token,
-        ))->toArray();
-
-        return $this->api->as($response, User::class);
+        ));
     }
 
     public function recoverUpdatePassword(Ulid|string $user, string $token, string $plainPassword): User
@@ -106,7 +108,7 @@ class UserRepository extends AbstractRepository
 
         $response = $this->api->patch(sprintf(
             'users/%s/recover/%s.json',
-            (string)$user,
+            $user,
             $token,
         ), ['json' => $data])->toArray();
 
