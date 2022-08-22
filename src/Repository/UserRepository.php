@@ -90,13 +90,13 @@ class UserRepository extends AbstractRepository
      * 403 Recovery token has expired.
      * 404 User not found.
      */
-    public function recoverPasswordCheckStatus(Ulid|string $user, string $token): ResponseInterface
+    public function recoverPasswordCheckStatus(Ulid|string $user, string $token): void
     {
-        return $this->api->get(sprintf(
+        $this->api->get(sprintf(
             'users/%s/recover/%s.json',
             $user,
             $token,
-        ));
+        ))->getContent();
     }
 
     public function recoverUpdatePassword(Ulid|string $user, string $token, string $plainPassword): User
