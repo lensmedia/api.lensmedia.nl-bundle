@@ -46,16 +46,14 @@ class Address
     public string $country = 'NL';
 
     #[Assert\Range(
-        minMessage: 'address.longitude.range.min',
-        maxMessage: 'address.longitude.range.max',
+        notInRangeMessage: 'address.longitude.range.not_in_range',
         min: Coords::LONGITUDE_MIN,
         max: Coords::LONGITUDE_MAX,
     )]
     public ?string $longitude = null;
 
     #[Assert\Range(
-        minMessage: 'address.latitude.range.min',
-        maxMessage: 'address.latitude.range.max',
+        notInRangeMessage: 'address.latitude.range.not_in_range',
         min: Coords::LATITUDE_MIN,
         max: Coords::LATITUDE_MAX,
     )]
