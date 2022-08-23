@@ -12,4 +12,9 @@ class DriversLicence
 
     #[Assert\NotBlank(message: 'drivers_licence.label.not_blank')]
     public string $label;
+
+    public function __construct()
+    {
+        $this->id = new Ulid();
+    }
 }

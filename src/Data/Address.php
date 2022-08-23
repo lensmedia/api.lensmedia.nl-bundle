@@ -58,4 +58,9 @@ class Address
         max: Coords::LATITUDE_MAX,
     )]
     public ?string $latitude = null;
+
+    public function __construct()
+    {
+        $this->id = new Ulid();
+    }
 }

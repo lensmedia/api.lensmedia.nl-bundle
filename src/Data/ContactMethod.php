@@ -14,6 +14,7 @@ class ContactMethod
     public const PERSON = 'person';
     public const SOCIAL = 'social';
     public const CUSTOM = 'custom';
+
     public const METHODS = [
         self::UNDEFINED,
         self::PHONE,
@@ -35,4 +36,9 @@ class ContactMethod
     public string $value;
 
     public ?string $label = null;
+
+    public function __construct()
+    {
+        $this->id = new Ulid();
+    }
 }

@@ -27,4 +27,9 @@ class PaymentMethod
     #[Assert\NotBlank(message: 'payment_method.iban.not_blank')]
     #[Assert\Iban(message: 'payment_method.iban.iban')]
     public string $iban;
+
+    public function __construct()
+    {
+        $this->id = new Ulid();
+    }
 }

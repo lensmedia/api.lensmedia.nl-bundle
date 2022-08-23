@@ -44,6 +44,11 @@ class Personal
     #[Assert\Valid]
     public array $remarks = [];
 
+    public function __construct()
+    {
+        $this->id = new Ulid();
+    }
+
     public function displayName(): ?string
     {
         if (!empty($this->nickname)) {

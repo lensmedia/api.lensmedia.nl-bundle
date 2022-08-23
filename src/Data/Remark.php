@@ -39,4 +39,13 @@ class Remark
 
     #[Assert\NotBlank(message: 'remark.remark.not_blank')]
     public string $remark;
+
+    public function __construct()
+    {
+        $this->id = new Ulid();
+
+        $this->createdAt
+            = $this->updatedAt
+            = new DateTimeImmutable();
+    }
 }

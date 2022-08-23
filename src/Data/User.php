@@ -59,6 +59,15 @@ class User
     #[Assert\Valid]
     public ?Personal $personal = null;
 
+    public function __construct()
+    {
+        $this->id = new Ulid();
+
+        $this->createdAt
+            = $this->updatedAt
+            = new DateTimeImmutable();
+    }
+
     public function displayName(): string
     {
         return $this->personal?->displayName() ?? $this->username;

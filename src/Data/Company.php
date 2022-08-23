@@ -88,6 +88,15 @@ class Company
 
     public ?string $distance = null;
 
+    public function __construct()
+    {
+        $this->id = new Ulid();
+
+        $this->createdAt
+            = $this->updatedAt
+            = new DateTimeImmutable();
+    }
+
     public function enable(): void
     {
         $this->disabledBy = null;
