@@ -221,7 +221,7 @@ class Company
 
     public function directDebitPaymentMethod(): ?PaymentMethod
     {
-        if (!$this->contactMethods) {
+        if (!$this->paymentMethods) {
             return null;
         }
 
