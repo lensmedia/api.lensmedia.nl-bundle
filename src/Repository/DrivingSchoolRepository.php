@@ -24,6 +24,19 @@ class DrivingSchoolRepository extends AbstractRepository
         return $this->api->as($response, Company::class);
     }
 
+    public function byCbr(string $cbr): ?Company
+    {
+        $response = $this->api->get('driving-schools.json', [
+            'query' => ['cbr' => $cbr],
+        ])->toArray()[0] ?? null;
+
+        if (!$response) {
+            return null;
+        }
+
+        return $this->byId($response['id']);
+    }
+
     public function byChamberOfCommerce(string $chamberOfCommerce): ?Company
     {
         $response = $this->api->get('driving-schools.json', [
