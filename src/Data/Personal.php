@@ -49,14 +49,14 @@ class Personal
         $this->id = new Ulid();
     }
 
-    public function displayName(): ?string
+    public function displayName(bool $noNickname = false): ?string
     {
-        if (!empty($this->nickname)) {
+        if (!empty($this->nickname) && !$noNickname) {
             return $this->nickname;
         }
 
         if (!empty($this->initials) && !empty($this->surname)) {
-            return $this->initials.' '.$this->surname;
+            return $this->initials.($this->surnameAffix ? ' '.$this->surnameAffix : '').' '.$this->surname;
         }
 
         return null;
