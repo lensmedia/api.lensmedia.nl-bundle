@@ -2,16 +2,7 @@
 
 namespace Lens\Bundle\LensApiBundle;
 
-use Exception;
-use Lens\Bundle\LensApiBundle\Repository\AddressRepository;
-use Lens\Bundle\LensApiBundle\Repository\AdvertisementRepository;
-use Lens\Bundle\LensApiBundle\Repository\CompanyRepository;
-use Lens\Bundle\LensApiBundle\Repository\DriversLicenceRepository;
-use Lens\Bundle\LensApiBundle\Repository\DrivingSchoolRepository;
-use Lens\Bundle\LensApiBundle\Repository\DealerRepository;
-use Lens\Bundle\LensApiBundle\Repository\PersonalRepository;
-use Lens\Bundle\LensApiBundle\Repository\UserRepository;
-use RuntimeException;
+use Lens\Bundle\LensApiBundle\Repository;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -19,44 +10,36 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 use Symfony\Contracts\HttpClient\ResponseStreamInterface;
 
-/**
- * @property-read AddressRepository        $addresses
- * @property-read AdvertisementRepository  $advertisements
- * @property-read CompanyRepository        $companies
- * @property-read DealerRepository         $dealers
- * @property-read DrivingSchoolRepository  $drivingSchools
- * @property-read DriversLicenceRepository $driversLicences
- * @property-read PersonalRepository       $personals
- * @property-read UserRepository           $users
- */
 class LensApi implements HttpClientInterface
 {
     private HttpClientInterface $httpClient;
 
-    public AddressRepository $addresses;
-    public AdvertisementRepository $advertisements;
-    public CompanyRepository $companies;
-    public DealerRepository $dealers;
-    public DrivingSchoolRepository $drivingSchools;
-    public DriversLicenceRepository $driversLicences;
-    public PersonalRepository $personals;
-    public UserRepository $users;
+    public readonly Repository\AddressRepository $addresses;
+    public readonly Repository\AdvertisementRepository $advertisements;
+    public readonly Repository\CompanyRepository $companies;
+    public readonly Repository\DealerRepository $dealers;
+    public readonly Repository\DrivingSchoolRepository $drivingSchools;
+    public readonly Repository\DriversLicenceRepository $driversLicences;
+    public readonly Repository\PaymentMethodRepository $paymentMethods;
+    public readonly Repository\PersonalRepository $personals;
+    public readonly Repository\UserRepository $users;
 
     public function __construct(
-        private SerializerInterface $serializer,
+        private readonly SerializerInterface $serializer,
         HttpClientInterface $httpClient,
         array $options,
     ) {
         $this->httpClient = $httpClient->withOptions($options);
 
-        $this->addresses = new AddressRepository($this);
-        $this->advertisements = new AdvertisementRepository($this);
-        $this->companies = new CompanyRepository($this);
-        $this->dealers = new DealerRepository($this);
-        $this->drivingSchools = new DrivingSchoolRepository($this);
-        $this->driversLicences = new DriversLicenceRepository($this);
-        $this->personals = new PersonalRepository($this);
-        $this->users = new UserRepository($this);
+        $this->addresses = new Repository\AddressRepository($this);
+        $this->advertisements = new Repository\AdvertisementRepository($this);
+        $this->companies = new Repository\CompanyRepository($this);
+        $this->dealers = new Repository\DealerRepository($this);
+        $this->drivingSchools = new Repository\DrivingSchoolRepository($this);
+        $this->driversLicences = new Repository\DriversLicenceRepository($this);
+        $this->paymentMethods = new Repository\PaymentMethodRepository($this);
+        $this->personals = new Repository\PersonalRepository($this);
+        $this->users = new Repository\UserRepository($this);
     }
 
     /** Interface implementations */

@@ -3,35 +3,57 @@
 namespace Lens\Bundle\LensApiBundle\Repository;
 
 use Lens\Bundle\LensApiBundle\Data\User;
-use Symfony\Component\HttpClient\Exception\ClientException;
-use Symfony\Component\HttpClient\Exception\ServerException;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\Ulid;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
-use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class UserRepository extends AbstractRepository
 {
-    public function auth(): ?User
-    {
-        $response = $this->api->get('users/auth.json')->toArray();
-
-        return $this->api->as($response, User::class);
-    }
-
-    public function new(User $user): User
-    {
-        $response = $this->api->post('users.json', [
-            'json' => $user,
-        ])->toArray();
-
-        return $this->api->as($response, User::class);
-    }
-
     public function list(array $options = []): array
     {
         $response = $this->api->get('users.json', $options)->toArray();
 
         return $this->api->asArray($response, User::class);
+    }
+
+    public function get(User|Ulid|string $user, array $options = []): ?User
+    {
+        $response = $this->api->get(sprintf(
+            'users/%s.json',
+            $user->id ?? $user,
+        ), $options);
+
+        if (Response::HTTP_NOT_FOUND === $response->getStatusCode()) {
+            return null;
+        }
+
+        return $this->api->as($response->toArray(), User::class);
+    }
+
+    public function post(User $user, array $options = []): User
+    {
+        $response = $this->api->post('users.json', [
+            'json' => $user,
+        ] + $options)->toArray();
+
+        return $this->api->as($response, User::class);
+    }
+
+    public function patch(User $user, array $options = []): User
+    {
+        $url = sprintf('users/%s.json', $user->id);
+
+        $response = $this->api->patch($url, [
+            'json' => $user,
+        ] + $options)->toArray();
+
+        return $this->api->as($response, User::class);
+    }
+
+    public function delete(User|Ulid|string $user, array $options = []): void
+    {
+        $url = sprintf('users/%s.json', $user->id ?? $user);
+
+        $this->api->delete($url, $options)->getHeaders();
     }
 
     public function search(string $terms, array $options = []): array
@@ -47,18 +69,17 @@ class UserRepository extends AbstractRepository
         return $this->api->asArray($users, User::class);
     }
 
-
+    /**
+     * @deprecated Use `UserRepository::get` instead.
+     */
     public function byId(Ulid|string $user): ?User
     {
-        $response = $this->api->get(sprintf(
-            'users/%s.json',
-            $user,
-        ))->toArray();
+        trigger_deprecation('lensmedia/api.lensmedia.nl-bundle', '*', 'The method "%s" is deprecated, use "%s::get" instead.', __METHOD__, __CLASS__);
 
-        return $this->api->as($response, User::class);
+        return $this->get($user);
     }
 
-    public function byUsername(string $username): ?User
+    public function getByUsername(string $username): ?User
     {
         $response = $this->api->get('users.json', [
             'query' => ['username' => $username],
@@ -68,14 +89,31 @@ class UserRepository extends AbstractRepository
             return null;
         }
 
-        return $this->byId($response['id']);
+        return $this->get($response['id']);
     }
 
-    public function recoverPassword(Ulid|string $user): User
+    /**
+     * @deprecated Use `UserRepository::getByUsername` instead.
+     */
+    public function byUsername(string $username): ?User
+    {
+        trigger_deprecation('lensmedia/api.lensmedia.nl-bundle', '*', 'The method "%s" is deprecated, use "%s::getByUsername" instead.', __METHOD__, __CLASS__);
+
+        return $this->getByUsername($username);
+    }
+
+    public function auth(): ?User
+    {
+        $response = $this->api->get('users/auth.json')->toArray();
+
+        return $this->api->as($response, User::class);
+    }
+
+    public function recoverPassword(User|Ulid|string $user): User
     {
         $response = $this->api->get(sprintf(
             'users/%s/recover.json',
-            $user,
+            $user->id ?? $user,
         ))->toArray();
 
         return $this->api->as($response, User::class);
@@ -90,25 +128,25 @@ class UserRepository extends AbstractRepository
      * 403 Recovery token has expired.
      * 404 User not found.
      */
-    public function recoverPasswordCheckStatus(Ulid|string $user, string $token): void
+    public function recoverPasswordCheckStatus(User|Ulid|string $user, string $token): int
     {
-        $this->api->get(sprintf(
+        return $this->api->get(sprintf(
             'users/%s/recover/%s.json',
-            $user,
+            $user->id ?? $user,
             $token,
-        ))->getContent();
+        ))->getStatusCode();
     }
 
-    public function recoverUpdatePassword(Ulid|string $user, string $token, string $plainPassword): User
+    public function recoverUpdatePassword(User|Ulid|string $user, string $token, string $plainPassword): User
     {
         $data = [
-            'id' => $user,
+            'id' => $user->id ?? $user,
             'plainPassword' => $plainPassword,
         ];
 
         $response = $this->api->patch(sprintf(
             'users/%s/recover/%s.json',
-            $user,
+            $user->id ?? $user,
             $token,
         ), ['json' => $data])->toArray();
 
