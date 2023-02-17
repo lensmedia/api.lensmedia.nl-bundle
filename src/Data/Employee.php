@@ -2,10 +2,11 @@
 
 namespace Lens\Bundle\LensApiBundle\Data;
 
+use Lens\Bundle\LensApiBundle\Repository\LensApiResourceDataInterface;
 use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class Employee
+class Employee implements LensApiResourceDataInterface
 {
     #[Assert\NotBlank(message: 'employee.id.not_blank')]
     public Ulid $id;
@@ -14,13 +15,18 @@ class Employee
     public string $function;
 
     #[Assert\Valid]
-    public ?Personal $personal = null;
+    public Personal|string|null $personal = null;
 
     #[Assert\Valid]
-    public ?Company $company = null;
+    public Company|string|null $company = null;
 
     public function __construct()
     {
         $this->id = new Ulid();
+    }
+
+    public static function resource(): string
+    {
+        return 'employees';
     }
 }

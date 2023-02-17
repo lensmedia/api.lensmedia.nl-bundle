@@ -2,10 +2,11 @@
 
 namespace Lens\Bundle\LensApiBundle\Data;
 
+use Lens\Bundle\LensApiBundle\Repository\LensApiResourceDataInterface;
 use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class DriversLicence
+class DriversLicence implements LensApiResourceDataInterface
 {
     #[Assert\NotBlank(message: 'drivers_licence.id.not_blank')]
     public Ulid $id;
@@ -16,5 +17,10 @@ class DriversLicence
     public function __construct()
     {
         $this->id = new Ulid();
+    }
+
+    public static function resource(): string
+    {
+        return 'drivers-licences';
     }
 }

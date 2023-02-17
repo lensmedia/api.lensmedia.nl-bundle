@@ -2,10 +2,11 @@
 
 namespace Lens\Bundle\LensApiBundle\Data;
 
+use Lens\Bundle\LensApiBundle\Repository\LensApiResourceDataInterface;
 use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class Address
+class Address implements LensApiResourceDataInterface
 {
     public const DEFAULT = 'default';
     public const MAILING = 'mailing';
@@ -22,6 +23,12 @@ class Address
 
     #[Assert\NotBlank(message: 'address.id.not_blank')]
     public Ulid $id;
+
+    #[Assert\Valid]
+    public Company|string|null $company = null;
+
+    #[Assert\Valid]
+    public Personal|string|null $personal = null;
 
     #[Assert\NotBlank(message: 'address.type.not_blank')]
     #[Assert\Choice(choices: self::TYPES, message: 'address.type.choice')]
@@ -62,5 +69,10 @@ class Address
     public function __construct()
     {
         $this->id = new Ulid();
+    }
+
+    public static function resource(): string
+    {
+        return 'addresses';
     }
 }

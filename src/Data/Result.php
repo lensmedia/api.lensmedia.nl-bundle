@@ -2,12 +2,13 @@
 
 namespace Lens\Bundle\LensApiBundle\Data;
 
+use Lens\Bundle\LensApiBundle\Repository\LensApiResourceDataInterface;
 use Lens\Bundle\LensApiBundle\Validator as Validators;
 use DateTimeInterface;
 use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class Result
+class Result implements LensApiResourceDataInterface
 {
     #[Assert\NotBlank(message: 'result.id.not_blank')]
     public Ulid $id;
@@ -55,5 +56,10 @@ class Result
     public function __construct()
     {
         $this->id = new Ulid();
+    }
+
+    public static function resource(): string
+    {
+        return 'results';
     }
 }

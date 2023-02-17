@@ -2,10 +2,11 @@
 
 namespace Lens\Bundle\LensApiBundle\Data;
 
+use Lens\Bundle\LensApiBundle\Repository\LensApiResourceDataInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Uid\Ulid;
 
-class ContactMethod
+class ContactMethod implements LensApiResourceDataInterface
 {
     public const UNDEFINED = 'undefined';
     public const PHONE = 'phone';
@@ -28,6 +29,12 @@ class ContactMethod
     #[Assert\NotBlank(message: 'contact_method.id.not_blank')]
     public Ulid $id;
 
+    #[Assert\Valid]
+    public Personal|string|null $personal = null;
+
+    #[Assert\Valid]
+    public Company|string|null $company = null;
+
     #[Assert\NotBlank(message: 'contact_method.type.not_blank')]
     #[Assert\Choice(choices: self::METHODS, message: 'contact_method.type.choice')]
     public string $method = self::UNDEFINED;
@@ -40,5 +47,10 @@ class ContactMethod
     public function __construct()
     {
         $this->id = new Ulid();
+    }
+
+    public static function resource(): string
+    {
+        return 'contact-methods';
     }
 }

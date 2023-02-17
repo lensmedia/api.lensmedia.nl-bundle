@@ -4,12 +4,13 @@ namespace Lens\Bundle\LensApiBundle\Data;
 
 use DateTimeImmutable;
 use DateTimeInterface;
+use Lens\Bundle\LensApiBundle\Repository\LensApiResourceDataInterface;
 use Lens\Bundle\LensApiBundle\Validator as Validators;
 use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[Validators\UniqueUser(message: 'user.unique_user')]
-class User
+class User implements LensApiResourceDataInterface
 {
     public const AUTH_NOT_FOUND = '6b4281f6-9bf3-4e67-9e31-cf31723ab714';
     public const AUTH_INVALID_PASSWORD = 'f85765a3-df36-40e8-b9f7-5e532ef5a9a0';
@@ -57,7 +58,7 @@ class User
     public ?DateTimeInterface $disabledAt = null;
 
     #[Assert\Valid]
-    public ?Personal $personal = null;
+    public Personal|string|null $personal = null;
 
     public function __construct()
     {
@@ -86,5 +87,10 @@ class User
     public function isDisabled(): bool
     {
         return null !== $this->disabledAt;
+    }
+
+    public static function resource(): string
+    {
+        return 'users';
     }
 }

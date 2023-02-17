@@ -4,11 +4,12 @@ namespace Lens\Bundle\LensApiBundle\Data;
 
 use DateTimeImmutable;
 use Lens\Bundle\LensApiBundle\LensApiUtil;
+use Lens\Bundle\LensApiBundle\Repository\LensApiResourceDataInterface;
 use Lens\Bundle\LensApiBundle\Validator as Validators;
 use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class Company
+class Company implements LensApiResourceDataInterface
 {
     public const COMPANY = 'company';
     public const DRIVING_SCHOOL = 'driving_school';
@@ -227,7 +228,7 @@ class Company
 
         return LensApiUtil::ArrayFind(
             static fn(PaymentMethod $paymentMethod) =>
-                Paymentmethod::DEBIT === $paymentMethod->type,
+                Paymentmethod::DEBIT === $paymentMethod->method,
             $this->paymentMethods,
         );
     }
@@ -284,5 +285,10 @@ class Company
                 && $contactMethod->label === 'mobile',
             $this->contactMethods,
         );
+    }
+
+    public static function resource(): string
+    {
+        return 'companies';
     }
 }

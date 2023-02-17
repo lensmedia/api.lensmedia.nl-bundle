@@ -31,7 +31,9 @@ class PaymentMethodRepository extends AbstractRepository
 
     public function post(PaymentMethod $paymentMethod, array $options = []): PaymentMethod
     {
-        $response = $this->api->post('payment-methods.json', [
+        $url = sprintf('%s.json', $this->target($paymentMethod));
+
+        $response = $this->api->post($url, [
             'json' => $paymentMethod,
         ] + $options)->toArray();
 
@@ -40,7 +42,7 @@ class PaymentMethodRepository extends AbstractRepository
 
     public function patch(PaymentMethod $paymentMethod, array $options = []): PaymentMethod
     {
-        $url = sprintf('payment-methods/%s.json', $paymentMethod->id);
+        $url = sprintf('%s/%s.json', $this->target($paymentMethod), $paymentMethod->id);
 
         $response = $this->api->patch($url, [
             'json' => $paymentMethod,
@@ -54,5 +56,13 @@ class PaymentMethodRepository extends AbstractRepository
         $url = sprintf('payment-methods/%s.json', $paymentMethod->id ?? $paymentMethod);
 
         $this->api->delete($url, $options)->getHeaders();
+    }
+
+    private function target(PaymentMethod $paymentMethod): string
+    {
+        return match ($paymentMethod->method) {
+            PaymentMethod::DEBIT => 'debits',
+            default => 'payment-methods',
+        };
     }
 }

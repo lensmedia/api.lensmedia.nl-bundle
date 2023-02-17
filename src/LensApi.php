@@ -3,9 +3,12 @@
 namespace Lens\Bundle\LensApiBundle;
 
 use Lens\Bundle\LensApiBundle\Repository;
+use Lens\Bundle\LensApiBundle\Repository\LensApiResourceDataInterface;
+use RuntimeException;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Uid\Ulid;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 use Symfony\Contracts\HttpClient\ResponseStreamInterface;
@@ -42,6 +45,34 @@ class LensApi implements HttpClientInterface
         $this->users = new Repository\UserRepository($this);
     }
 
+    public function reference(
+        LensApiResourceDataInterface|string $lensApiResourceData,
+        Ulid|string|null $id = null,
+        int $apiVersion = 1,
+    ): string {
+        $resource = $lensApiResourceData;
+        if ($lensApiResourceData instanceof LensApiResourceDataInterface) {
+            $resource = $lensApiResourceData::resource();
+        } elseif (class_exists($lensApiResourceData)) {
+            if (is_a($lensApiResourceData, LensApiResourceDataInterface::class, true)) {
+                throw new RuntimeException(sprintf(
+                    'Class "%s" does not implement "%s".',
+                    $lensApiResourceData,
+                    LensApiResourceDataInterface::class,
+                ));
+            }
+
+            $resource = $lensApiResourceData::resource();
+        }
+
+        return sprintf(
+            '/v%d/%s/%s',
+            $apiVersion,
+            $resource,
+            $lensApiResourceData->id ?? $id,
+        );
+    }
+
     /** Interface implementations */
     public function request(string $method, string $url, array $options = []): ResponseInterface
     {
@@ -65,7 +96,9 @@ class LensApi implements HttpClientInterface
     /** custom helper aliases */
     public function get(string $url, array $options = []): ResponseInterface
     {
-        return $this->request('GET', $url, $options);
+        return $this->request('GET', $url, array_merge_recursive([
+            'headers' => ['content-type' => 'application/ld+json'],
+        ], $options));
     }
 
     public function post(string $url, array $options = []): ResponseInterface
@@ -76,18 +109,22 @@ class LensApi implements HttpClientInterface
             ]);
         }
 
-        return $this->request('POST', $url, $options);
+        return $this->request('POST', $url, array_merge_recursive([
+            'headers' => ['content-type' => 'application/ld+json'],
+        ], $options));
     }
 
     public function put(string $url, array $options = []): ResponseInterface
     {
-        return $this->request('PUT', $url, $options);
+        return $this->request('PUT', $url, array_merge_recursive([
+            'headers' => ['content-type' => 'application/ld+json'],
+        ], $options));
     }
 
     public function patch(string $url, array $options = []): ResponseInterface
     {
         return $this->request('PATCH', $url, array_merge_recursive([
-            'headers' => ['Content-Type' => 'application/merge-patch+json'],
+            'headers' => ['content-type' => 'application/merge-patch+json'],
         ], $options));
     }
 
