@@ -102,9 +102,11 @@ class UserRepository extends AbstractRepository
         return $this->getByUsername($username);
     }
 
-    public function auth(): ?User
+    public function auth(string $username, string $password, array $options = []): ?User
     {
-        $response = $this->api->get('users/auth.json')->toArray();
+        $response = $this->api->get('users/auth.json', array_merge_recursive($options, [
+            'auth_basic' => [$username, $password],
+        ]))->toArray();
 
         return $this->api->as($response, User::class);
     }
