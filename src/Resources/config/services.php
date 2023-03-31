@@ -2,7 +2,7 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-use Lens\Bundle\LensApiBundle\Form\Extension\ExclusionExtension;
+use Lens\Bundle\LensApiBundle\Doctrine\NamespacedUnderscoreNamingStrategy;
 use Lens\Bundle\LensApiBundle\Form\Type\AdvertisementChoiceType;
 use Lens\Bundle\LensApiBundle\Form\Type\CompanyType;
 use Lens\Bundle\LensApiBundle\Form\Type\DealerChoiceType;
@@ -47,10 +47,6 @@ return static function (ContainerConfigurator $container) {
             service(LensApi::class),
         ])
 
-        ->set(ExclusionExtension::class)
-        ->args([false])
-        ->tag('form.type_extension', ['priority' => -4096])
-
         ->set(UniqueAdvertisementValidator::class)
         ->tag('validator.constraint_validator')
         ->args([
@@ -68,5 +64,7 @@ return static function (ContainerConfigurator $container) {
         ->args([
             service(LensApi::class),
         ])
+
+        ->set(NamespacedUnderscoreNamingStrategy::class)
     ;
 };

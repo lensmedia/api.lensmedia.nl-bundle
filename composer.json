@@ -12,7 +12,8 @@
         "symfony/framework-bundle": "^6.0",
         "symfony/form": "^6.0",
         "symfony/validator": "^6.0",
-        "symfony/security-core": "^6.0"
+        "symfony/security-core": "^6.0",
+        "symfony/orm-pack": "^2.3"
     },
     "suggest": {
         "brick/math": "*"

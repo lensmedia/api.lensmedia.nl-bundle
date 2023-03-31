@@ -2,8 +2,8 @@
 
 namespace Lens\Bundle\LensApiBundle;
 
-use Lens\Bundle\LensApiBundle\Repository;
-use Lens\Bundle\LensApiBundle\Repository\LensApiResourceDataInterface;
+use Lens\Bundle\LensApiBundle\OldApiRepository;
+use Lens\Bundle\LensApiBundle\OldApiRepository\LensApiResourceDataInterface;
 use RuntimeException;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
@@ -17,15 +17,15 @@ class LensApi implements HttpClientInterface
 {
     private HttpClientInterface $httpClient;
 
-    public readonly Repository\AddressRepository $addresses;
-    public readonly Repository\AdvertisementRepository $advertisements;
-    public readonly Repository\CompanyRepository $companies;
-    public readonly Repository\DealerRepository $dealers;
-    public readonly Repository\DrivingSchoolRepository $drivingSchools;
-    public readonly Repository\DriversLicenceRepository $driversLicences;
-    public readonly Repository\PaymentMethodRepository $paymentMethods;
-    public readonly Repository\PersonalRepository $personals;
-    public readonly Repository\UserRepository $users;
+    public readonly OldApiRepository\AddressRepository $addresses;
+    public readonly OldApiRepository\AdvertisementRepository $advertisements;
+    public readonly OldApiRepository\CompanyRepository $companies;
+    public readonly OldApiRepository\DealerRepository $dealers;
+    public readonly OldApiRepository\DrivingSchoolRepository $drivingSchools;
+    public readonly OldApiRepository\DriversLicenceRepository $driversLicences;
+    public readonly OldApiRepository\PaymentMethodRepository $paymentMethods;
+    public readonly OldApiRepository\PersonalRepository $personals;
+    public readonly OldApiRepository\UserRepository $users;
 
     public function __construct(
         private readonly SerializerInterface $serializer,
@@ -34,15 +34,15 @@ class LensApi implements HttpClientInterface
     ) {
         $this->httpClient = $httpClient->withOptions($options);
 
-        $this->addresses = new Repository\AddressRepository($this);
-        $this->advertisements = new Repository\AdvertisementRepository($this);
-        $this->companies = new Repository\CompanyRepository($this);
-        $this->dealers = new Repository\DealerRepository($this);
-        $this->drivingSchools = new Repository\DrivingSchoolRepository($this);
-        $this->driversLicences = new Repository\DriversLicenceRepository($this);
-        $this->paymentMethods = new Repository\PaymentMethodRepository($this);
-        $this->personals = new Repository\PersonalRepository($this);
-        $this->users = new Repository\UserRepository($this);
+        $this->addresses = new OldApiRepository\AddressRepository($this);
+        $this->advertisements = new OldApiRepository\AdvertisementRepository($this);
+        $this->companies = new OldApiRepository\CompanyRepository($this);
+        $this->dealers = new OldApiRepository\DealerRepository($this);
+        $this->drivingSchools = new OldApiRepository\DrivingSchoolRepository($this);
+        $this->driversLicences = new OldApiRepository\DriversLicenceRepository($this);
+        $this->paymentMethods = new OldApiRepository\PaymentMethodRepository($this);
+        $this->personals = new OldApiRepository\PersonalRepository($this);
+        $this->users = new OldApiRepository\UserRepository($this);
     }
 
     public function reference(

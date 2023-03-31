@@ -2,8 +2,6 @@
 
 namespace Lens\Bundle\LensApiBundle\DependencyInjection;
 
-use Lens\Bundle\LensApiBundle\Form\Extension\ExclusionExtension;
-use Lens\Bundle\LensApiBundle\LensApi;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
@@ -18,11 +16,5 @@ class LensLensApiExtension extends Extension
 
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.php');
-
-        $container->getDefinition(LensApi::class)
-            ->replaceArgument(2, $config['http_client_options']);
-
-        $container->getDefinition(ExclusionExtension::class)
-            ->replaceArgument(0, $config['features']['form_exclusion_extension'] ?? false);
     }
 }

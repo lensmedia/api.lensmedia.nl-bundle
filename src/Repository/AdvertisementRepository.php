@@ -2,57 +2,46 @@
 
 namespace Lens\Bundle\LensApiBundle\Repository;
 
-use Lens\Bundle\LensApiBundle\Data\Advertisement;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Uid\Ulid;
+use Doctrine\ORM\EntityRepository;
 
-class AdvertisementRepository extends AbstractRepository
+class AdvertisementRepository extends EntityRepository
 {
-    public function list(array $options = []): array
+    public function getAdvertisementsByCompanyKVK(string $kvk)
     {
-        $response = $this->api->get('advertisements.json', $options)->toArray();
-
-        return $this->api->asArray($response, Advertisement::class);
+        return $this->createQueryBuilder('advertisement')
+            ->leftJoin('advertisement.personals', 'personal')
+            ->leftJoin('personal.companies', 'employee')
+            ->leftJoin('employee.company', 'company')
+            ->andWhere('company.chamberOfCommerce = :kvk')
+            ->setParameter('kvk', $kvk)
+            ->getQuery()
+            ->getResult();
     }
 
-    public function get(Advertisement|Ulid|string $advertisement, array $options = []): ?Advertisement
+    public function getAdvertisementByCompanyKVKAndType(string $kvk, string $type)
     {
-        $response = $this->api->get(sprintf(
-            'advertisements/%s.json',
-            $advertisement->id ?? $advertisement,
-        ), $options);
-
-        if (Response::HTTP_NOT_FOUND === $response->getStatusCode()) {
-            return null;
-        }
-
-        return $this->api->as($response->toArray(), Advertisement::class);
+        return $this->createQueryBuilder('advertisement')
+            ->leftJoin('advertisement.personals', 'personal')
+            ->leftJoin('personal.companies', 'employee')
+            ->leftJoin('employee.company', 'company')
+            ->andWhere('company.chamberOfCommerce = :kvk')
+            ->setParameter('kvk', $kvk)
+            ->andWhere('advertisement.type = :type')
+            ->setParameter('type', $type)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
-    public function post(Advertisement $advertisement, array $options = []): Advertisement
+    public function getAdvertisementByEmail(string $email)
     {
-        $response = $this->api->post('advertisements.json', [
-                'json' => $advertisement,
-            ] + $options)->toArray();
-
-        return $this->api->as($response, Advertisement::class);
-    }
-
-    public function patch(Advertisement $advertisement, array $options = []): Advertisement
-    {
-        $url = sprintf('advertisements/%s.json', $advertisement->id);
-
-        $response = $this->api->patch($url, [
-            'json' => $advertisement,
-        ] + $options)->toArray();
-
-        return $this->api->as($response, Advertisement::class);
-    }
-
-    public function delete(Advertisement|Ulid|string $advertisement, array $options = []): void
-    {
-        $url = sprintf('advertisements/%s.json', $advertisement->id ?? $advertisement);
-
-        $this->api->delete($url, $options)->getHeaders();
+        return $this->createQueryBuilder('advertisement')
+            ->leftJoin('advertisement.personals', 'personal')
+            ->leftJoin('personal.contactMethods', 'contactMethod')
+            ->andWhere('contactMethod.value = :email')
+            ->setParameter('email', $email)
+            ->andWhere('advertisement.type = :type')
+            ->setParameter('type', 'email')
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

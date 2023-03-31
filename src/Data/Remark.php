@@ -3,7 +3,7 @@
 namespace Lens\Bundle\LensApiBundle\Data;
 
 use DateTimeImmutable;
-use Lens\Bundle\LensApiBundle\Repository\LensApiResourceDataInterface;
+use Lens\Bundle\LensApiBundle\OldApiRepository\LensApiResourceDataInterface;
 use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Constraints as Assert;
 

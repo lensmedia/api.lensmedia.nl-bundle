@@ -2,7 +2,7 @@
 
 namespace Lens\Bundle\LensApiBundle\Data;
 
-use Lens\Bundle\LensApiBundle\Repository\LensApiResourceDataInterface;
+use Lens\Bundle\LensApiBundle\OldApiRepository\LensApiResourceDataInterface;
 use Lens\Bundle\LensApiBundle\Validator as Validators;
 use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Constraints as Assert;
