@@ -2,7 +2,7 @@
 
 namespace Lens\Bundle\LensApiBundle\Form\Type;
 
-use Lens\Bundle\LensApiBundle\Data\Dealer;
+use Lens\Bundle\LensApiBundle\Entity\Company\Dealer;
 use Lens\Bundle\LensApiBundle\LensApi;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;

@@ -6,8 +6,9 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Ulid;
+use Lens\Bundle\LensApiBundle\Repository\ActiveDealersRepository;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: ActiveDealersRepository::class)]
 class ActiveDealers
 {
     #[ORM\Id]

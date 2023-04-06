@@ -11,4 +11,5 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class Creditcard extends PaymentMethod
 {
+    public const METHOD = 'creditcard';
 }

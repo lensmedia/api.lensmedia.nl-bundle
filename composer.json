@@ -13,7 +13,12 @@
         "symfony/form": "^6.0",
         "symfony/validator": "^6.0",
         "symfony/security-core": "^6.0",
-        "symfony/orm-pack": "^2.3"
+        "symfony/orm-pack": "^2.3",
+        "egulias/email-validator": "^4.0",
+        "creof/doctrine2-spatial": "^1.2",
+        "brick/money": "^0.8.0",
+        "brick/math": "^0.11.0",
+        "sendinblue/api-v3-sdk": "^8.4"
     },
     "suggest": {
         "brick/math": "*"

@@ -2,52 +2,39 @@
 
 namespace Lens\Bundle\LensApiBundle\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Entity\Company\Company;
-use App\Entity\Personal\Personal;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
-use Lens\Bundle\LensApiBundle\RemarkInterface;
+use Lens\Bundle\LensApiBundle\Entity\Company\Company;
+use Lens\Bundle\LensApiBundle\Entity\Personal\Personal;
 use Lens\Bundle\LensApiBundle\Repository\RemarkRepository;
 use Symfony\Component\Uid\Ulid;
 
-#[ApiResource(
-    collectionOperations: ['get', 'post'],
-    itemOperations: ['get', 'patch', 'delete'],
-    subresourceOperations: [
-        'api_companies_remarks_get_subresource' => [
-            'normalization_context' => [
-                'groups' => ['company'],
-            ],
-        ],
-        'api_driving_schools_remarks_get_subresource' => [
-            'normalization_context' => [
-                'groups' => ['driving_school'],
-            ],
-        ],
-        'api_personals_remarks_get_subresource' => [
-            'normalization_context' => [
-                'groups' => ['personal'],
-            ],
-        ],
-    ],
-    denormalizationContext: [
-        'groups' => ['remark'],
-    ],
-    normalizationContext: [
-        'groups' => ['remark'],
-    ],
-)]
 #[ORM\Entity(repositoryClass: RemarkRepository::class)]
 class Remark
 {
+    public const DEFAULT = 'default';
+    public const INFO = 'info';
+    public const QUESTION = 'question';
+    public const IMPORTANT = 'important';
+    public const WARNING = 'warning';
+    public const DANGER = 'danger';
+
+    public const LEVELS = [
+        self::DEFAULT => self::DEFAULT,
+        self::INFO => self::INFO,
+        self::QUESTION => self::QUESTION,
+        self::IMPORTANT => self::IMPORTANT,
+        self::WARNING => self::WARNING,
+        self::DANGER => self::DANGER,
+    ];
+
     #[ORM\Id]
     #[ORM\Column(type: 'ulid')]
     public Ulid $id;
 
     #[ORM\Column]
-    public string $level = RemarkInterface::DEFAULT;
+    public string $level = self::DEFAULT;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]

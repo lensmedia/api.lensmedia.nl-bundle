@@ -2,11 +2,9 @@
 
 namespace Lens\Bundle\LensApiBundle\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 use Egulias\EmailValidator\EmailValidator;
 use Egulias\EmailValidator\Validation\RFCValidation;
-use Lens\Bundle\LensApiBundle\ContactMethodInterface;
 use Lens\Bundle\LensApiBundle\Entity\Company\Company;
 use Lens\Bundle\LensApiBundle\Entity\Personal\Personal;
 use Lens\Bundle\LensApiBundle\Repository\ContactMethodRepository;
@@ -15,39 +13,35 @@ use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
-#[ApiResource(
-    collectionOperations: ['get', 'post'],
-    itemOperations: ['get', 'patch', 'delete'],
-    subresourceOperations: [
-        'api_companies_contact_methods_get_subresource' => [
-            'normalization_context' => [
-                'groups' => ['company'],
-            ],
-        ],
-        'api_driving_schools_contact_methods_get_subresource' => [
-            'normalization_context' => [
-                'groups' => ['driving_school'],
-            ],
-        ],
-    ],
-    denormalizationContext: [
-        'groups' => ['contact_method'],
-    ],
-    normalizationContext: [
-        'groups' => ['contact_method'],
-    ],
-)]
+use function in_array;
+
+use const FILTER_VALIDATE_URL;
+
 #[ORM\Entity(repositoryClass: ContactMethodRepository::class)]
 #[ORM\Index(fields: ['value'])]
 class ContactMethod
 {
+    public const UNDEFINED = 'undefined';
+    public const PHONE = 'phone';
+    public const EMAIL = 'email';
+    public const WEBSITE = 'website';
+    public const SOCIAL = 'social';
+
+    public const METHODS = [
+        self::UNDEFINED => self::UNDEFINED,
+        self::PHONE => self::PHONE,
+        self::EMAIL => self::EMAIL,
+        self::WEBSITE => self::WEBSITE,
+        self::SOCIAL => self::SOCIAL,
+    ];
+
     #[ORM\Id]
     #[ORM\Column(type: 'ulid')]
     public Ulid $id;
 
     #[ORM\Column]
-    #[Assert\Choice(choices: ContactMethodInterface::METHODS)]
-    public string $method = ContactMethodInterface::UNDEFINED;
+    #[Assert\Choice(choices: self::METHODS)]
+    public string $method = self::UNDEFINED;
 
     /**
      * The actual value of chosen contact method (eg email address,
@@ -59,7 +53,7 @@ class ContactMethod
 
     /**
      * Label for custom types and remarks. Mainly to differentiate
-     * between eg home and mobile phone, or Facebook and Twitter etc.
+     * between e.g. home and mobile phone, or Facebook and Twitter etc.
      */
     #[ORM\Column(nullable: true)]
     public ?string $label = null;
@@ -75,13 +69,38 @@ class ContactMethod
     public function __construct(
         string $method,
         string $value,
-        string $label = null,
+        ?string $label = null,
     ) {
         $this->id = new Ulid();
 
         $this->method = $method;
         $this->value = $value;
         $this->label = $label;
+    }
+
+    public function isUndefined(): bool
+    {
+        return self::UNDEFINED === $this->method;
+    }
+
+    public function isPhone(): bool
+    {
+        return self::PHONE === $this->method;
+    }
+
+    public function isEmail(): bool
+    {
+        return self::EMAIL === $this->method;
+    }
+
+    public function isWebsite(): bool
+    {
+        return self::WEBSITE === $this->method;
+    }
+
+    public function isSocial(): bool
+    {
+        return self::SOCIAL === $this->method;
     }
 
     public function setPersonal(?Personal $personal): void
@@ -114,21 +133,21 @@ class ContactMethod
         }
 
         match ($this->method) {
-            ContactMethodInterface::WEBSITE => $this->isValidDomain($context, $payload),
-            ContactMethodInterface::EMAIL => $this->isValidEmail($context, $payload),
-            ContactMethodInterface::PHONE => $this->isValidPhoneNumber($context, $payload),
+            self::WEBSITE => $this->isValidDomain($context, $payload),
+            self::EMAIL => $this->isValidEmail($context, $payload),
+            self::PHONE => $this->isValidPhoneNumber($context, $payload),
         };
     }
 
     private function hasValidType(): bool
     {
-        return in_array($this->method, ContactMethodInterface::METHODS, true);
+        return in_array($this->method, self::METHODS, true);
     }
 
     private function isValidDomain(ExecutionContextInterface $context, $payload): void
     {
         if (filter_var($this->value, FILTER_VALIDATE_URL)) {
-            /** @noinspection HttpUrlsUsage */
+            /* @noinspection HttpUrlsUsage */
             if (str_starts_with($this->value, 'http://') || str_starts_with($this->value, 'https://')) {
                 return;
             }
@@ -160,5 +179,10 @@ class ContactMethod
                 ->setParameter('{{ phone_number }}', $this->value)
                 ->addViolation();
         }
+    }
+
+    public function __toString(): string
+    {
+        return $this->value;
     }
 }

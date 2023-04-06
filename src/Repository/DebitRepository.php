@@ -2,10 +2,17 @@
 
 namespace Lens\Bundle\LensApiBundle\Repository;
 
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+use Lens\Bundle\LensApiBundle\Entity\PaymentMethod\Debit;
 
-class DebitRepository extends EntityRepository
+class DebitRepository extends ServiceEntityRepository
 {
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Debit::class);
+    }
+
     public function getDebitWithCompanyKVK(string $kvk){
         return $this->createQueryBuilder('debit')
             ->leftJoin('debit.company', 'company')

@@ -2,8 +2,8 @@
 
 namespace Lens\Bundle\LensApiBundle\Form\Type;
 
-use Lens\Bundle\LensApiBundle\Data\Personal;
-use Lens\Bundle\LensApiBundle\Data\User;
+use Lens\Bundle\LensApiBundle\Entity\Personal\Personal;
+use Lens\Bundle\LensApiBundle\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;

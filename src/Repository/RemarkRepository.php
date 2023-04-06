@@ -2,11 +2,18 @@
 
 namespace Lens\Bundle\LensApiBundle\Repository;
 
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+use Lens\Bundle\LensApiBundle\Entity\Remark;
 
-class RemarkRepository extends EntityRepository
+class RemarkRepository extends ServiceEntityRepository
 {
-    public function getRemarkByCompanyId(string $companyId)
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Remark::class);
+    }
+
+    public function getRemarkByCompanyId(string $companyId): ?Remark
     {
         return $this->createQueryBuilder('remark')
             ->leftJoin('remark.company', 'company')

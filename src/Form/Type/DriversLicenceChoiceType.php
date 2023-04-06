@@ -2,7 +2,7 @@
 
 namespace Lens\Bundle\LensApiBundle\Form\Type;
 
-use Lens\Bundle\LensApiBundle\Data\DriversLicence;
+use Lens\Bundle\LensApiBundle\Entity\Company\DrivingSchool\DriversLicence;
 use Lens\Bundle\LensApiBundle\LensApi;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -30,10 +30,8 @@ class DriversLicenceChoiceType extends AbstractType
     {
         $resolver->setDefaults([
             'choices' => $this->driversLicences(),
-            'choice_label' => static fn(DriversLicence $driversLicence) =>
-                'drivers_licence.'.$driversLicence->label,
-            'choice_value' => static fn(DriversLicence $driversLicence) =>
-                $driversLicence->id,
+            'choice_label' => static fn (DriversLicence $driversLicence) => 'drivers_licence.'.$driversLicence->label,
+            'choice_value' => static fn (DriversLicence $driversLicence) => $driversLicence->id,
             'multiple' => true,
             'expanded' => true,
         ]);

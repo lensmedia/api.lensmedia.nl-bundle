@@ -2,107 +2,30 @@
 
 namespace Lens\Bundle\LensApiBundle\Entity\Personal;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Controller\AddAdvertisementToPersonal;
-use App\Controller\DeleteAdvertisementFromPersonal;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Lens\Bundle\LensApiBundle\Entity\Address;
+use Lens\Bundle\LensApiBundle\Entity\AddressTrait;
 use Lens\Bundle\LensApiBundle\Entity\Company\Employee;
 use Lens\Bundle\LensApiBundle\Entity\ContactMethod;
+use Lens\Bundle\LensApiBundle\Entity\ContactMethodTrait;
 use Lens\Bundle\LensApiBundle\Entity\Remark;
 use Lens\Bundle\LensApiBundle\Entity\User;
 use Lens\Bundle\LensApiBundle\Repository\PersonalRepository;
 use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ApiResource(
-    collectionOperations: ['get', 'post'],
-    itemOperations: [
-        'get',
-        'patch',
-        'add_advertisement' => [
-            'method' => 'PATCH',
-            'path' => '/personal/{id}/advertisement/{type}',
-            'controller' => AddAdvertisementToPersonal::class,
-            'openapi_context' => [
-                'parameters' => [
-                    [
-                        'in' => 'path',
-                        'name' => 'id',
-                        'description' => 'Personal resource identifier',
-                        'required' => true,
-                        'schema' => [
-                            'type' => 'string',
-                        ],
-                    ],
-                    [
-                        'in' => 'path',
-                        'name' => 'type',
-                        'description' => 'type of advertisement (email, mail, phone)',
-                        'required' => true,
-                        'schema' => [
-                            'type' => 'string',
-                        ],
-                    ],
-                ],
-            ],
-        ],
-        'delete',
-        'delete_advertisement' => [
-            'method' => 'DELETE',
-            'path' => '/personal/{id}/advertisement/{advertisementId}',
-            'controller' => DeleteAdvertisementFromPersonal::class,
-            'openapi_context' => [
-                'parameters' => [
-                    [
-                        'in' => 'path',
-                        'name' => 'id',
-                        'description' => 'Personal resource identifier',
-                        'required' => true,
-                        'schema' => [
-                            'type' => 'string',
-                        ],
-                    ],
-                    [
-                        'in' => 'path',
-                        'name' => 'advertisementId',
-                        'description' => 'Advertisement resource identifier',
-                        'required' => true,
-                        'schema' => [
-                            'type' => 'string',
-                        ],
-                    ],
-                ],
-            ],
-        ],
-    ],
-    subresourceOperations: [
-        'api_users_personal_get_subresource' => [
-            'normalization_context' => [
-                'groups' => ['personal'],
-            ],
-        ],
-        'api_employees_personal_get_subresource' => [
-            'normalization_context' => [
-                'groups' => ['personal'],
-            ],
-        ],
-        'api_advertisements_personals_get_subresource' => [
-            'normalization_context' => [
-                'groups' => ['personal'],
-            ],
-        ],
-    ],
-    denormalizationContext: ['groups' => ['personal']],
-    normalizationContext: ['groups' => ['personal']],
-)]
 #[ORM\Entity(repositoryClass: PersonalRepository::class)]
 #[ORM\Index(fields: ['nickname'])]
 #[ORM\Index(fields: ['surname'])]
 class Personal
 {
+    use AddressTrait;
+    use AdvertisementTrait;
+    use ContactMethodTrait;
+    use PersonalTrait;
+
     #[ORM\Id]
     #[ORM\Column(type: 'ulid')]
     public Ulid $id;
@@ -245,5 +168,18 @@ class Personal
             $this->remarks->removeElement($remark);
             $remark->setPersonal(null);
         }
+    }
+
+    public function displayName(bool $noNickname = false): ?string
+    {
+        if (!empty($this->nickname) && !$noNickname) {
+            return $this->nickname;
+        }
+
+        if (!empty($this->initials) && !empty($this->surname)) {
+            return $this->initials.($this->surnameAffix ? ' '.$this->surnameAffix : '').' '.$this->surname;
+        }
+
+        return null;
     }
 }

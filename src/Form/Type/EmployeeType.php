@@ -2,9 +2,9 @@
 
 namespace Lens\Bundle\LensApiBundle\Form\Type;
 
-use Lens\Bundle\LensApiBundle\Data\Company;
-use Lens\Bundle\LensApiBundle\Data\Employee;
-use Lens\Bundle\LensApiBundle\Data\Personal;
+use Lens\Bundle\LensApiBundle\Entity\Company\Company;
+use Lens\Bundle\LensApiBundle\Entity\Company\Employee;
+use Lens\Bundle\LensApiBundle\Entity\Personal\Personal;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;

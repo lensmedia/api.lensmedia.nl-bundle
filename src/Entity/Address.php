@@ -2,10 +2,7 @@
 
 namespace Lens\Bundle\LensApiBundle\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Serializer\AutoContextBuilder;
 use Doctrine\ORM\Mapping as ORM;
-use Lens\Bundle\LensApiBundle\AddressInterface;
 use Lens\Bundle\LensApiBundle\Entity\Company\Company;
 use Lens\Bundle\LensApiBundle\Entity\Personal\Personal;
 use Lens\Bundle\LensApiBundle\Repository\AddressRepository;
@@ -13,39 +10,26 @@ use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AddressRepository::class)]
-#[ApiResource(
-    collectionOperations: ['get', 'post'],
-    itemOperations: ['get', 'patch', 'delete'],
-    subresourceOperations: [
-        'api_companies_addresses_get_subresource' => [
-            'normalization_context' => [
-                'groups' => ['company'],
-            ],
-        ],
-        'api_driving_schools_addresses_get_subresource' => [
-            'normalization_context' => [
-                'groups' => ['driving_school'],
-            ],
-        ],
-        'api_personals_addresses_get_subresource' => [
-            'normalization_context' => [
-                'groups' => ['personal'],
-            ],
-        ],
-    ],
-    denormalizationContext: [
-        AutoContextBuilder::DISABLE => true,
-    ],
-    normalizationContext: [
-        'groups' => ['address'],
-    ],
-)]
 #[ORM\Index(fields: ['streetName'])]
 #[ORM\Index(fields: ['streetNumber'])]
 #[ORM\Index(fields: ['city'])]
 #[ORM\Index(fields: ['zipCode'])]
 class Address
 {
+    public const DEFAULT = 'default';
+    public const MAILING = 'mailing';
+    public const SHIPPING = 'shipping';
+    public const BILLING = 'billing';
+    public const OPERATING = 'operating';
+
+    public const TYPES = [
+        self::DEFAULT => self::DEFAULT,
+        self::MAILING => self::MAILING,
+        self::SHIPPING => self::SHIPPING,
+        self::BILLING => self::BILLING,
+        self::OPERATING => self::OPERATING,
+    ];
+
     #[ORM\Id]
     #[ORM\Column(type: 'ulid')]
     public Ulid $id;
@@ -70,7 +54,7 @@ class Address
     public string $country = 'NL';
 
     #[ORM\Column]
-    public string $type = AddressInterface::DEFAULT;
+    public string $type = self::DEFAULT;
 
     #[ORM\Column(type: 'decimal', precision: 8, scale: 5, nullable: true)]
     public ?string $longitude = null;
@@ -109,5 +93,30 @@ class Address
         $this->company?->removeAddress($this);
         $company?->addAddress($this);
         $this->company = $company;
+    }
+
+    public function isDefault(): bool
+    {
+        return $this->type = self::DEFAULT;
+    }
+
+    public function isMailing(): bool
+    {
+        return $this->type = self::MAILING;
+    }
+
+    public function isShipping(): bool
+    {
+        return $this->type = self::SHIPPING;
+    }
+
+    public function isBilling(): bool
+    {
+        return $this->type = self::BILLING;
+    }
+
+    public function isOperating(): bool
+    {
+        return $this->type = self::OPERATING;
     }
 }

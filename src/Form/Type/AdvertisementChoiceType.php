@@ -2,7 +2,7 @@
 
 namespace Lens\Bundle\LensApiBundle\Form\Type;
 
-use Lens\Bundle\LensApiBundle\Data\Advertisement;
+use Lens\Bundle\LensApiBundle\Entity\Personal\Advertisement;
 use Lens\Bundle\LensApiBundle\LensApi;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;

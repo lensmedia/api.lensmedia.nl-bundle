@@ -2,26 +2,25 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use Doctrine\Inflector\Language;
 use Lens\Bundle\LensApiBundle\Doctrine\NamespacedUnderscoreNamingStrategy;
 use Lens\Bundle\LensApiBundle\Form\Type\AdvertisementChoiceType;
 use Lens\Bundle\LensApiBundle\Form\Type\CompanyType;
 use Lens\Bundle\LensApiBundle\Form\Type\DealerChoiceType;
 use Lens\Bundle\LensApiBundle\Form\Type\DriversLicenceChoiceType;
 use Lens\Bundle\LensApiBundle\LensApi;
+use Lens\Bundle\LensApiBundle\Repository;
 use Lens\Bundle\LensApiBundle\Validator\UniqueAdvertisementValidator;
 use Lens\Bundle\LensApiBundle\Validator\UniqueDealerValidator;
 use Lens\Bundle\LensApiBundle\Validator\UniqueUserValidator;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-return static function (ContainerConfigurator $container) {
+use const CASE_LOWER;
+
+return static function (ContainerConfigurator $container): void {
     $container->services()
         ->set(LensApi::class)
-        ->args([
-            service(SerializerInterface::class),
-            service(HttpClientInterface::class),
-            [],
-        ])
+        ->autowire()
+        ->autoconfigure()
 
         ->set(CompanyType::class)
         ->tag('form.type')
@@ -66,5 +65,25 @@ return static function (ContainerConfigurator $container) {
         ])
 
         ->set(NamespacedUnderscoreNamingStrategy::class)
+        ->args([
+            Language::ENGLISH,
+            CASE_LOWER,
+            true,
+        ])
+
+        ->set(Repository\AddressRepository::class)->autoWire()->autoConfigure()
+        ->set(Repository\AdvertisementRepository::class)->autoWire()->autoConfigure()
+        ->set(Repository\CompanyRepository::class)->autoWire()->autoConfigure()
+        ->set(Repository\ContactMethodRepository::class)->autoWire()->autoConfigure()
+        ->set(Repository\DealerRepository::class)->autoWire()->autoConfigure()
+        ->set(Repository\DebitRepository::class)->autoWire()->autoConfigure()
+        ->set(Repository\DriversLicenceRepository::class)->autoWire()->autoConfigure()
+        ->set(Repository\DrivingSchoolRepository::class)->autoWire()->autoConfigure()
+        ->set(Repository\EmployeeRepository::class)->autoWire()->autoConfigure()
+        ->set(Repository\PaymentMethodRepository::class)->autoWire()->autoConfigure()
+        ->set(Repository\PersonalRepository::class)->autoWire()->autoConfigure()
+        ->set(Repository\RemarkRepository::class)->autoWire()->autoConfigure()
+        ->set(Repository\ResultRepository::class)->autoWire()->autoConfigure()
+        ->set(Repository\UserRepository::class)->autoWire()->autoConfigure()
     ;
 };

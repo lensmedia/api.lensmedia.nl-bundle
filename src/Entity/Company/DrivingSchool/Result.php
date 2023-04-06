@@ -2,30 +2,13 @@
 
 namespace Lens\Bundle\LensApiBundle\Entity\Company\DrivingSchool;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use Lens\Bundle\LensApiBundle\OldApiRepository\ResultRepository;
+use Lens\Bundle\LensApiBundle\Repository\ResultRepository;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Ulid;
 
 #[ORM\Entity(repositoryClass: ResultRepository::class)]
-#[ApiResource(
-    collectionOperations: ['get'],
-    subresourceOperations: [
-        'api_driving_schools_results_get_subresource' => [
-            'normalization_context' => [
-                'groups' => ['result'],
-            ],
-        ],
-    ],
-    denormalizationContext: [
-        'groups' => ['result'],
-    ],
-    normalizationContext: [
-        'groups' => ['result'],
-    ],
-)]
 class Result
 {
     #[ORM\Id]

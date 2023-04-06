@@ -4,12 +4,12 @@ namespace Lens\Bundle\LensApiBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Lens\Bundle\LensApiBundle\Entity\ContactMethod;
+use Lens\Bundle\LensApiBundle\Entity\Company\DrivingSchool\Statistics\ActiveDealers;
 
-class ContactMethodRepository extends ServiceEntityRepository
+class ActiveDealersRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, ContactMethod::class);
+        parent::__construct($registry, ActiveDealers::class);
     }
 }

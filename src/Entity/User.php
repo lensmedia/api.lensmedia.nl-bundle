@@ -2,140 +2,18 @@
 
 namespace Lens\Bundle\LensApiBundle\Entity;
 
-use ApiPlatform\Core\Annotation\ApiFilter;
-use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Annotation\ApiSubresource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use App\Controller\Auth;
-use App\Controller\RecoveryController;
-use App\Data\ResetPassword;
-use App\DataFilters\Old\UserFilter;
-use App\Entity\Personal\Personal;
-use App\Security\SecurityUser;
-use App\Serializer\AutoContextBuilder;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Lens\Bundle\LensApiBundle\Entity\Personal\Personal;
 use Lens\Bundle\LensApiBundle\Repository\UserRepository;
+use Lens\Bundle\LensApiBundle\Security\SecurityUser;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
-#[ApiResource(
-    collectionOperations: [
-        'auth' => [
-            'method' => 'GET',
-            'path' => '/auth.{_format}',
-            'security' => "is_granted('ROLE_USER') or is_granted('ROLE_ADMIN')",
-            'controller' => Auth::class,
-        ],
-        self::SEARCH_OPERATION => [
-            'method' => 'GET',
-            'path' => '/users/search.{_format}',
-            'openapi_context' => [
-                'description' => 'Search for any user looking through multiple fields.',
-                'parameters' => [
-                    [
-                        'name' => 'q',
-                        'in' => 'query',
-                        'description' => 'The search term(s) to look for.',
-                        'type' => 'string',
-                        'required' => true,
-                    ],
-                ],
-            ],
-        ],
-        'get' => ['security' => "is_granted('ROLE_ADMIN')"],
-        'post' => ['security' => "is_granted('ROLE_ADMIN')"],
-    ],
-    itemOperations: [
-        'get' => ['security' => "is_granted('ROLE_ADMIN') or object.username == user.getUserIdentifier()"],
-        'patch' => ['security' => "is_granted('ROLE_ADMIN') or object.username == user.getUserIdentifier()"],
-        'delete' => ['security' => "is_granted('ROLE_ADMIN') or object.username == user.getUserIdentifier()"],
-        'recovery-start' => [
-            'method' => 'GET',
-            'path' => '/users/{id}/recover.{_format}',
-            'controller' => [RecoveryController::class, 'start'],
-            'openapi_context' => [
-                'summary' => 'Start password recovery process.',
-            ],
-        ],
-        'recovery-check' => [
-            'method' => 'GET',
-            'path' => '/users/{id}/recover/{token}.{_format}',
-            'controller' => [RecoveryController::class, 'check'],
-            'status' => Response::HTTP_NO_CONTENT,
-            'openapi_context' => [
-                'summary' => 'Check if recovery is still possible.',
-                'parameters' => [
-                    [
-                        'in' => 'path',
-                        'name' => 'id',
-                        'description' => 'User identifier',
-                        'required' => true,
-                        'schema' => ['type' => 'string'],
-                    ],
-                    [
-                        'in' => 'path',
-                        'name' => 'token',
-                        'description' => 'Recovery token',
-                        'required' => true,
-                        'schema' => ['type' => 'string'],
-                    ],
-                ],
-                'responses' => [
-                    Response::HTTP_NO_CONTENT => ['description' => 'Recovery is still possible.'],
-                    Response::HTTP_BAD_REQUEST => ['description' => 'Invalid recovery token.'],
-                    Response::HTTP_FORBIDDEN => ['description' => 'Recovery token has expired.'],
-                    Response::HTTP_NOT_FOUND => ['description' => 'User not found.'],
-                ],
-            ],
-        ],
-        'recovery-finish' => [
-            'method' => 'PATCH',
-            'path' => '/users/{id}/recover/{token}.{_format}',
-            'input' => ResetPassword::class,
-            'denormalization_context' => [AutoContextBuilder::DISABLE => true],
-            'openapi_context' => [
-                'summary' => 'Finish recovery by updating the users password.',
-                'parameters' => [
-                    [
-                        'in' => 'path',
-                        'name' => 'id',
-                        'description' => 'User identifier',
-                        'required' => true,
-                        'schema' => ['type' => 'string'],
-                    ],
-                    [
-                        'in' => 'path',
-                        'name' => 'token',
-                        'description' => 'Recovery token',
-                        'required' => true,
-                        'schema' => ['type' => 'string'],
-                    ],
-                ],
-                'responses' => [
-                    Response::HTTP_BAD_REQUEST => ['description' => 'Invalid recovery token.'],
-                    Response::HTTP_FORBIDDEN => ['description' => 'Recovery token has expired.'],
-                    Response::HTTP_NOT_FOUND => ['description' => 'User not found.'],
-                ],
-            ],
-        ],
-    ],
-    denormalizationContext: [
-        'groups' => ['user'],
-    ],
-    normalizationContext: [
-        'groups' => ['user'],
-    ],
-)]
-#[ApiFilter(UserFilter::class)]
-#[ApiFilter(SearchFilter::class, properties: [
-    'username' => 'exact',
-])]
 #[UniqueEntity(fields: ['username'])]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User
@@ -146,7 +24,13 @@ class User
 
     public const RECOVERY_TIMEOUT = '+3 hours';
 
-    public const SEARCH_OPERATION = 'search';
+    public const ROLE_ADMIN = 'ROLE_ADMIN';
+    public const ROLE_USER = 'ROLE_USER';
+
+    public const ROLES = [
+        self::ROLE_ADMIN => self::ROLE_ADMIN,
+        self::ROLE_USER => self::ROLE_USER,
+    ];
 
     #[ORM\Id]
     #[ORM\Column(type: 'ulid')]
@@ -165,7 +49,7 @@ class User
 
     #[Assert\NotBlank]
     #[ORM\Column(type: 'simple_array')]
-    public array $roles = [SecurityUser::ROLE_USER];
+    public array $roles = [];
 
     #[ORM\Column(unique: true, nullable: true)]
     public ?string $authToken = null;
@@ -188,7 +72,6 @@ class User
     public ?DateTimeInterface $disabledAt = null;
 
     #[ORM\OneToOne(mappedBy: 'user', targetEntity: Personal::class, cascade: ['persist'])]
-    #[ApiSubresource(maxDepth: 1)]
     public ?Personal $personal = null;
 
     public int $weight = 0;
@@ -200,6 +83,11 @@ class User
         $this->createdAt
             = $this->updatedAt
             = new DateTimeImmutable();
+    }
+
+    public function displayName(): string
+    {
+        return $this->personal?->displayName() ?? $this->username;
     }
 
     public function setPersonal(?Personal $personal): void
@@ -223,9 +111,9 @@ class User
 
     public function auth(): string
     {
-        $invalid = empty($this->authToken) || strlen($this->authToken) !== 64;
+        $invalid = empty($this->authToken) || 64 !== mb_strlen($this->authToken);
         if (!$invalid) {
-            $ulid = Ulid::fromBinary(hex2bin(substr($this->authToken, 0, 32)));
+            $ulid = Ulid::fromBinary(hex2bin(mb_substr($this->authToken, 0, 32)));
 
             if (new DateTimeImmutable('-1 month') > $ulid->getDateTime()) {
                 $invalid = true;
@@ -266,7 +154,7 @@ class User
     }
 
     public function finishRecovery(
-        UserPasswordHasherInterface $userPasswordHasher,
+        PasswordHasherInterface $passwordHasher,
         string $plainPassword,
     ): void {
         // Also generate a new auth token when password is reset.
@@ -274,10 +162,7 @@ class User
 
         /* @todo remove plain password with legacy thing */
         $this->plainPassword = $plainPassword;
-        $this->password = $userPasswordHasher->hashPassword(
-            SecurityUser::fromUser($this),
-            $plainPassword,
-        );
+        $this->password = $passwordHasher->hash($plainPassword);
 
         $this->recoveryToken = null;
     }

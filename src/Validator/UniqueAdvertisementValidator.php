@@ -2,7 +2,7 @@
 
 namespace Lens\Bundle\LensApiBundle\Validator;
 
-use Lens\Bundle\LensApiBundle\Data\Advertisement;
+use Lens\Bundle\LensApiBundle\Entity\Personal\Advertisement;
 use Lens\Bundle\LensApiBundle\LensApi;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;

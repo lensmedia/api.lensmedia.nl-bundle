@@ -2,9 +2,6 @@
 
 namespace Lens\Bundle\LensApiBundle\Entity\Personal;
 
-use ApiPlatform\Core\Annotation\ApiFilter;
-use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -21,22 +18,12 @@ use Symfony\Component\Uid\Ulid;
  * Email is always personal, we don't send advertisements directed
  * to companies, but always directed to a person.
  */
-#[ApiFilter(SearchFilter::class, properties: [
-    'type' => 'partial',
-])]
 #[ORM\Entity(repositoryClass: AdvertisementRepository::class)]
 #[UniqueEntity(fields: 'type', message: 'advertisement.type.unique_entity')]
-#[ApiResource(
-    denormalizationContext: [
-        'groups' => ['advertisement']
-    ],
-    normalizationContext: [
-        'groups' => ['advertisement'],
-    ]
-)]
 class Advertisement
 {
-    public const PHONE = 'phone';
+    /** @deprecated  */
+    private const PHONE = 'phone';
     public const EMAIL = 'email';
     public const MAIL = 'mail';
 
@@ -60,6 +47,16 @@ class Advertisement
     {
         $this->id = new Ulid();
         $this->personals = new ArrayCollection();
+    }
+
+    public function isEmail(): bool
+    {
+        return self::EMAIL === $this->type;
+    }
+
+    public function isMail(): bool
+    {
+        return self::MAIL === $this->type;
     }
 
     public function addPersonal(Personal $personal): void

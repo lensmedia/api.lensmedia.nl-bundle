@@ -2,38 +2,24 @@
 
 namespace Lens\Bundle\LensApiBundle\Entity\PaymentMethod;
 
-use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use Lens\Bundle\LensApiBundle\Repository\PaymentMethodRepository;
 use Lens\Bundle\LensApiBundle\Entity\Company\Company;
-use Lens\Bundle\LensApiBundle\PaymentMethodInterface;
 use Symfony\Component\Uid\Ulid;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: PaymentMethodRepository::class)]
 #[ORM\InheritanceType('JOINED')]
 #[ORM\DiscriminatorColumn(name: 'method')]
 #[ORM\DiscriminatorMap(PaymentMethod::TYPE_TO_CLASS)]
-#[ApiResource(
-    subresourceOperations: [
-        'api_companies_payment_methods_get_subresource' => [
-            'normalization_context' => [
-                'groups' => ['company'],
-            ],
-        ],
-        'api_driving_schools_payment_methods_get_subresource' => [
-            'normalization_context' => [
-                'groups' => ['driving_school'],
-            ],
-        ],
-    ],
-    normalizationContext: [
-        'groups' => ['payment_method'],
-    ],
-)]
 class PaymentMethod
 {
-    public const TYPE_TO_CLASS = [
-        PaymentMethodInterface::DEBIT => Debit::class,
-        PaymentMethodInterface::CREDIT_CARD => Creditcard::class,
+    private const TYPE_TO_CLASS = [
+        Debit::METHOD => Debit::class,
+        Creditcard::METHOD => Creditcard::class,
+    ];
+
+    public const METHODS = [
+        Debit::METHOD => Debit::METHOD,
     ];
 
     #[ORM\Id]
@@ -48,7 +34,7 @@ class PaymentMethod
         $this->id = new Ulid();
     }
 
-    public function getType(): string
+    public function getTypes(): string
     {
         return array_flip(self::TYPE_TO_CLASS)[static::class];
     }
