@@ -19,7 +19,7 @@ class Dealer
     #[ORM\Column(unique: true)]
     public string $name;
 
-    #[ORM\ManyToMany(targetEntity: Company::class, mappedBy: 'dealers')]
+    #[ORM\ManyToMany(targetEntity: Company::class, inversedBy: 'dealers')]
     public Collection $companies;
 
     public function __construct()

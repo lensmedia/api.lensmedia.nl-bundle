@@ -89,7 +89,7 @@ class Company
     #[Assert\Valid]
     public Collection $employees;
 
-    #[ORM\ManyToMany(targetEntity: Dealer::class, inversedBy: 'companies', cascade: ['persist'])]
+    #[ORM\ManyToMany(targetEntity: Dealer::class, mappedBy: 'companies', cascade: ['persist'])]
     public Collection $dealers;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: PaymentMethod::class, cascade: ['all'], orphanRemoval: true)]
