@@ -229,7 +229,6 @@ class Company
         if (!$this->employees->contains($employee)) {
             $this->employees->add($employee);
             $employee->company = $this;
-            $employee->personal->addCompany($employee);
         }
     }
 
@@ -264,8 +263,8 @@ class Company
         }
 
         $this->parent?->removeChild($this);
-        $parent?->addChild($this);
         $this->parent = $parent;
+        $parent?->addChild($this);
     }
 
     public function addChild(self $child): void

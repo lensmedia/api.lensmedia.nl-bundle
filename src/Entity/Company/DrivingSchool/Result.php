@@ -2,10 +2,10 @@
 
 namespace Lens\Bundle\LensApiBundle\Entity\Company\DrivingSchool;
 
-use Lens\Bundle\LensApiBundle\Repository\ResultRepository;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Lens\Bundle\LensApiBundle\Repository\ResultRepository;
 use Symfony\Component\Uid\Ulid;
 
 #[ORM\Entity(repositoryClass: ResultRepository::class)]
@@ -67,7 +67,7 @@ class Result
     }
 
     /**
-     * @link https://github.com/lensmedia/api.lensmedia.nl/wiki/Cbr-open-data Check the
+     * @see https://github.com/lensmedia/api.lensmedia.nl/wiki/Cbr-open-data Check the
      *       wiki page for index descriptions.
      */
     public static function fromCsvRecord(array $record): self
@@ -93,7 +93,7 @@ class Result
         return $instance;
     }
 
-    public function mergeEntryTotals(Result $result): void
+    public function mergeEntryTotals(self $result): void
     {
         $this->firstExamsSufficientTotal += $result->firstExamsSufficientTotal;
         $this->firstExamsInsufficientTotal += $result->firstExamsInsufficientTotal;

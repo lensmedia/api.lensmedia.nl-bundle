@@ -3,6 +3,7 @@
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Doctrine\Inflector\Language;
+use Lens\Bundle\LensApiBundle\Doctrine\Event\UpdateSendInBlueListener;
 use Lens\Bundle\LensApiBundle\Doctrine\NamespacedUnderscoreNamingStrategy;
 use Lens\Bundle\LensApiBundle\Form\Type\AdvertisementChoiceType;
 use Lens\Bundle\LensApiBundle\Form\Type\CompanyType;
@@ -10,9 +11,11 @@ use Lens\Bundle\LensApiBundle\Form\Type\DealerChoiceType;
 use Lens\Bundle\LensApiBundle\Form\Type\DriversLicenceChoiceType;
 use Lens\Bundle\LensApiBundle\LensApi;
 use Lens\Bundle\LensApiBundle\Repository;
+use Lens\Bundle\LensApiBundle\SendInBlue\SendInBlue;
 use Lens\Bundle\LensApiBundle\Validator\UniqueAdvertisementValidator;
 use Lens\Bundle\LensApiBundle\Validator\UniqueDealerValidator;
 use Lens\Bundle\LensApiBundle\Validator\UniqueUserValidator;
+use Psr\Log\LoggerInterface;
 
 use const CASE_LOWER;
 
@@ -70,6 +73,20 @@ return static function (ContainerConfigurator $container): void {
             CASE_LOWER,
             true,
         ])
+
+        ->set(SendInBlue::class)
+        ->args([
+            service(LensApi::class),
+            null,
+            0,
+            null,
+        ])
+
+        ->set(UpdateSendInBlueListener::class)->args([
+            service(SendInBlue::class),
+            service(LoggerInterface::class),
+            param('kernel.debug'),
+        ])->autoConfigure()
 
         ->set(Repository\AddressRepository::class)->autoWire()->autoConfigure()
         ->set(Repository\AdvertisementRepository::class)->autoWire()->autoConfigure()

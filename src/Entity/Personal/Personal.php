@@ -142,7 +142,6 @@ class Personal
         if (!$this->companies->contains($employee)) {
             $this->companies->add($employee);
             $employee->setPersonal($this);
-            $employee->company?->addEmployee($employee);
         }
     }
 
@@ -150,7 +149,7 @@ class Personal
     {
         if ($this->companies->contains($employee)) {
             $this->companies->removeElement($employee);
-            $employee->company?->removeEmployee($employee);
+            $employee->company->removeEmployee($employee);
         }
     }
 

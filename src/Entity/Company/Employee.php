@@ -41,8 +41,8 @@ class Employee
                 $this->personal->removeCompany($this);
             }
 
-            $personal->addCompany($this);
             $this->personal = $personal;
+            $personal->addCompany($this);
         }
     }
 
@@ -53,8 +53,8 @@ class Employee
                 $this->company->removeEmployee($this);
             }
 
-            $company->addEmployee($this);
             $this->company = $company;
+            $company->addEmployee($this);
         }
     }
 }

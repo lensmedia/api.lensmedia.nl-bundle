@@ -119,4 +119,19 @@ class Address
     {
         return $this->type = self::OPERATING;
     }
+
+    public function isLocatedAtTheSamePlaceAs(Address $address): bool
+    {
+        return $this->streetName === $address->streetName
+            && $this->streetNumber === $address->streetNumber
+            && $this->addition === $address->addition
+            && $this->zipCode === $address->zipCode
+            && $this->city === $address->city
+            && $this->country === $address->country;
+    }
+
+    public function __clone(): void
+    {
+        $this->id = new Ulid();
+    }
 }

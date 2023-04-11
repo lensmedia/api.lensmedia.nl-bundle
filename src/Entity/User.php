@@ -172,13 +172,13 @@ class User
         $this->disabledAt = new DateTimeImmutable();
     }
 
-    public function isDisabled(): bool
-    {
-        return null !== $this->disabledAt;
-    }
-
     public function enable(): void
     {
         $this->disabledAt = null;
+    }
+
+    public function isDisabled(): bool
+    {
+        return null !== $this->disabledAt;
     }
 }
