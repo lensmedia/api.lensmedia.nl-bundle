@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 class UniqueDealerValidator extends ConstraintValidator
 {
     public function __construct(
-        private LensApi $lensApi,
+        private readonly LensApi $lensApi,
     ) {
     }
 
@@ -29,15 +29,11 @@ class UniqueDealerValidator extends ConstraintValidator
             return;
         }
 
-        $dealers = $this->lensApi->dealers->list();
-        foreach ($dealers as $dealer) {
-            if ($dealer->name === $value->name && $dealer->id !== $value->id) {
-                $this->context->buildViolation($constraint->message)
-                    ->setParameter('{{ value }}', $value->name)
-                    ->addViolation();
-
-                break;
-            }
+        $dealer = $this->lensApi->dealers->findOneByName($value->name);
+        if ($dealer->name === $value->name && $dealer->id !== $value->id) {
+            $this->context->buildViolation($constraint->message)
+                ->setParameter('{{ value }}', $value->name)
+                ->addViolation();
         }
     }
 }

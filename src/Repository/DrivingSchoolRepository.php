@@ -159,13 +159,4 @@ class DrivingSchoolRepository extends ServiceEntityRepository
             return $result[0];
         }, $qb->getQuery()->getResult());
     }
-
-    public function forSitemap(): array
-    {
-        return $this->createQueryBuilder('drivingSchool', 'drivingSchool.chamberOfCommerce')
-            ->select('drivingSchool.id', 'drivingSchool.chamberOfCommerce', 'drivingSchool.name')
-            ->andWhere('drivingSchool.disabledAt IS NULL')
-            ->getQuery()
-            ->getResult();
-    }
 }

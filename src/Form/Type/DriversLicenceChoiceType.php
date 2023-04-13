@@ -13,14 +13,14 @@ class DriversLicenceChoiceType extends AbstractType
     private static array $driversLicences;
 
     public function __construct(
-        private LensApi $lensApi,
+        private readonly LensApi $lensApi,
     ) {
     }
 
     private function driversLicences(): array
     {
         if (empty(self::$driversLicences)) {
-            self::$driversLicences = $this->lensApi->driversLicences->list();
+            self::$driversLicences = $this->lensApi->driversLicences->findAll();
         }
 
         return self::$driversLicences;

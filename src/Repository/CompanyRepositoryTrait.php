@@ -4,6 +4,8 @@ namespace Lens\Bundle\LensApiBundle\Repository;
 
 use Doctrine\ORM\Query\ResultSetMapping;
 
+use Doctrine\SqlFormatter\SqlFormatter;
+
 use const PREG_SPLIT_NO_EMPTY;
 
 /**
@@ -22,27 +24,7 @@ trait CompanyRepositoryTrait
 
     private function calculateCompanySearchWeights(string $searchQueryString, int $limit): array
     {
-        $terms = preg_split('~\s+~', trim($searchQueryString), flags: PREG_SPLIT_NO_EMPTY);
-
-        $parameters = [];
-
-        $cases = [];
-        foreach ($terms as $index => $term) {
-            $cases[] = '(CASE WHEN company.name LIKE :term_'.$index.' THEN '.(10 * mb_strlen($term)).' ELSE 0 END)';
-            $cases[] = '(CASE WHEN company.chamber_of_commerce LIKE :term_'.$index.' THEN '.(10 * mb_strlen($term)).' ELSE 0 END)';
-            $cases[] = '(CASE WHEN company_contact_method.value LIKE :term_'.$index.' THEN '.(1 * mb_strlen($term)).' ELSE 0 END)';
-            $cases[] = '(CASE WHEN company_driving_school.cbr LIKE :term_'.$index.' THEN '.(10 * mb_strlen($term)).' ELSE 0 END)';
-            $cases[] = '(CASE WHEN personal.nickname LIKE :term_'.$index.' THEN '.(3 * mb_strlen($term)).' ELSE 0 END)';
-            $cases[] = '(CASE WHEN personal.surname LIKE :term_'.$index.' THEN '.(3 * mb_strlen($term)).' ELSE 0 END)';
-            $cases[] = '(CASE WHEN user.username LIKE :term_'.$index.' THEN '.(10 * mb_strlen($term)).' ELSE 0 END)';
-            $cases[] = '(CASE WHEN personal_contact_method.value LIKE :term_'.$index.' THEN '.(1 * mb_strlen($term)).' ELSE 0 END)';
-            $cases[] = '(CASE WHEN address.street_name LIKE :term_'.$index.' THEN '.(1 * mb_strlen($term)).' ELSE 0 END)';
-            $cases[] = '(CASE WHEN address.street_number LIKE :term_'.$index.' THEN '.(1 * mb_strlen($term)).' ELSE 0 END)';
-            $cases[] = '(CASE WHEN address.city LIKE :term_'.$index.' THEN '.(1 * mb_strlen($term)).' ELSE 0 END)';
-            $cases[] = '(CASE WHEN address.zip_code LIKE :term_'.$index.' THEN '.(4 * mb_strlen($term)).' ELSE 0 END)';
-
-            $parameters['term_'.$index] = '%'.$term.'%';
-        }
+        [$cases, $parameters] = $this->buildTermsList($searchQueryString);
 
         $rsm = new ResultSetMapping();
         $rsm->addScalarResult('id', 'id');
@@ -71,6 +53,57 @@ trait CompanyRepositoryTrait
         // die((new SqlFormatter())->format($query->getSQL()));
 
         return $query->getResult();
+    }
+
+    private function buildTermsList(string $searchQueryString): array
+    {
+        $terms = preg_split('~\s+~', trim($searchQueryString), flags: PREG_SPLIT_NO_EMPTY);
+        $terms = array_unique($terms);
+
+        $parameters = [];
+        $cases = [];
+
+        $this->buildTermsListForFields(0, $searchQueryString, $cases, $parameters);
+        foreach ($terms as $index => $term) {
+            $this->buildTermsListForFields($index + 1, $term, $cases, $parameters);
+        }
+
+        return [$cases, $parameters];
+    }
+
+    private function buildTermsListForFields(int $index, string $term, array &$cases, array &$parameters): void
+    {
+        array_push($cases, ...$this->buildTermsListForField('company.name', $index, 20));
+        array_push($cases, ...$this->buildTermsListForField('company.chamber_of_commerce', $index, 20));
+        array_push($cases, ...$this->buildTermsListForField('company_contact_method.value', $index, 5));
+        array_push($cases, ...$this->buildTermsListForField('company_driving_school.cbr', $index, 20));
+        array_push($cases, ...$this->buildTermsListForField('personal.nickname', $index, 1));
+        array_push($cases, ...$this->buildTermsListForField('personal.surname', $index, 1));
+        array_push($cases, ...$this->buildTermsListForField('user.username', $index, 10));
+        array_push($cases, ...$this->buildTermsListForField('personal_contact_method.value', $index, 5));
+        array_push($cases, ...$this->buildTermsListForField('address.street_name', $index, 1));
+        array_push($cases, ...$this->buildTermsListForField('address.street_number', $index, 1));
+        array_push($cases, ...$this->buildTermsListForField('address.city', $index, 1));
+        array_push($cases, ...$this->buildTermsListForField('address.zip_code', $index, 15));
+
+        $parameters['term_exact_'.$index] = $term;
+        $parameters['term_start_'.$index] = $term.'%';
+        $parameters['term_end_'.$index] = '%'.$term;
+        $parameters['term_'.$index] = '%'.$term.'%';
+    }
+
+    private function buildTermsListForField(string $field, int $index, int $weight): array
+    {
+        $weight /= ($index + 1);
+
+        $cases = [];
+        // Using like https://stackoverflow.com/questions/22080382/mysql-why-comparing-a-string-to-0-gives-true
+        $cases[] = sprintf('(CASE WHEN %s LIKE :term_exact_%d THEN %d ELSE 0 END)', $field, $index, $weight * 10);
+        $cases[] = sprintf('(CASE WHEN %s LIKE :term_start_%d THEN %d ELSE 0 END)', $field, $index, $weight * 3);
+        $cases[] = sprintf('(CASE WHEN %s LIKE :term_%d THEN %d ELSE 0 END)', $field, $index, $weight * .5);
+        $cases[] = sprintf('(CASE WHEN %s LIKE :term_end_%d THEN %d ELSE 0 END)', $field, $index, $weight);
+
+        return $cases;
     }
 
     private function getCompanySearchResultsUsingWeights(array $weights)

@@ -97,27 +97,27 @@ class Address
 
     public function isDefault(): bool
     {
-        return $this->type = self::DEFAULT;
+        return self::DEFAULT === $this->type;
     }
 
     public function isMailing(): bool
     {
-        return $this->type = self::MAILING;
+        return self::MAILING === $this->type;
     }
 
     public function isShipping(): bool
     {
-        return $this->type = self::SHIPPING;
+        return self::SHIPPING === $this->type;
     }
 
     public function isBilling(): bool
     {
-        return $this->type = self::BILLING;
+        return self::BILLING === $this->type;
     }
 
     public function isOperating(): bool
     {
-        return $this->type = self::OPERATING;
+        return self::OPERATING === $this->type;
     }
 
     public function isLocatedAtTheSamePlaceAs(Address $address): bool

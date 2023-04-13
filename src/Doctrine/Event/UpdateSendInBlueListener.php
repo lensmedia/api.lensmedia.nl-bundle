@@ -93,7 +93,7 @@ class UpdateSendInBlueListener
         if ($entity instanceof Personal) {
             $this->markAsHandled($entity, $operation);
         } elseif ($entity instanceof ContactMethod) {
-            if ($entity->isEmail()) {
+            if ($entity->isEmail() && $entity->personal) {
                 $this->markAsHandled($entity->personal, $operation);
             }
         }

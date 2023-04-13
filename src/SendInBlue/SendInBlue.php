@@ -191,12 +191,12 @@ class SendInBlue
         return $this->subscriberDealerListIds[$dealer->name] ?? 0;
     }
 
-    private function firstNameFromPersonal(Personal $personal): string
+    private function firstNameFromPersonal(Personal $personal): ?string
     {
         return $personal->initials;
     }
 
-    private function lastNameFromPersonal(Personal $personal): string
+    private function lastNameFromPersonal(Personal $personal): ?string
     {
         return trim($personal->surnameAffix.' '.$personal->surname);
     }
