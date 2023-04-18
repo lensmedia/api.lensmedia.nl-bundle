@@ -9,6 +9,7 @@ use Lens\Bundle\LensApiBundle\Form\Type\AdvertisementChoiceType;
 use Lens\Bundle\LensApiBundle\Form\Type\CompanyType;
 use Lens\Bundle\LensApiBundle\Form\Type\DealerChoiceType;
 use Lens\Bundle\LensApiBundle\Form\Type\DriversLicenceChoiceType;
+use Lens\Bundle\LensApiBundle\GeoLocate\GeoLocate;
 use Lens\Bundle\LensApiBundle\LensApi;
 use Lens\Bundle\LensApiBundle\Repository;
 use Lens\Bundle\LensApiBundle\SendInBlue\SendInBlue;
@@ -16,6 +17,7 @@ use Lens\Bundle\LensApiBundle\Validator\UniqueAdvertisementValidator;
 use Lens\Bundle\LensApiBundle\Validator\UniqueDealerValidator;
 use Lens\Bundle\LensApiBundle\Validator\UniqueUserValidator;
 use Psr\Log\LoggerInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 use const CASE_LOWER;
 
@@ -80,6 +82,11 @@ return static function (ContainerConfigurator $container): void {
             null,
             0,
             null,
+        ])
+
+        ->set(GeoLocate::class)
+        ->args([
+            service(HttpClientInterface::class),
         ])
 
         ->set(UpdateSendInBlueListener::class)->args([

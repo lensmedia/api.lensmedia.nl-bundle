@@ -8,9 +8,7 @@ use Throwable;
 
 class GeoLocate
 {
-    private static array $tracker = [];
-
-    public const API = 'https://geodata.nationaalgeoregister.nl/locatieserver/v3';
+    private const API = 'https://geodata.nationaalgeoregister.nl/locatieserver/v3/free';
 
     public function __construct(
         private readonly HttpClientInterface $geoApiClient,
@@ -23,35 +21,44 @@ class GeoLocate
             return [null, null];
         }
 
-        $searchTerm = $address->zipCode;
         if ($address->streetNumber) {
-            $searchTerm .= 'and '.$address->streetNumber.$address->addition;
+            $searchTerm = sprintf(
+                'postcode:%s AND huisnummer:%s %s AND type:adres',
+                $address->zipCode,
+                $address->streetNumber,
+                $address->addition,
+            );
+
+            $result = $this->request($searchTerm);
+            if ($result) {
+                return $result;
+            }
         }
 
-        return $this->request($searchTerm)
-            ?? $this->request($address->zipCode)
-            ?? [null, null];
+        return $this->request('postcode:'.$address->zipCode.' AND type:postcode') ?? [null, null];
     }
 
     private function request(string $query): ?array
     {
-        if (isset(self::$tracker[$query])) {
-            return self::$tracker[$query];
+        static $tracker = [];
+        if (!isset($tracker[$query])) {
+            return $tracker[$query];
         }
 
         try {
-            $result = $this->match($this->geoApiClient->request('GET', self::API.'/free', [
+            $response = $this->geoApiClient->request('GET', self::API, [
                 'query' => [
                     'q' => $query,
+                    'rows' => 1,
                 ],
-            ])->toArray());
+            ])->toArray();
+
+            return $tracker[$query] = $this->match($response);
         } catch (Throwable $e) {
+            $tracker[$query] = null;
+
             throw new GeoLocateException('GeoLocate Error: '.$e->getMessage(), previous: $e);
         }
-
-        self::$tracker[$query] = $result;
-
-        return $result;
     }
 
     private function match(array $response): ?array
