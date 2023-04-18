@@ -6,9 +6,11 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Lens\Bundle\LensApiBundle\Repository\ResultRepository;
+use LogicException;
 use Symfony\Component\Uid\Ulid;
 
 #[ORM\Entity(repositoryClass: ResultRepository::class)]
+#[ORM\Index(fields: ['cbr', 'categoryCode', 'examPeriodStartedAt'])]
 class Result
 {
     #[ORM\Id]
@@ -24,51 +26,45 @@ class Result
     #[ORM\Column]
     public string $categoryName;
 
-    #[ORM\Column(type: 'datetime_immutable')]
+    #[ORM\Column(type: 'date_immutable')]
     public DateTimeInterface $examPeriodStartedAt;
 
-    #[ORM\Column(type: 'datetime_immutable')]
+    #[ORM\Column(type: 'date_immutable')]
     public DateTimeInterface $examPeriodEndedAt;
 
-    #[ORM\Column]
-    public int $firstExamsSufficientTotal;
+    #[ORM\Column(options: ['default' => 0])]
+    public int $firstExamsSufficientTotal = 0;
 
-    #[ORM\Column]
-    public int $firstExamsInsufficientTotal;
+    #[ORM\Column(options: ['default' => 0])]
+    public int $firstExamsInsufficientTotal = 0;
 
-    #[ORM\Column(type: 'decimal', precision: 5, scale: 4, nullable: true)]
-    public ?float $firstExamsPercentage;
+    #[ORM\Column(type: 'decimal', precision: 5, scale: 4, options: ['default' => 0])]
+    public float $firstExamsPercentage = 0;
 
-    #[ORM\Column]
-    public int $reExamsSufficientTotal;
+    #[ORM\Column(options: ['default' => 0])]
+    public int $reExamsSufficientTotal = 0;
 
-    #[ORM\Column]
-    public int $reExamsInsufficientTotal;
+    #[ORM\Column(options: ['default' => 0])]
+    public int $reExamsInsufficientTotal = 0;
 
-    #[ORM\Column(type: 'decimal', precision: 5, scale: 4, nullable: true)]
-    public ?float $reExamsPercentage;
+    #[ORM\Column(type: 'decimal', precision: 5, scale: 4, options: ['default' => 0])]
+    public float $reExamsPercentage = 0;
+
+    /**
+     * @var bool Whether this result is locked or not. If locked, it can not be updated.
+     *           Used to avoid importing the same data sets multiple times and the numbers stacking.
+     */
+    #[ORM\Column(type: 'boolean')]
+    private bool $locked = false;
 
     public function __construct()
     {
         $this->id = new Ulid();
     }
 
-    public function updatePercentages(): void
-    {
-        $totalFirstExams = $this->firstExamsSufficientTotal + $this->firstExamsInsufficientTotal;
-        if ($totalFirstExams > 0) {
-            $this->firstExamsPercentage = $this->firstExamsSufficientTotal / $totalFirstExams;
-        }
-
-        $totalReExams = $this->reExamsSufficientTotal + $this->reExamsInsufficientTotal;
-        if ($totalReExams > 0) {
-            $this->reExamsPercentage = $this->reExamsSufficientTotal / $totalReExams;
-        }
-    }
-
     /**
-     * @see https://github.com/lensmedia/api.lensmedia.nl/wiki/Cbr-open-data Check the
-     *       wiki page for index descriptions.
+     * Create a new result from a CSV record.
+     * @see https://github.com/lensmedia/api.lensmedia.nl/wiki/Cbr-open-data for details on the CSV, and it's format.
      */
     public static function fromCsvRecord(array $record): self
     {
@@ -79,8 +75,8 @@ class Result
         $instance->categoryCode = $values[9];
         $instance->categoryName = $values[10];
 
-        $instance->examPeriodStartedAt = new DateTimeImmutable($values[19].' 00:00:00');
-        $instance->examPeriodEndedAt = new DateTimeImmutable($values[20].' 00:00:00');
+        $instance->examPeriodStartedAt = new DateTimeImmutable($values[19]);
+        $instance->examPeriodEndedAt = new DateTimeImmutable($values[20]);
 
         $instance->firstExamsSufficientTotal = $values[21];
         $instance->firstExamsInsufficientTotal = $values[22];
@@ -93,8 +89,26 @@ class Result
         return $instance;
     }
 
-    public function mergeEntryTotals(self $result): void
+    public function lock(): void
     {
+        $this->locked = true;
+    }
+
+    public function isLocked(): bool
+    {
+        return $this->locked;
+    }
+
+    public function merge(self $result): void
+    {
+        if ($this->isLocked()) {
+            throw new LogicException('Cannot merge with a locked result.');
+        }
+
+        if ($this->cbr !== $result->cbr) {
+            throw new LogicException('Cannot merge results from different driving schools (CBR ID does not match).');
+        }
+
         $this->firstExamsSufficientTotal += $result->firstExamsSufficientTotal;
         $this->firstExamsInsufficientTotal += $result->firstExamsInsufficientTotal;
 
@@ -102,5 +116,18 @@ class Result
         $this->reExamsInsufficientTotal += $result->reExamsInsufficientTotal;
 
         $this->updatePercentages();
+    }
+
+    private function updatePercentages(): void
+    {
+        $totalFirstExams = $this->firstExamsSufficientTotal + $this->firstExamsInsufficientTotal;
+        if ($totalFirstExams > 0) {
+            $this->firstExamsPercentage = $this->firstExamsSufficientTotal / $totalFirstExams;
+        }
+
+        $totalReExams = $this->reExamsSufficientTotal + $this->reExamsInsufficientTotal;
+        if ($totalReExams > 0) {
+            $this->reExamsPercentage = $this->reExamsSufficientTotal / $totalReExams;
+        }
     }
 }

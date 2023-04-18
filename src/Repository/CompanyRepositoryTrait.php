@@ -63,9 +63,13 @@ trait CompanyRepositoryTrait
         $parameters = [];
         $cases = [];
 
+        // Add a special first priority case for the term as a whole
         $this->buildTermsListForFields(0, $searchQueryString, $cases, $parameters);
-        foreach ($terms as $index => $term) {
-            $this->buildTermsListForFields($index + 1, $term, $cases, $parameters);
+
+        if (count($terms) > 1) {
+            foreach ($terms as $index => $term) {
+                $this->buildTermsListForFields($index + 1, $term, $cases, $parameters);
+            }
         }
 
         return [$cases, $parameters];
@@ -94,10 +98,10 @@ trait CompanyRepositoryTrait
 
     private function buildTermsListForField(string $field, int $index, int $weight): array
     {
-        $weight /= ($index + 1);
+        $weight /= .9 ** ($index + 1);
 
         $cases = [];
-        // Using like https://stackoverflow.com/questions/22080382/mysql-why-comparing-a-string-to-0-gives-true
+        // Using like - https://stackoverflow.com/questions/22080382/mysql-why-comparing-a-string-to-0-gives-true
         $cases[] = sprintf('(CASE WHEN %s LIKE :term_exact_%d THEN %d ELSE 0 END)', $field, $index, $weight * 10);
         $cases[] = sprintf('(CASE WHEN %s LIKE :term_start_%d THEN %d ELSE 0 END)', $field, $index, $weight * 3);
         $cases[] = sprintf('(CASE WHEN %s LIKE :term_%d THEN %d ELSE 0 END)', $field, $index, $weight * .5);

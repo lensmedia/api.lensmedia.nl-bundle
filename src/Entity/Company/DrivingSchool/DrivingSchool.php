@@ -26,6 +26,13 @@ class DrivingSchool extends Company
         $this->driversLicences = new ArrayCollection();
     }
 
+    public function instructsForLicence(string $name): bool
+    {
+        return $this->driversLicences->exists(
+            static fn (int $index, DriversLicence $drivingLicence) => strcasecmp($name, $drivingLicence->label),
+        );
+    }
+
     public function addDriversLicence(DriversLicence $driversLicence): void
     {
         if (!$this->driversLicences->contains($driversLicence)) {

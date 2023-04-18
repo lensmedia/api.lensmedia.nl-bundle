@@ -15,17 +15,16 @@ class ActiveDrivingSchools
     #[ORM\Column(type: 'ulid')]
     public Ulid $id;
 
-    #[ORM\Column(type: 'integer')]
-    public int $total = 0;
-
-    #[ORM\Column(type: 'integer')]
-    public int $active;
-
-    #[ORM\Column(type: 'datetime_immutable')]
+    #[ORM\Column(type: 'date_immutable')]
     public DateTimeInterface $createdAt;
 
-    public function __construct()
-    {
+    public function __construct(
+        #[ORM\Column(type: 'integer')]
+        public int $total = 0,
+
+        #[ORM\Column(type: 'integer')]
+        public int $active = 0,
+    ) {
         $this->id = new Ulid();
 
         $this->createdAt = new DateTimeImmutable();

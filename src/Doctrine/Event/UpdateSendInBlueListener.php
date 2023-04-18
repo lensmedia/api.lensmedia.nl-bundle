@@ -62,9 +62,6 @@ class UpdateSendInBlueListener
         // Handle add/remove email option, or company becoming a dealer or not.
         $this->handleCollectionUpdates($uow->getScheduledCollectionUpdates());
         $this->handleCollectionDeletions($uow->getScheduledCollectionDeletions());
-
-        // Ignored for now, can be used to monitor dealer deletion and removing entire list from SendInBlue.
-        // $this->handleCollectionDeletions($uow->getScheduledCollectionDeletions());
     }
 
     private function handleEntityInsertions(array $entities): void

@@ -15,19 +15,17 @@ class ActiveDealers
     #[ORM\Column(type: 'ulid')]
     public Ulid $id;
 
-    #[ORM\Column(type: 'integer')]
-    public int $total = 0;
-
-    #[ORM\Column]
-    public string $name;
-
-    #[ORM\Column(type: 'datetime_immutable')]
+    #[ORM\Column(type: 'date_immutable')]
     public DateTimeInterface $createdAt;
 
-    public function __construct()
-    {
-        $this->id = new Ulid();
+    public function __construct(
+        #[ORM\Column]
+        public string $name,
 
+        #[ORM\Column(type: 'integer')]
+        public int $total = 0,
+    ) {
+        $this->id = new Ulid();
         $this->createdAt = new DateTimeImmutable();
     }
 }
