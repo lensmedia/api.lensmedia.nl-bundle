@@ -22,7 +22,7 @@ class LensLensApiExtension extends Extension
         $loader->load('services.php');
 
         if (!preg_match('/^(([a-z_]+:\d+),)*([a-z_]+:\d+)$/', $config['send_in_blue']['dealer_lists'])) {
-            throw new RuntimeException('"lens_lens_api.send_in_blue.dealer_lists" configuration must match the format "dealer=1,other_dealer=2"');
+            throw new RuntimeException('"lens_lens_api.send_in_blue.dealer_lists" configuration must match the format "dealer=1,other_dealer=2". The dealer name must match those from the Dealer entity records for it to work.');
         }
 
         $sendInBlue = $container->getDefinition(SendInBlue::class);
