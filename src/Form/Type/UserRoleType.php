@@ -2,7 +2,7 @@
 
 namespace Lens\Bundle\LensApiBundle\Form\Type;
 
-use Lens\Bundle\LensApiBundle\Data\User;
+use Lens\Bundle\LensApiBundle\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -13,8 +13,7 @@ class UserRoleType extends AbstractType
     {
         $resolver->setDefaults([
             'choices' => User::ROLES,
-            'choice_label' => static fn (string $role) =>
-                'user.role.'.strtolower(substr($role, strrpos($role, '_') + 1)),
+            'choice_label' => static fn (string $role) => 'user.role.'.mb_strtolower(mb_substr($role, mb_strrpos($role, '_') + 1)),
             'multiple' => true,
             'expanded' => true,
         ]);

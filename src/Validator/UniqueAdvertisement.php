@@ -2,9 +2,10 @@
 
 namespace Lens\Bundle\LensApiBundle\Validator;
 
+use Attribute;
 use Symfony\Component\Validator\Constraint;
 
-#[\Attribute]
+#[Attribute]
 class UniqueAdvertisement extends Constraint
 {
     public string $message = 'An advertisement option with the name "{{ value }}" already exists.';

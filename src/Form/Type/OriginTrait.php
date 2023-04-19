@@ -2,6 +2,8 @@
 
 namespace Lens\Bundle\LensApiBundle\Form\Type;
 
+use function in_array;
+
 trait OriginTrait
 {
     public function isOrigin(array $options, ...$classes): bool

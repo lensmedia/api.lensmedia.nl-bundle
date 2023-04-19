@@ -7,6 +7,8 @@ use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
+use function is_string;
+
 class CbrValidator extends ConstraintValidator
 {
     public function validate($value, Constraint $constraint): void

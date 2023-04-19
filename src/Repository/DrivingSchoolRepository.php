@@ -2,134 +2,77 @@
 
 namespace Lens\Bundle\LensApiBundle\Repository;
 
-use Lens\Bundle\LensApiBundle\Data\Company;
-use Symfony\Component\HttpFoundation\Response;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NoResultException;
+use Doctrine\Persistence\ManagerRegistry;
+use Lens\Bundle\LensApiBundle\Entity\Address;
+use Lens\Bundle\LensApiBundle\Entity\Company\DrivingSchool\DrivingSchool;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Uid\Ulid;
 
-class DrivingSchoolRepository extends AbstractRepository
+class DrivingSchoolRepository extends ServiceEntityRepository
 {
-    public function list(array $options = []): array
+    use CompanyRepositoryTrait;
+
+    public function __construct(ManagerRegistry $registry)
     {
-        $response = $this->api->get('driving-schools.json', $options)->toArray();
-
-        return $this->api->asArray($response, Company::class);
-    }
-
-    public function get(Company|Ulid|string $drivingSchool, array $options = []): ?Company
-    {
-        $response = $this->api->get(sprintf(
-            'driving-schools/%s.json',
-            $drivingSchool->id ?? $drivingSchool,
-        ), $options);
-
-        if (Response::HTTP_NOT_FOUND === $response->getStatusCode()) {
-            return null;
-        }
-
-        return $this->api->as($response->toArray(), Company::class);
-    }
-
-    public function post(Company $drivingSchool, array $options = []): Company
-    {
-        $response = $this->api->post('driving-schools.json', [
-            'json' => $drivingSchool,
-        ] + $options)->toArray();
-
-        return $this->api->as($response, Company::class);
-    }
-
-    public function patch(Company $drivingSchool, array $options = []): Company
-    {
-        $url = sprintf('driving-schools/%s.json', $drivingSchool->id);
-
-        $response = $this->api->patch($url, [
-            'json' => $drivingSchool,
-        ] + $options)->toArray();
-
-        return $this->api->as($response, Company::class);
-    }
-
-    public function delete(Company|Ulid|string $drivingSchool, array $options = []): void
-    {
-        $url = sprintf('driving-schools/%s.json', $drivingSchool->id ?? $drivingSchool);
-
-        $this->api->delete($url, $options)->getHeaders();
-    }
-
-    public function search(string $terms): array
-    {
-        $response = $this->api->get('driving-schools/search.json', [
-            'query' => [
-                'q' => $terms,
-            ],
-        ])->toArray();
-
-        return $this->api->asArray($response, Company::class);
+        parent::__construct($registry, DrivingSchool::class);
     }
 
     /**
-     * @deprecated Use `DrivingSchoolRepository::get` instead.
+     * List driving schools that are nearby the provided driving school.
      */
-    public function byId(string|Ulid $drivingSchool): Company
+    public function nearby(Ulid|string $drivingSchoolId, int $limit = 10): array
     {
-        trigger_deprecation('lensmedia/api.lensmedia.nl-bundle', '*', 'The method "%s" is deprecated, use "%s::get" instead.', __METHOD__, __CLASS__);
+        try {
+            /** @var DrivingSchool $drivingSchoolEntity */
+            $drivingSchoolEntity = $this->createQueryBuilder('drivingSchool')
+                ->andWhere('drivingSchool.id = :drivingSchool')
+                ->setParameter('drivingSchool', $drivingSchoolId, 'ulid')
 
-        return $this->get($drivingSchool);
-    }
+                ->andWhere('drivingSchool.publishedAt IS NOT NULL AND drivingSchool.publishedAt <= CURRENT_TIMESTAMP()')
 
-    public function getByCbr(string $cbr): ?Company
-    {
-        $response = $this->api->get('driving-schools.json', [
-            'query' => ['cbr' => $cbr],
-        ])->toArray()[0] ?? null;
+                ->join('drivingSchool.addresses', 'address')
+                ->addSelect('address')
+                ->andWhere('address.type IN (:address_types) AND address.latitude IS NOT NULL AND address.longitude IS NOT NULL')
+                ->setParameter('address_types', [Address::OPERATING, Address::DEFAULT])
 
-        if (!$response) {
-            return null;
+                ->getQuery()
+                ->getSingleResult();
+        } catch (NoResultException) {
+            throw new NotFoundHttpException(sprintf(
+                'Provided driving school "%s" does not exist, has no default address or is missing its latitude and/or longitude values.',
+                $drivingSchoolId,
+            ));
         }
 
-        return $this->get($response['id']);
-    }
+        $drivingSchoolAddress = $drivingSchoolEntity->operatingAddress() ?? $drivingSchoolEntity->defaultAddress();
 
-    /**
-     * @deprecated Use `DrivingSchoolRepository::getByCbr` instead.
-     */
-    public function byCbr(string $cbr): ?Company
-    {
-        trigger_deprecation('lensmedia/api.lensmedia.nl-bundle', '*', 'The method "%s" is deprecated, use "%s::getByCbr" instead.', __METHOD__, __CLASS__);
+        $qb = $this->createQueryBuilder('drivingSchool')
+            ->andWhere('drivingSchool.id != :drivingSchool')
+            ->setParameter('drivingSchool', $drivingSchoolId, 'ulid')
 
-        return $this->getByCbr($cbr);
-    }
+            ->andWhere('drivingSchool.publishedAt IS NOT NULL AND drivingSchool.publishedAt <= CURRENT_TIMESTAMP()')
 
-    public function getByChamberOfCommerce(string $chamberOfCommerce): ?Company
-    {
-        $response = $this->api->get('driving-schools.json', [
-            'query' => ['chamberOfCommerce' => $chamberOfCommerce],
-        ])->toArray()[0] ?? null;
+            ->join('drivingSchool.addresses', 'address')
+            ->addSelect('address')
+            ->andWhere('address.type IN (:address_types) AND address.latitude IS NOT NULL AND address.longitude IS NOT NULL')
+            ->setParameter('address_types', [Address::OPERATING, Address::DEFAULT])
 
-        if (!$response) {
-            return null;
-        }
+            ->addSelect('ST_Distance_Sphere(
+                POINT(:longitude, :latitude),
+                POINT(address.longitude, address.latitude)
+            ) AS distance')
+            ->setParameter('latitude', $drivingSchoolAddress->latitude)
+            ->setParameter('longitude', $drivingSchoolAddress->longitude)
+            ->orderBy('distance')
 
-        return $this->get($response['id']);
-    }
+            ->setMaxResults($limit);
 
-    /**
-     * @deprecated Use `DrivingSchoolRepository::getByChamberOfCommerce` instead.
-     */
-    public function byChamberOfCommerce(string $chamberOfCommerce): ?Company
-    {
-        trigger_deprecation('lensmedia/api.lensmedia.nl-bundle', '*', 'The method "%s" is deprecated, use "%s::getByChamberOfCommerce" instead.', __METHOD__, __CLASS__);
+        return array_map(static function ($result) {
+            $result[0]->distance = (float)$result['distance'];
 
-        return $this->getByChamberOfCommerce($chamberOfCommerce);
-    }
-
-    public function nearby(Company|Ulid|string $drivingSchool): array
-    {
-        $response = $this->api->get(sprintf(
-            'driving-schools/%s/nearby.json',
-            $drivingSchool->id ?? $drivingSchool,
-        ))->toArray();
-
-        return $this->api->asArray($response, Company::class);
+            return $result[0];
+        }, $qb->getQuery()->getResult());
     }
 }

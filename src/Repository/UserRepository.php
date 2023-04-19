@@ -2,156 +2,119 @@
 
 namespace Lens\Bundle\LensApiBundle\Repository;
 
-use Lens\Bundle\LensApiBundle\Data\User;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Uid\Ulid;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Persistence\ManagerRegistry;
+use Lens\Bundle\LensApiBundle\Entity\User;
 
-class UserRepository extends AbstractRepository
+use const PREG_SPLIT_NO_EMPTY;
+
+class UserRepository extends ServiceEntityRepository
 {
-    public function list(array $options = []): array
+    public function __construct(ManagerRegistry $registry)
     {
-        $response = $this->api->get('users.json', $options)->toArray();
-
-        return $this->api->asArray($response, User::class);
+        parent::__construct($registry, User::class);
     }
 
-    public function get(User|Ulid|string $user, array $options = []): ?User
+    // used in itheorie for now (needs decorator).
+    public function hasUserByCompanyChamberOfCommerce(string $chamberOfCommerce): bool
     {
-        $response = $this->api->get(sprintf(
-            'users/%s.json',
-            $user->id ?? $user,
-        ), $options);
+        return $this->createQueryBuilder('user')
+            ->select('count(user.id)')
+            ->leftJoin('user.personal', 'personal')
+            ->leftJoin('personal.companies', 'employee')
+            ->leftJoin('employee.company', 'company')
 
-        if (Response::HTTP_NOT_FOUND === $response->getStatusCode()) {
-            return null;
+            ->andWhere('company.chamberOfCommerce = :chamberOfCommerce')
+            ->setParameter('chamberOfCommerce', $chamberOfCommerce)
+
+            ->getQuery()
+            ->getSingleScalarResult() > 0;
+    }
+
+    public function search(string $terms): array
+    {
+        $weights = $this->calculateUserSearchWeights($terms);
+
+        return $this->getUserSearchResultsUsingWeights($weights);
+    }
+
+    private function calculateUserSearchWeights(string $terms): array
+    {
+        $terms = preg_split('~\s+~', trim($terms), flags: PREG_SPLIT_NO_EMPTY);
+
+        $parameters = [];
+
+        $cases = [];
+        foreach ($terms as $index => $term) {
+            $cases[] = '(CASE WHEN user.username LIKE :term_'.$index.' THEN '.(20 * mb_strlen($term)).' ELSE 0 END)';
+            $cases[] = "(CASE WHEN CONCAT_WS(' ', personal.initials, personal.nickname, personal.surname_affix, personal.surname) LIKE :term_".$index.' THEN '.(6 * mb_strlen($term)).' ELSE 0 END)';
+            $cases[] = '(CASE WHEN personal_contact_method.value LIKE :term_'.$index.' THEN '.(1 * mb_strlen($term)).' ELSE 0 END)';
+            $cases[] = '(CASE WHEN company.name LIKE :term_'.$index.' THEN '.(1 * mb_strlen($term)).' ELSE 0 END)';
+
+            $parameters['term_'.$index] = '%'.$term.'%';
         }
 
-        return $this->api->as($response->toArray(), User::class);
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('id', 'id');
+        $rsm->addScalarResult('weight', 'weight');
+
+        $query = $this->getEntityManager()->createNativeQuery('
+            SELECT user.id, SUM('.implode(' + ', $cases).') AS weight
+            FROM user
+            LEFT JOIN personal ON (user.id = personal.user_id)
+            LEFT JOIN contact_method personal_contact_method ON (personal.id = personal_contact_method.personal_id)
+            LEFT JOIN company_employee ON (personal.id = company_employee.personal_id)
+            LEFT JOIN company ON (company_employee.company_id = company.id)
+            GROUP BY user.id
+            HAVING weight > 0
+            ORDER BY weight DESC, user.username ASC
+            LIMIT :limit
+        ', $rsm);
+
+        $parameters['limit'] = 25;
+
+        $query->setParameters($parameters);
+
+        // die((new SqlFormatter())->format($query->getSQL()));
+
+        return $query->getResult();
     }
 
-    public function post(User $user, array $options = []): User
+    private function getUserSearchResultsUsingWeights(array $weights): array
     {
-        $response = $this->api->post('users.json', [
-            'json' => $user,
-        ] + $options)->toArray();
-
-        return $this->api->as($response, User::class);
-    }
-
-    public function patch(User $user, array $options = []): User
-    {
-        $url = sprintf('users/%s.json', $user->id);
-
-        $response = $this->api->patch($url, [
-            'json' => $user,
-        ] + $options)->toArray();
-
-        return $this->api->as($response, User::class);
-    }
-
-    public function delete(User|Ulid|string $user, array $options = []): void
-    {
-        $url = sprintf('users/%s.json', $user->id ?? $user);
-
-        $this->api->delete($url, $options)->getHeaders();
-    }
-
-    public function search(string $terms, array $options = []): array
-    {
-        $options = array_merge($options, [
-            'query' => [
-                'q' => $terms,
-            ],
-        ]);
-
-        $users = $this->api->get('users/search.json', $options)->toArray();
-
-        return $this->api->asArray($users, User::class);
-    }
-
-    /**
-     * @deprecated Use `UserRepository::get` instead.
-     */
-    public function byId(Ulid|string $user): ?User
-    {
-        trigger_deprecation('lensmedia/api.lensmedia.nl-bundle', '*', 'The method "%s" is deprecated, use "%s::get" instead.', __METHOD__, __CLASS__);
-
-        return $this->get($user);
-    }
-
-    public function getByUsername(string $username): ?User
-    {
-        $response = $this->api->get('users.json', [
-            'query' => ['username' => $username],
-        ])->toArray()[0] ?? null;
-
-        if (!$response) {
-            return null;
+        if (empty($weights)) {
+            return [];
         }
 
-        return $this->get($response['id']);
-    }
+        $qb = $this->createQueryBuilder('user');
 
-    /**
-     * @deprecated Use `UserRepository::getByUsername` instead.
-     */
-    public function byUsername(string $username): ?User
-    {
-        trigger_deprecation('lensmedia/api.lensmedia.nl-bundle', '*', 'The method "%s" is deprecated, use "%s::getByUsername" instead.', __METHOD__, __CLASS__);
+        $qb->andWhere('user.id IN (:ids)');
+        $qb->setParameter('ids', array_column($weights, 'id'));
 
-        return $this->getByUsername($username);
-    }
+        $qb->orderBy(sprintf(
+            'FIELD(HEX(user.id), %s)',
+            implode(', ', array_map(static fn ($entry) => sprintf("'%s'", bin2hex($entry['id'])), $weights)),
+        ));
 
-    public function auth(string $username, string $password, array $options = []): ?User
-    {
-        $response = $this->api->get('users/auth.json', array_merge_recursive($options, [
-            'auth_basic' => [$username, $password],
-        ]))->toArray();
+        $qb->leftJoin('user.personal', 'personal');
+        $qb->addSelect('personal');
+        $qb->leftJoin('personal.contactMethods', 'contactMethod');
+        $qb->addSelect('contactMethod');
+        $qb->leftJoin('personal.advertisements', 'advertisements');
+        $qb->addSelect('advertisements');
+        $qb->leftJoin('personal.companies', 'employee');
+        $qb->addSelect('employee');
+        $qb->leftJoin('employee.company', 'company');
+        $qb->addSelect('company');
 
-        return $this->api->as($response, User::class);
-    }
+        // die((new SqlFormatter())->format($qb->getQuery()->getDQL()));
 
-    public function recoverPassword(User|Ulid|string $user): User
-    {
-        $response = $this->api->get(sprintf(
-            'users/%s/recover.json',
-            $user->id ?? $user,
-        ))->toArray();
+        $results = $qb->getQuery()->getResult();
+        foreach ($results as $index => $result) {
+            $result->weight = $weights[$index]['weight'];
+        }
 
-        return $this->api->as($response, User::class);
-    }
-
-    /**
-     * Has returning status code for specific statuses for user
-     * recovery, useful for validators.
-     *
-     * 204 Recovery is still possible.
-     * 400 Invalid recovery token.
-     * 403 Recovery token has expired.
-     * 404 User not found.
-     */
-    public function recoverPasswordCheckStatus(User|Ulid|string $user, string $token): int
-    {
-        return $this->api->get(sprintf(
-            'users/%s/recover/%s.json',
-            $user->id ?? $user,
-            $token,
-        ))->getStatusCode();
-    }
-
-    public function recoverUpdatePassword(User|Ulid|string $user, string $token, string $plainPassword): User
-    {
-        $data = [
-            'id' => $user->id ?? $user,
-            'plainPassword' => $plainPassword,
-        ];
-
-        $response = $this->api->patch(sprintf(
-            'users/%s/recover/%s.json',
-            $user->id ?? $user,
-            $token,
-        ), ['json' => $data])->toArray();
-
-        return $this->api->as($response, User::class);
+        return $results;
     }
 }

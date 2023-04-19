@@ -15,7 +15,7 @@ class DateTimeCheckboxType extends AbstractType
     {
         $builder->addModelTransformer(new CallbackTransformer(
             fn ($value) => null !== $value,
-            fn ($value) => true === $value
+            fn ($value) => (true === $value)
                 ? new DateTimeImmutable()
                 : null,
         ));

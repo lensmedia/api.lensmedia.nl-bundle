@@ -2,8 +2,8 @@
 
 namespace Lens\Bundle\LensApiBundle\Form\Type;
 
-use Lens\Bundle\LensApiBundle\Data\Address;
-use Lens\Bundle\LensApiBundle\Data\Coords;
+use Lens\Bundle\LensApiBundle\Coords;
+use Lens\Bundle\LensApiBundle\Entity\Address;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;

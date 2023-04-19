@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 class UniqueUserValidator extends ConstraintValidator
 {
     public function __construct(
-        private LensApi $lensApi,
+        private readonly LensApi $lensApi,
     ) {
     }
 
@@ -24,12 +24,8 @@ class UniqueUserValidator extends ConstraintValidator
             return;
         }
 
-        $user = $this->lensApi->users->byUsername($value);
-        if (!$user) {
-            return;
-        }
-
-        if ($user->username === $value) {
+        $user = $this->lensApi->users->findOneByUsername($value);
+        if ($user) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ value }}', $value)
                 ->addViolation();

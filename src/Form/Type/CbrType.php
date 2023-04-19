@@ -14,14 +14,14 @@ class CbrType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->addModelTransformer(new CallbackTransformer(
-            fn ($value) => strtoupper($value),
-            fn ($value) => strtoupper($value),
+            fn ($value) => mb_strtoupper($value),
+            fn ($value) => mb_strtoupper($value),
         ));
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefault('attr', function (OptionsResolver $resolver) {
+        $resolver->setDefault('attr', function (OptionsResolver $resolver): void {
             $resolver->setDefaults([
                 'class' => null,
                 'placeholder' => null,

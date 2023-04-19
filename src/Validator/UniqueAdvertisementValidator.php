@@ -2,7 +2,7 @@
 
 namespace Lens\Bundle\LensApiBundle\Validator;
 
-use Lens\Bundle\LensApiBundle\Data\Advertisement;
+use Lens\Bundle\LensApiBundle\Entity\Personal\Advertisement;
 use Lens\Bundle\LensApiBundle\LensApi;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 class UniqueAdvertisementValidator extends ConstraintValidator
 {
     public function __construct(
-        private LensApi $lensApi,
+        private readonly LensApi $lensApi,
     ) {
     }
 
@@ -29,15 +29,11 @@ class UniqueAdvertisementValidator extends ConstraintValidator
             return;
         }
 
-        $advertisements = $this->lensApi->advertisements->list();
-        foreach ($advertisements as $advertisement) {
-            if ($advertisement->type === $value->type && $advertisement->id !== $value->id) {
-                $this->context->buildViolation($constraint->message)
-                    ->setParameter('{{ type }}', $value->type)
-                    ->addViolation();
-
-                break;
-            }
+        $advertisement = $this->lensApi->advertisements->findOneByType($value->type);
+        if ($advertisement->type === $value->type && $advertisement->id !== $value->id) {
+            $this->context->buildViolation($constraint->message)
+                ->setParameter('{{ type }}', $value->type)
+                ->addViolation();
         }
     }
 }

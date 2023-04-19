@@ -2,122 +2,115 @@
 
 namespace Lens\Bundle\LensApiBundle\Repository;
 
-use Lens\Bundle\LensApiBundle\Data\Company;
-use Lens\Bundle\LensApiBundle\Data\Dealer;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Uid\Ulid;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NoResultException;
+use Doctrine\Persistence\ManagerRegistry;
+use Lens\Bundle\LensApiBundle\Entity\Address;
+use Lens\Bundle\LensApiBundle\Entity\Company\Company;
+use Lens\Bundle\LensApiBundle\Entity\Company\Dealer;
+use Lens\Bundle\LensApiBundle\Entity\Company\DrivingSchool\DrivingSchool;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Validator\Constraints\Ulid;
 
-class DealerRepository extends AbstractRepository
+class DealerRepository extends ServiceEntityRepository
 {
-    public function list(array $options = []): array
+    public function __construct(ManagerRegistry $registry)
     {
-        $response = $this->api->get('dealers.json', $options)->toArray();
-
-        return $this->api->asArray($response, Dealer::class);
-    }
-
-    public function get(Dealer|Ulid|string $dealer, array $options = []): ?Dealer
-    {
-        $response = $this->api->get(sprintf(
-            'dealers/%s.json',
-            $dealer->id ?? $dealer,
-        ), $options);
-
-        if (Response::HTTP_NOT_FOUND === $response->getStatusCode()) {
-            return null;
-        }
-
-        return $this->api->as($response->toArray(), Dealer::class);
-    }
-
-    public function post(Dealer $dealer, array $options = []): Dealer
-    {
-        $response = $this->api->post('dealers.json', [
-            'json' => $dealer,
-        ] + $options)->toArray();
-
-        return $this->api->as($response, Dealer::class);
-    }
-
-    public function patch(Dealer $dealer, array $options = []): Dealer
-    {
-        $url = sprintf('dealers/%s.json', $dealer->id);
-
-        $response = $this->api->patch($url, [
-            'json' => $dealer,
-        ] + $options)->toArray();
-
-        return $this->api->as($response, Dealer::class);
-    }
-
-    public function delete(Dealer|Ulid|string $dealer, array $options = []): void
-    {
-        $url = sprintf('dealers/%s.json', $dealer->id ?? $dealer);
-
-        $this->api->delete($url, $options)->getHeaders();
+        parent::__construct($registry, Dealer::class);
     }
 
     /**
-     * @deprecated Use `DealerRepository::get` instead.
+     * Returns a list of driving schools for a given dealer optimized for the leaflet map displays.
      */
-    public function byId(Ulid|string $dealer): ?Dealer
+    public function map(Ulid|string $dealerId): array
     {
-        trigger_deprecation('lensmedia/api.lensmedia.nl-bundle', '*', 'The method "%s" is deprecated, use "%s::get" instead.', __METHOD__, __CLASS__);
+        // Approaching from other side, its easier due to joins.
+        return $this->getEntityManager()
+            ->getRepository(DrivingSchool::class)
+            ->createQueryBuilder('driving_school')
+            ->andWhere('driving_school.disabledAt IS NULL')
+            ->andWhere('driving_school.publishedAt IS NOT NULL AND driving_school.publishedAt < CURRENT_TIMESTAMP()')
 
-        return $this->get($dealer);
-    }
+            ->leftJoin('driving_school.driversLicences', 'driversLicence')
+            ->addSelect('driversLicence')
 
-    public function getByName(string $name): ?Dealer
-    {
-        $response = $this->api->get('dealers.json', [
-            'query' => ['name' => $name],
-        ])->toArray()[0] ?? null;
+            ->join('driving_school.addresses', 'address')
+            ->addSelect('address')
+            ->andWhere('address.type IN (:address_types) AND address.latitude IS NOT NULL AND address.longitude IS NOT NULL')
+            ->setParameter('address_types', [Address::OPERATING, Address::DEFAULT])
 
-        if (!$response) {
-            return null;
-        }
+            ->leftJoin('driving_school.contactMethods', 'contactMethod')
+            ->addSelect('contactMethod')
 
-        return $this->get($response['id']);
+            ->join('driving_school.dealers', 'dealer')
+            ->andWhere('dealer.id = :dealer')
+            ->setParameter('dealer', $dealerId, 'ulid')
+
+            ->getQuery()
+            ->getResult();
     }
 
     /**
-     * @deprecated Use `DealerRepository::getByName` instead.
+     * Returns a list of the closest dealers next to the specified company.
      */
-    public function byName(string $name): ?Dealer
+    public function nearby(Ulid|string $dealerId, Ulid|string $companyId, int $maxResults = 10): array
     {
-        trigger_deprecation('lensmedia/api.lensmedia.nl-bundle', '*', 'The method "%s" is deprecated, use "%s::getByName" instead.', __METHOD__, __CLASS__);
+        // Check if we have provided a company which can be used.
+        try {
+            /** @var Company $company */
+            $company = $this->getEntityManager()
+                ->getRepository(Company::class)
+                ->createQueryBuilder('company')
+                ->andWhere('company.id = :company')
+                ->setParameter('company', $companyId, 'ulid')
 
-        return $this->getByName($name);
-    }
+                ->andWhere('company.publishedAt IS NOT NULL AND company.publishedAt <= CURRENT_TIMESTAMP()')
 
-    public function companies(Dealer $dealer, array $options = []): array
-    {
-        $response = $this->api->get(sprintf(
-            'dealers/%s/companies.json',
-            $dealer->id,
-        ), $options)->toArray();
+                ->join('company.addresses', 'address')
+                ->addSelect('address')
+                ->andWhere('address.type IN (:address_types) AND address.latitude IS NOT NULL AND address.longitude IS NOT NULL')
+                ->setParameter('address_types', [Address::OPERATING, Address::DEFAULT])
 
-        return $this->api->asArray($response, Company::class);
-    }
+                ->getQuery()
+                ->getSingleResult();
+        } catch (NoResultException) {
+            throw new NotFoundHttpException(sprintf(
+                'Provided company "%s" does not exist, is not published, has no default address or is missing its latitude and/or longitude values.',
+                $companyId,
+            ));
+        }
 
-    public function map(Dealer $dealer): array
-    {
-        $response = $this->api->get(sprintf(
-            'dealers/%s/map.json',
-            $dealer->id,
-        ))->toArray();
+        $companyAddress = $company->operatingAddress() ?? $company->defaultAddress();
 
-        return $this->api->asArray($response, Company::class);
-    }
+        $qb = $this->getEntityManager()
+            ->getRepository(Company::class)
+            ->createQueryBuilder('company')
+            ->andWhere('company.id != :company')
+            ->setParameter('company', $companyId, 'ulid')
+            ->andWhere('company.publishedAt IS NOT NULL AND company.publishedAt <= CURRENT_TIMESTAMP()')
 
-    public function nearby(Dealer $dealer, Company $company): array
-    {
-        $response = $this->api->get(sprintf(
-            'dealers/%s/companies/%s/nearby.json',
-            $dealer->id,
-            $company->id,
-        ))->toArray();
+            ->join('company.dealers', 'dealer')
+            ->andWhere('dealer.id = :dealer')
+            ->setParameter('dealer', $dealerId, 'ulid')
 
-        return $this->api->asArray($response, Company::class);
+            ->join('company.addresses', 'address')
+            ->addSelect('address')
+            ->andWhere('address.type IN (:address_types) AND address.latitude IS NOT NULL AND address.longitude IS NOT NULL')
+            ->setParameter('address_types', [Address::OPERATING, Address::DEFAULT])
+
+            ->addSelect('ST_Distance_Sphere(
+                POINT(:longitude, :latitude),
+                POINT(address.longitude, address.latitude)
+            ) AS distance')
+            ->setParameter('latitude', $companyAddress->latitude)
+            ->setParameter('longitude', $companyAddress->longitude)
+            ->orderBy('distance')
+            ->setMaxResults($maxResults);
+
+        return array_map(static function ($result) {
+            $result[0]->distance = $result['distance'];
+
+            return $result[0];
+        }, $qb->getQuery()->getResult());
     }
 }

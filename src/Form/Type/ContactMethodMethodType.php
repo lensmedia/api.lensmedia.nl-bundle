@@ -2,7 +2,7 @@
 
 namespace Lens\Bundle\LensApiBundle\Form\Type;
 
-use Lens\Bundle\LensApiBundle\Data\ContactMethod;
+use Lens\Bundle\LensApiBundle\Entity\ContactMethod;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -13,8 +13,7 @@ class ContactMethodMethodType extends AbstractType
     {
         $resolver->setDefaults([
             'choices' => ContactMethod::METHODS,
-            'choice_label' => static fn (string $method) =>
-                'contact_method.method.'.$method,
+            'choice_label' => static fn (string $method) => 'contact_method.method.'.$method,
         ]);
     }
 
