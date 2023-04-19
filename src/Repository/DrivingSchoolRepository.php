@@ -35,7 +35,7 @@ class DrivingSchoolRepository extends ServiceEntityRepository
                 ->join('drivingSchool.addresses', 'address')
                 ->addSelect('address')
                 ->andWhere('address.type IN (:address_types) AND address.latitude IS NOT NULL AND address.longitude IS NOT NULL')
-                ->setParameter('address_type', [Address::OPERATING, Address::DEFAULT])
+                ->setParameter('address_types', [Address::OPERATING, Address::DEFAULT])
 
                 ->getQuery()
                 ->getSingleResult();
@@ -57,7 +57,7 @@ class DrivingSchoolRepository extends ServiceEntityRepository
             ->join('drivingSchool.addresses', 'address')
             ->addSelect('address')
             ->andWhere('address.type IN (:address_types) AND address.latitude IS NOT NULL AND address.longitude IS NOT NULL')
-            ->setParameter('address_type', [Address::OPERATING, Address::DEFAULT])
+            ->setParameter('address_types', [Address::OPERATING, Address::DEFAULT])
 
             ->addSelect('ST_Distance_Sphere(
                 POINT(:longitude, :latitude),

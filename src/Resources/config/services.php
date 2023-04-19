@@ -3,6 +3,7 @@
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Doctrine\Inflector\Language;
+use Doctrine\Persistence\ManagerRegistry;
 use Lens\Bundle\LensApiBundle\Doctrine\Event\UpdateSendInBlueListener;
 use Lens\Bundle\LensApiBundle\Doctrine\NamespacedUnderscoreNamingStrategy;
 use Lens\Bundle\LensApiBundle\Form\Type\AdvertisementChoiceType;
@@ -24,8 +25,23 @@ use const CASE_LOWER;
 return static function (ContainerConfigurator $container): void {
     $container->services()
         ->set(LensApi::class)
-        ->autowire()
-        ->autoconfigure()
+        ->args([
+            service(ManagerRegistry::class),
+            service(Repository\AddressRepository::class),
+            service(Repository\AdvertisementRepository::class),
+            service(Repository\CompanyRepository::class),
+            service(Repository\ContactMethodRepository::class),
+            service(Repository\DealerRepository::class),
+            service(Repository\DebitRepository::class),
+            service(Repository\DriversLicenceRepository::class),
+            service(Repository\DrivingSchoolRepository::class),
+            service(Repository\EmployeeRepository::class),
+            service(Repository\PaymentMethodRepository::class),
+            service(Repository\PersonalRepository::class),
+            service(Repository\RemarkRepository::class),
+            service(Repository\ResultRepository::class),
+            service(Repository\UserRepository::class),
+        ])
 
         ->set(CompanyType::class)
         ->tag('form.type')

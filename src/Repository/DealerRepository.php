@@ -37,7 +37,7 @@ class DealerRepository extends ServiceEntityRepository
             ->join('driving_school.addresses', 'address')
             ->addSelect('address')
             ->andWhere('address.type IN (:address_types) AND address.latitude IS NOT NULL AND address.longitude IS NOT NULL')
-            ->setParameter('address_type', [Address::OPERATING, Address::DEFAULT])
+            ->setParameter('address_types', [Address::OPERATING, Address::DEFAULT])
 
             ->leftJoin('driving_school.contactMethods', 'contactMethod')
             ->addSelect('contactMethod')
@@ -69,7 +69,7 @@ class DealerRepository extends ServiceEntityRepository
                 ->join('company.addresses', 'address')
                 ->addSelect('address')
                 ->andWhere('address.type IN (:address_types) AND address.latitude IS NOT NULL AND address.longitude IS NOT NULL')
-                ->setParameter('address_type', [Address::OPERATING, Address::DEFAULT])
+                ->setParameter('address_types', [Address::OPERATING, Address::DEFAULT])
 
                 ->getQuery()
                 ->getSingleResult();
@@ -96,7 +96,7 @@ class DealerRepository extends ServiceEntityRepository
             ->join('company.addresses', 'address')
             ->addSelect('address')
             ->andWhere('address.type IN (:address_types) AND address.latitude IS NOT NULL AND address.longitude IS NOT NULL')
-            ->setParameter('address_type', [Address::OPERATING, Address::DEFAULT])
+            ->setParameter('address_types', [Address::OPERATING, Address::DEFAULT])
 
             ->addSelect('ST_Distance_Sphere(
                 POINT(:longitude, :latitude),

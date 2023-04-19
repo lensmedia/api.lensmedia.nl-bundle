@@ -3,12 +3,17 @@
 namespace Lens\Bundle\LensApiBundle;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
+use InvalidArgumentException;
 use Lens\Bundle\LensApiBundle\Repository;
+use RuntimeException;
 
 class LensApi
 {
+    private readonly EntityManagerInterface $lensApiEntityManager;
+
     public function __construct(
-        private readonly EntityManagerInterface $lensApiEntityManager,
+        ManagerRegistry $managerRegistry,
         public readonly Repository\AddressRepository $addresses,
         public readonly Repository\AdvertisementRepository $advertisements,
         public readonly Repository\CompanyRepository $companies,
@@ -24,6 +29,11 @@ class LensApi
         public readonly Repository\ResultRepository $results,
         public readonly Repository\UserRepository $users,
     ) {
+        try {
+            $this->lensApiEntityManager = $managerRegistry->getManager('lens_api');
+        } catch (InvalidArgumentException) {
+            throw new RuntimeException('No entity manager named "lens_api" found. Did you forget to add the "lens_lens_api.yaml" config?');
+        }
     }
 
     public function manager(): EntityManagerInterface
