@@ -1,0 +1,45 @@
+# https://github.com/lensmedia/docs/blob/main/code-quality/php-cs-fixer.md#github-workflow
+name: 'Continues Integration'
+
+on:
+    pull_request:
+        types: [ 'opened', 'synchronize', 'reopened' ]
+
+jobs:
+    composer_and_php_cs_fixer:
+        name: 'Composer validate, normalize & PHP CS Fixer'
+        runs-on: ubuntu-latest
+
+        steps:
+            -   name: 'Checkout'
+                uses: actions/checkout@v3
+                with:
+                    ref: ${{ github.head_ref }}
+
+            -   name: 'Composer validate'
+                run: php8.1 $(which composer) validate --strict
+
+            -   name: 'Set up composer cache'
+                uses: actions/cache@v3
+                with:
+                    path: ~/.composer/cache
+                    key: php8.1-composer-locked-${{ hashFiles('**/composer.lock') }}
+                    restore-keys: |
+                        php8.1-composer-locked-
+
+            -   name: 'Composer install'
+                run: php8.1 $(which composer) install --no-interaction --no-progress --no-suggest
+
+            -   name: 'Composer normalize'
+                run: php8.1 $(which composer) normalize --no-interaction --dry-run --verbose
+
+            -   name: 'Set up PHP Coding Standards cache'
+                uses: actions/cache@v3
+                with:
+                    path: ~/.build/php-cs-fixer
+                    key: php8.1-php-cs-fixer-${{ hashFiles('**/composer.lock') }}
+                    restore-keys: |
+                        php8.1-php-cs-fixer-
+
+            -   name: 'PHP Coding Standards Fixer'
+                run: php8.1 vendor/bin/php-cs-fixer fix src --diff --dry-run --verbose
