@@ -15,7 +15,7 @@ class ActiveDrivingSchools
     #[ORM\Column(type: 'ulid')]
     public Ulid $id;
 
-    #[ORM\Column(type: 'date_immutable')]
+    #[ORM\Column(type: 'date_immutable', options: ['default' => 'CURRENT_DATE'])]
     public DateTimeInterface $createdAt;
 
     public function __construct(

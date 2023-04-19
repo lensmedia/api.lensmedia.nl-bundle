@@ -7,21 +7,15 @@ use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Lens\Bundle\LensApiBundle\Entity\Personal\Personal;
 use Lens\Bundle\LensApiBundle\Repository\UserRepository;
-use Lens\Bundle\LensApiBundle\Security\SecurityUser;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[UniqueEntity(fields: ['username'])]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User
 {
-    public const AUTH_USER_NOT_FOUND = '6b4281f6-9bf3-4e67-9e31-cf31723ab714';
-    public const AUTH_INVALID_PASSWORD = 'f85765a3-df36-40e8-b9f7-5e532ef5a9a0';
-    public const AUTH_USER_BLOCKED = '80d61237-ce0f-441f-8379-95b7790e128a';
-
     public const RECOVERY_TIMEOUT = '+3 hours';
 
     public const ROLE_ADMIN = 'ROLE_ADMIN';
@@ -50,9 +44,6 @@ class User
     #[Assert\NotBlank]
     #[ORM\Column(type: 'simple_array')]
     public array $roles = [];
-
-    #[ORM\Column(unique: true, nullable: true)]
-    public ?string $authToken = null;
 
     #[ORM\Column(unique: true, nullable: true)]
     public ?string $recoveryToken = null;
@@ -101,34 +92,13 @@ class User
         $this->personal = $personal;
     }
 
-    #[Assert\Callback]
-    public function validateRoles(ExecutionContextInterface $context, $payload): void
-    {
-        if (empty(array_intersect($this->roles, SecurityUser::ROLES))) {
-            $context->buildViolation('User has invalid role value.');
-        }
-    }
-
-    public function auth(): string
-    {
-        $invalid = empty($this->authToken) || 64 !== mb_strlen($this->authToken);
-        if (!$invalid) {
-            $ulid = Ulid::fromBinary(hex2bin(mb_substr($this->authToken, 0, 32)));
-
-            if (new DateTimeImmutable('-1 month') > $ulid->getDateTime()) {
-                $invalid = true;
-            }
-        }
-
-        if ($invalid) {
-            $ulid = (new Ulid())->toBinary();
-
-            $this->authToken = bin2hex($ulid).bin2hex(random_bytes(8));
-        }
-
-        $this->lastLoggedInAt = new DateTimeImmutable();
-
-        return $this->authToken;
+    public function updatePassword(
+        PasswordHasherInterface $passwordHasher,
+        string $plainPassword,
+    ): void {
+        /* @todo remove plain password with legacy thing */
+        $this->plainPassword = $plainPassword;
+        $this->password = $passwordHasher->hash($plainPassword);
     }
 
     public function startRecovery(): void
@@ -146,7 +116,7 @@ class User
 
     public function canRecoverAccount(): bool
     {
-        if (!$this->recoveryToken) {
+        if (!$this->recoveryExpiresAt()) {
             return false;
         }
 
@@ -157,12 +127,7 @@ class User
         PasswordHasherInterface $passwordHasher,
         string $plainPassword,
     ): void {
-        // Also generate a new auth token when password is reset.
-        $this->auth();
-
-        /* @todo remove plain password with legacy thing */
-        $this->plainPassword = $plainPassword;
-        $this->password = $passwordHasher->hash($plainPassword);
+        $this->updatePassword($passwordHasher, $plainPassword);
 
         $this->recoveryToken = null;
     }
