@@ -2,6 +2,7 @@
     "name": "lensmedia/api.lensmedia.nl-bundle",
     "description": "Symfony bundle for to work with our main LENS API",
     "type": "symfony-bundle",
+    "license": "proprietary",
     "require": {
         "php": "^8.1",
         "symfony/http-client": "^6.0",
