@@ -85,6 +85,7 @@ class SendInBlue
         $identifier = $oldEmail ?? $email;
         if (!$this->isContact($identifier)) {
             $this->createContact($personal);
+
             return;
         }
 

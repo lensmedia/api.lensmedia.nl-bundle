@@ -121,7 +121,7 @@ class Address
         return self::OPERATING === $this->type;
     }
 
-    public function isLocatedAtTheSamePlaceAs(Address $address): bool
+    public function isLocatedAtTheSamePlaceAs(self $address): bool
     {
         return $this->streetName === $address->streetName
             && $this->streetNumber === $address->streetNumber

@@ -13,8 +13,7 @@ class UserRoleType extends AbstractType
     {
         $resolver->setDefaults([
             'choices' => User::ROLES,
-            'choice_label' => static fn (string $role) =>
-                'user.role.'.strtolower(substr($role, strrpos($role, '_') + 1)),
+            'choice_label' => static fn (string $role) => 'user.role.'.mb_strtolower(mb_substr($role, mb_strrpos($role, '_') + 1)),
             'multiple' => true,
             'expanded' => true,
         ]);

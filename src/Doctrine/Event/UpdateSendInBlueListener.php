@@ -3,7 +3,6 @@
 namespace Lens\Bundle\LensApiBundle\Doctrine\Event;
 
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
-
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\PersistentCollection;
@@ -31,9 +30,9 @@ class UpdateSendInBlueListener
     private array $isHandled = [];
     private static ObjectManager $manager;
 
-    private CONST CREATE = 'create';
-    private CONST UPDATE = 'update';
-    private CONST DELETE = 'delete';
+    private const CREATE = 'create';
+    private const UPDATE = 'update';
+    private const DELETE = 'delete';
 
     public function __construct(
         private readonly SendInBlue $sendInBlue,
@@ -168,7 +167,7 @@ class UpdateSendInBlueListener
 
         // Update requires old email to be passed to method.
         $oldEmail = null;
-        if ($personal->emailContactMethod() !== null) {
+        if (null !== $personal->emailContactMethod()) {
             $changes = $uow->getEntityChangeSet($personal->emailContactMethod());
             if (!empty($changes)) {
                 $oldEmail = $changes['value'][0];

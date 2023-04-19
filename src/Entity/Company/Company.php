@@ -31,8 +31,8 @@ class Company
 {
     use AddressTrait;
     use ContactMethodTrait;
-    use PaymentMethodTrait;
     use EmployeeTrait;
+    use PaymentMethodTrait;
 
     public const COMPANY = 'company';
     public const DRIVING_SCHOOL = 'driving_school';

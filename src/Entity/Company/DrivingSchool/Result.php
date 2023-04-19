@@ -64,6 +64,7 @@ class Result
 
     /**
      * Create a new result from a CSV record.
+     *
      * @see https://github.com/lensmedia/api.lensmedia.nl/wiki/Cbr-open-data for details on the CSV, and it's format.
      */
     public static function fromCsvRecord(array $record): self

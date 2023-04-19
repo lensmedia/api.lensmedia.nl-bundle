@@ -5,7 +5,6 @@ namespace Lens\Bundle\LensApiBundle;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use InvalidArgumentException;
-use Lens\Bundle\LensApiBundle\Repository;
 use RuntimeException;
 
 class LensApi

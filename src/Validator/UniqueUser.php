@@ -2,9 +2,10 @@
 
 namespace Lens\Bundle\LensApiBundle\Validator;
 
+use Attribute;
 use Symfony\Component\Validator\Constraint;
 
-#[\Attribute]
+#[Attribute]
 class UniqueUser extends Constraint
 {
     public string $message = 'A user with the name "{{ value }}" already exists.';

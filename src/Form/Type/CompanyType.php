@@ -3,9 +3,7 @@
 namespace Lens\Bundle\LensApiBundle\Form\Type;
 
 use Lens\Bundle\LensApiBundle\Entity\Company\Company;
-use Lens\Bundle\LensApiBundle\LensApi;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Event\PostSubmitEvent;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;

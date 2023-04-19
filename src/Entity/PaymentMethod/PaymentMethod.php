@@ -3,8 +3,8 @@
 namespace Lens\Bundle\LensApiBundle\Entity\PaymentMethod;
 
 use Doctrine\ORM\Mapping as ORM;
-use Lens\Bundle\LensApiBundle\Repository\PaymentMethodRepository;
 use Lens\Bundle\LensApiBundle\Entity\Company\Company;
+use Lens\Bundle\LensApiBundle\Repository\PaymentMethodRepository;
 use Symfony\Component\Uid\Ulid;
 
 #[ORM\Entity(repositoryClass: PaymentMethodRepository::class)]

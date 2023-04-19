@@ -5,8 +5,8 @@ namespace Lens\Bundle\LensApiBundle\Entity\Company\DrivingSchool\Statistics;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Uid\Ulid;
 use Lens\Bundle\LensApiBundle\Repository\ActiveDrivingSchoolsRepository;
+use Symfony\Component\Uid\Ulid;
 
 #[ORM\Entity(repositoryClass: ActiveDrivingSchoolsRepository::class)]
 class ActiveDrivingSchools
@@ -21,7 +21,6 @@ class ActiveDrivingSchools
     public function __construct(
         #[ORM\Column(type: 'integer')]
         public int $total = 0,
-
         #[ORM\Column(type: 'integer')]
         public int $active = 0,
     ) {

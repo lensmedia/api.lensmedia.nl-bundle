@@ -30,8 +30,8 @@ class AdvertisementChoiceType extends AbstractType
     {
         $resolver->setDefaults([
             'choices' => $this->advertisements(),
-            'choice_label' => static fn(Advertisement $advertisement) => 'advertisement.'.$advertisement->type,
-            'choice_value' => static fn(Advertisement $advertisement) => $advertisement->id,
+            'choice_label' => static fn (Advertisement $advertisement) => 'advertisement.'.$advertisement->type,
+            'choice_value' => static fn (Advertisement $advertisement) => $advertisement->id,
             'multiple' => true,
             'expanded' => true,
         ]);

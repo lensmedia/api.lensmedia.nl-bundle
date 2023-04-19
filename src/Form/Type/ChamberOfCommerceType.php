@@ -11,7 +11,7 @@ class ChamberOfCommerceType extends AbstractType
 {
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefault('attr', function (OptionsResolver $resolver) {
+        $resolver->setDefault('attr', function (OptionsResolver $resolver): void {
             $resolver->setDefaults([
                 'class' => null,
                 'placeholder' => null,

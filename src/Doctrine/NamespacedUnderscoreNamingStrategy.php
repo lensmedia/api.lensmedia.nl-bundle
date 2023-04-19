@@ -2,6 +2,10 @@
 
 namespace Lens\Bundle\LensApiBundle\Doctrine;
 
+use const CASE_LOWER;
+
+use function count;
+
 use Doctrine\Inflector\Inflector;
 use Doctrine\Inflector\InflectorFactory;
 use Doctrine\Inflector\Language;
@@ -60,7 +64,7 @@ class NamespacedUnderscoreNamingStrategy extends UnderscoreNamingStrategy
      */
     protected function classToParts(string $className): array
     {
-        $parts = explode('\\', strstr($className, 'Entity\\'));
+        $parts = explode('\\', mb_strstr($className, 'Entity\\'));
         array_shift($parts); // Removes 'Entity'
 
         $lastIndex = count($parts) - 1;
