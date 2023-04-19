@@ -2,14 +2,14 @@
 
 namespace Lens\Bundle\LensApiBundle\Doctrine;
 
-use const CASE_LOWER;
-
-use function count;
-
 use Doctrine\Inflector\Inflector;
 use Doctrine\Inflector\InflectorFactory;
 use Doctrine\Inflector\Language;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
+
+use function count;
+
+use const CASE_LOWER;
 
 class NamespacedUnderscoreNamingStrategy extends UnderscoreNamingStrategy
 {

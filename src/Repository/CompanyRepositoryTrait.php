@@ -5,9 +5,9 @@ namespace Lens\Bundle\LensApiBundle\Repository;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\SqlFormatter\SqlFormatter;
 
-use const PREG_SPLIT_NO_EMPTY;
-
 use function count;
+
+use const PREG_SPLIT_NO_EMPTY;
 
 /**
  * Repository functions for company. This is in a trait so the

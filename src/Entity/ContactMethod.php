@@ -13,9 +13,9 @@ use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
-use const FILTER_VALIDATE_URL;
-
 use function in_array;
+
+use const FILTER_VALIDATE_URL;
 
 #[ORM\Entity(repositoryClass: ContactMethodRepository::class)]
 #[ORM\Index(fields: ['value'])]
