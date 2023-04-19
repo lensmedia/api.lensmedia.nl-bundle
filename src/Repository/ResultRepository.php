@@ -12,18 +12,4 @@ class ResultRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Result::class);
     }
-
-    public function byCbrAndCategoryAndDate(
-        Result $result
-    ): ?Result {
-        return $this->createQueryBuilder('result')
-            ->andWhere('result.cbr = :cbr')
-            ->setParameter('cbr', $result->cbr)
-            ->andWhere('result.categoryCode = :category')
-            ->setParameter('category', $result->categoryCode)
-            ->andWhere('DATE(result.examPeriodStartedAt) = :date')
-            ->setParameter('date', $result->examPeriodStartedAt)
-            ->getQuery()
-            ->getOneOrNullResult();
-    }
 }

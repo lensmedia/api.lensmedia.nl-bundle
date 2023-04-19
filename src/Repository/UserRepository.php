@@ -16,6 +16,7 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
+    // used in itheorie for now (needs decorator).
     public function hasUserByCompanyChamberOfCommerce(string $chamberOfCommerce): bool
     {
         return $this->createQueryBuilder('user')
@@ -29,23 +30,6 @@ class UserRepository extends ServiceEntityRepository
 
             ->getQuery()
             ->getSingleScalarResult() > 0;
-    }
-
-    public function getUserByCompanyChamberOfCommerce(string $chamberOfCommerce): User
-    {
-        return $this->createQueryBuilder('user')
-            ->leftJoin('user.personal', 'personal')
-            ->addSelect('personal')
-            ->leftJoin('personal.companies', 'employee')
-            ->addSelect('employee')
-            ->leftJoin('employee.company', 'company')
-            ->addSelect('company')
-
-            ->andWhere('company.chamberOfCommerce = :chamberOfCommerce')
-            ->setParameter('chamberOfCommerce', $chamberOfCommerce)
-
-            ->getQuery()
-            ->getSingleResult();
     }
 
     public function search(string $terms): array
@@ -63,7 +47,7 @@ class UserRepository extends ServiceEntityRepository
 
         $cases = [];
         foreach ($terms as $index => $term) {
-            $cases[] = '(CASE WHEN user.username LIKE :term_'.$index.' THEN '.(10 * mb_strlen($term)).' ELSE 0 END)';
+            $cases[] = '(CASE WHEN user.username LIKE :term_'.$index.' THEN '.(20 * mb_strlen($term)).' ELSE 0 END)';
             $cases[] = "(CASE WHEN CONCAT_WS(' ', personal.initials, personal.nickname, personal.surname_affix, personal.surname) LIKE :term_".$index.' THEN '.(6 * mb_strlen($term)).' ELSE 0 END)';
             $cases[] = '(CASE WHEN personal_contact_method.value LIKE :term_'.$index.' THEN '.(1 * mb_strlen($term)).' ELSE 0 END)';
             $cases[] = '(CASE WHEN company.name LIKE :term_'.$index.' THEN '.(1 * mb_strlen($term)).' ELSE 0 END)';

@@ -20,33 +20,8 @@ class DealerRepository extends ServiceEntityRepository
     }
 
     /**
-     * @todo check how to implement for new api bundle
+     * Returns a list of driving schools for a given dealer optimized for the leaflet map displays.
      */
-    public function getDealersByCompanyKVK(string $kvk): ?Dealer
-    {
-        return $this->createQueryBuilder('dealer')
-            ->leftJoin('dealer.companies', 'company')
-            ->andWhere('company.chamberOfCommerce = :kvk')
-            ->setParameter('kvk', $kvk)
-            ->getQuery()
-            ->getResult();
-    }
-
-    /**
-     * @todo check how to implement for new api bundle
-     */
-    public function getDealerByCompanyKVKAndName(string $kvk, string $name): ?Dealer
-    {
-        return $this->createQueryBuilder('dealer')
-            ->leftJoin('dealer.companies', 'company')
-            ->andWhere('company.chamberOfCommerce = :kvk')
-            ->setParameter('kvk', $kvk)
-            ->andWhere('dealer.name = :name')
-            ->setParameter('name', $name)
-            ->getQuery()
-            ->getOneOrNullResult();
-    }
-
     public function map(Ulid|string $dealerId): array
     {
         // Approaching from other side, its easier due to joins.
@@ -61,8 +36,8 @@ class DealerRepository extends ServiceEntityRepository
 
             ->join('driving_school.addresses', 'address')
             ->addSelect('address')
-            ->andWhere('address.type = :address_type AND address.latitude IS NOT NULL AND address.longitude IS NOT NULL')
-            ->setParameter('address_type', Address::DEFAULT)
+            ->andWhere('address.type IN (:address_types) AND address.latitude IS NOT NULL AND address.longitude IS NOT NULL')
+            ->setParameter('address_type', [Address::OPERATING, Address::DEFAULT])
 
             ->leftJoin('driving_school.contactMethods', 'contactMethod')
             ->addSelect('contactMethod')
@@ -75,10 +50,14 @@ class DealerRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * Returns a list of the closest dealers next to the specified company.
+     */
     public function nearby(Ulid|string $dealerId, Ulid|string $companyId, int $maxResults = 10): array
     {
         // Check if we have provided a company which can be used.
         try {
+            /** @var Company $company */
             $company = $this->getEntityManager()
                 ->getRepository(Company::class)
                 ->createQueryBuilder('company')
@@ -89,8 +68,8 @@ class DealerRepository extends ServiceEntityRepository
 
                 ->join('company.addresses', 'address')
                 ->addSelect('address')
-                ->andWhere('address.type = :address_default AND address.latitude IS NOT NULL AND address.longitude IS NOT NULL')
-                ->setParameter('address_default', Address::DEFAULT)
+                ->andWhere('address.type IN (:address_types) AND address.latitude IS NOT NULL AND address.longitude IS NOT NULL')
+                ->setParameter('address_type', [Address::OPERATING, Address::DEFAULT])
 
                 ->getQuery()
                 ->getSingleResult();
@@ -101,7 +80,7 @@ class DealerRepository extends ServiceEntityRepository
             ));
         }
 
-        $companyAddress = $company->addresses[0];
+        $companyAddress = $company->operatingAddress() ?? $company->defaultAddress();
 
         $qb = $this->getEntityManager()
             ->getRepository(Company::class)
@@ -116,8 +95,8 @@ class DealerRepository extends ServiceEntityRepository
 
             ->join('company.addresses', 'address')
             ->addSelect('address')
-            ->orWhere('address.type = :address_default AND address.latitude IS NOT NULL AND address.longitude IS NOT NULL')
-            ->setParameter('address_default', Address::DEFAULT)
+            ->andWhere('address.type IN (:address_types) AND address.latitude IS NOT NULL AND address.longitude IS NOT NULL')
+            ->setParameter('address_type', [Address::OPERATING, Address::DEFAULT])
 
             ->addSelect('ST_Distance_Sphere(
                 POINT(:longitude, :latitude),

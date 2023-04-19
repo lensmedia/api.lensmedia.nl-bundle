@@ -3,12 +3,10 @@
 namespace Lens\Bundle\LensApiBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
 use Lens\Bundle\LensApiBundle\Entity\Address;
 use Lens\Bundle\LensApiBundle\Entity\Company\DrivingSchool\DrivingSchool;
-use Lens\Bundle\LensApiBundle\Entity\Personal\Advertisement;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Uid\Ulid;
 
@@ -21,55 +19,13 @@ class DrivingSchoolRepository extends ServiceEntityRepository
         parent::__construct($registry, DrivingSchool::class);
     }
 
-    public function findByZipcodeAndStreetNumber(
-        string $zipCode,
-        int $streetNumber
-    ): array {
-        return $this->createQueryBuilder('drivingSchool')
-            ->leftJoin('drivingSchool.addresses', 'address')
-            ->andWhere('address.zipCode = :zipCode')
-            ->setParameter('zipCode', $zipCode)
-            ->andWhere('address.streetNumber = :streetNumber')
-            ->setParameter('streetNumber', $streetNumber)
-            ->andWhere('drivingSchool.cbr IS NULL')
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function countDrivingSchoolsWithDealer(string $dealer): int
-    {
-        return $this->createQueryBuilder('drivingSchool')
-            ->select('count(drivingSchool.id)')
-            ->leftJoin('drivingSchool.dealers', 'dealer')
-            ->andWhere('dealer.name = :dealer')
-            ->setParameter('dealer', $dealer)
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
-
-    public function countDrivingSchoolsCustomers(): int
-    {
-        return $this->createQueryBuilder('drivingSchool')
-            ->select('count(DISTINCT drivingSchool.id)')
-            ->innerJoin('drivingSchool.dealers', 'dealer')
-            ->andWhere('dealer.id IS NOT NULL')
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
-
-    public function withAddress(): array
-    {
-        return $this->createQueryBuilder('drivingSchool')
-            ->leftJoin('drivingSchool.addresses', 'address')
-            ->andWhere('drivingSchool.disabledAt IS NULL')
-            ->orderBy('drivingSchool.id', 'ASC')
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function nearby(Ulid|string $drivingSchoolId): array
+    /**
+     * List driving schools that are nearby the provided driving school.
+     */
+    public function nearby(Ulid|string $drivingSchoolId, int $limit = 10): array
     {
         try {
+            /** @var DrivingSchool $drivingSchoolEntity */
             $drivingSchoolEntity = $this->createQueryBuilder('drivingSchool')
                 ->andWhere('drivingSchool.id = :drivingSchool')
                 ->setParameter('drivingSchool', $drivingSchoolId, 'ulid')
@@ -78,19 +34,19 @@ class DrivingSchoolRepository extends ServiceEntityRepository
 
                 ->join('drivingSchool.addresses', 'address')
                 ->addSelect('address')
-                ->andWhere('address.type = :address_type AND address.latitude IS NOT NULL AND address.longitude IS NOT NULL')
-                ->setParameter('address_type', Address::DEFAULT)
+                ->andWhere('address.type IN (:address_types) AND address.latitude IS NOT NULL AND address.longitude IS NOT NULL')
+                ->setParameter('address_type', [Address::OPERATING, Address::DEFAULT])
 
                 ->getQuery()
                 ->getSingleResult();
         } catch (NoResultException) {
             throw new NotFoundHttpException(sprintf(
-                'Provided drivingSchool "%s" does not exist, has no default address or is missing its latitude and/or longitude values.',
+                'Provided driving school "%s" does not exist, has no default address or is missing its latitude and/or longitude values.',
                 $drivingSchoolId,
             ));
         }
 
-        $drivingSchoolAddress = $drivingSchoolEntity->addresses[0];
+        $drivingSchoolAddress = $drivingSchoolEntity->operatingAddress() ?? $drivingSchoolEntity->defaultAddress();
 
         $qb = $this->createQueryBuilder('drivingSchool')
             ->andWhere('drivingSchool.id != :drivingSchool')
@@ -100,8 +56,8 @@ class DrivingSchoolRepository extends ServiceEntityRepository
 
             ->join('drivingSchool.addresses', 'address')
             ->addSelect('address')
-            ->andWhere('address.type = :address_type AND address.latitude IS NOT NULL AND address.longitude IS NOT NULL')
-            ->setParameter('address_type', Address::DEFAULT)
+            ->andWhere('address.type IN (:address_types) AND address.latitude IS NOT NULL AND address.longitude IS NOT NULL')
+            ->setParameter('address_type', [Address::OPERATING, Address::DEFAULT])
 
             ->addSelect('ST_Distance_Sphere(
                 POINT(:longitude, :latitude),
@@ -111,7 +67,7 @@ class DrivingSchoolRepository extends ServiceEntityRepository
             ->setParameter('longitude', $drivingSchoolAddress->longitude)
             ->orderBy('distance')
 
-            ->setMaxResults(10);
+            ->setMaxResults($limit);
 
         return array_map(static function ($result) {
             $result[0]->distance = (float)$result['distance'];

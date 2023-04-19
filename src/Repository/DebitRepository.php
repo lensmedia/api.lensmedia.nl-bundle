@@ -12,13 +12,4 @@ class DebitRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Debit::class);
     }
-
-    public function getDebitWithCompanyKVK(string $kvk){
-        return $this->createQueryBuilder('debit')
-            ->leftJoin('debit.company', 'company')
-            ->andWhere('company.chamberOfCommerce = :kvk')
-            ->setParameter('kvk', $kvk)
-            ->getQuery()
-            ->getOneOrNullResult();
-    }
 }

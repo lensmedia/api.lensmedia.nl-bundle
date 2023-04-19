@@ -12,13 +12,4 @@ class ActiveDrivingSchoolsRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, ActiveDrivingSchools::class);
     }
-
-    public function findLatestEntry()
-    {
-        return $this->createQueryBuilder('activeDealers')
-            ->orderBy('activeDealers.createdAt', 'DESC')
-            ->setMaxResults(1)
-            ->getQuery()
-            ->getOneOrNullResult();
-    }
 }

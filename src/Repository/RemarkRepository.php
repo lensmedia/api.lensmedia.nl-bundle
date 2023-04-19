@@ -12,14 +12,4 @@ class RemarkRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Remark::class);
     }
-
-    public function getRemarkByCompanyId(string $companyId): ?Remark
-    {
-        return $this->createQueryBuilder('remark')
-            ->leftJoin('remark.company', 'company')
-            ->andWhere('company.id = :companyId')
-            ->setParameter('companyId', $companyId, 'ulid')
-            ->getQuery()
-            ->getOneOrNullResult();
-    }
 }
