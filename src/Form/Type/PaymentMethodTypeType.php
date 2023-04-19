@@ -12,8 +12,8 @@ class PaymentMethodTypeType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'choices' => PaymentMethod::TYPES,
-            'choice_label' => static fn (string $type) => 'payment_method.type.'.$type,
+            'choices' => PaymentMethod::METHODS,
+            'choice_label' => static fn (string $method) => 'payment_method.method.'.$method,
         ]);
     }
 

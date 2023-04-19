@@ -13,8 +13,7 @@ class ContactMethodMethodType extends AbstractType
     {
         $resolver->setDefaults([
             'choices' => ContactMethod::METHODS,
-            'choice_label' => static fn (string $method) =>
-                'contact_method.method.'.$method,
+            'choice_label' => static fn (string $method) => 'contact_method.method.'.$method,
         ]);
     }
 

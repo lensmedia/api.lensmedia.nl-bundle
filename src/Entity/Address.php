@@ -3,6 +3,7 @@
 namespace Lens\Bundle\LensApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Lens\Bundle\LensApiBundle\Coords;
 use Lens\Bundle\LensApiBundle\Entity\Company\Company;
 use Lens\Bundle\LensApiBundle\Entity\Personal\Personal;
 use Lens\Bundle\LensApiBundle\Repository\AddressRepository;
@@ -56,10 +57,10 @@ class Address
     #[ORM\Column]
     public string $type = self::DEFAULT;
 
-    #[ORM\Column(type: 'decimal', precision: 8, scale: 5, nullable: true)]
+    #[ORM\Column(type: 'decimal', precision: Coords::PRECISION_1M + 3, scale: Coords::PRECISION_1M, nullable: true)]
     public ?string $longitude = null;
 
-    #[ORM\Column(type: 'decimal', precision: 7, scale: 5, nullable: true)]
+    #[ORM\Column(type: 'decimal', precision: Coords::PRECISION_1M + 2, scale: Coords::PRECISION_1M, nullable: true)]
     public ?string $latitude = null;
 
     #[ORM\ManyToOne(targetEntity: Company::class, inversedBy: 'addresses')]
