@@ -64,9 +64,20 @@ class NamespacedUnderscoreNamingStrategy extends UnderscoreNamingStrategy
      */
     protected function classToParts(string $className): array
     {
-        $parts = explode('\\', mb_strstr($className, 'Entity\\'));
-        array_shift($parts); // Removes 'Entity'
+        // If the class namespace contains Entity, we strip everything else up to it.
+        // App\Entity\Namespace\Class => Namespace\Class
+        // Vendor\Bundle\VendorBundle\Entity\Class => Class
+        $stripEntity = mb_strstr($className, 'Entity\\');
+        if (false === $stripEntity) {
+            $stripEntity = $className;
+        }
 
+        // Removes the first part from the namespace.
+        // Usually `Entity` (if split before) or `App`.
+        $parts = explode('\\', $stripEntity);
+        array_shift($parts);
+
+        // Removes the last part if the last namespace part and the entity class name are the same.
         $lastIndex = count($parts) - 1;
         if ((count($parts) > 1) && ($parts[$lastIndex] === $parts[$lastIndex - 1])) {
             array_pop($parts);
