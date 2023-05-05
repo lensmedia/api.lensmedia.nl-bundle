@@ -192,10 +192,6 @@ class UpdateSendInBlueListener
 
     private function handleException(Exception $exception): void
     {
-        if ($this->isDebug) {
-            throw $exception;
-        }
-
         $this->logger->error(__CLASS__.' returned an error: '.$exception->getMessage(), [
             'exception' => $exception,
         ]);
