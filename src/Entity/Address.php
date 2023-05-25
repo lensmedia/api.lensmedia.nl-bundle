@@ -69,6 +69,9 @@ class Address
     #[ORM\ManyToOne(targetEntity: Personal::class, inversedBy: 'addresses')]
     public ?Personal $personal = null;
 
+    #[ORM\Column(type: 'boolean')]
+    public bool $default = false;
+
     public function __construct()
     {
         $this->id = new Ulid();

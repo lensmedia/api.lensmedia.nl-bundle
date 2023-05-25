@@ -2,6 +2,7 @@
 
 namespace Lens\Bundle\LensApiBundle\Entity;
 
+use DateInterval;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
@@ -14,9 +15,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[UniqueEntity(fields: ['username'])]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User
+class User implements RecoveryInterface
 {
-    public const RECOVERY_TIMEOUT = '+3 hours';
+    use RecoveryTrait;
+
+    public const RECOVERY_TIMEOUT = 'PT3H';
 
     public const ROLE_ADMIN = 'ROLE_ADMIN';
     public const ROLE_USER = 'ROLE_USER';
@@ -44,9 +47,6 @@ class User
     #[Assert\NotBlank]
     #[ORM\Column(type: 'simple_array')]
     public array $roles = [self::ROLE_USER];
-
-    #[ORM\Column(unique: true, nullable: true)]
-    public ?string $recoveryToken = null;
 
     #[Assert\NotBlank]
     #[ORM\Column(type: 'datetime_immutable', options: ['default' => 'CURRENT_TIMESTAMP'])]
@@ -101,36 +101,6 @@ class User
         $this->password = $passwordHasher->hash($plainPassword);
     }
 
-    public function startRecovery(): void
-    {
-        $this->recoveryToken = (new Ulid())->toBase58();
-    }
-
-    public function recoveryExpiresAt(): ?DateTimeImmutable
-    {
-        return $this->recoveryToken
-            ? Ulid::fromBase58($this->recoveryToken)
-                ?->getDateTime()->modify(self::RECOVERY_TIMEOUT)
-            : null;
-    }
-
-    public function canRecoverAccount(): bool
-    {
-        if (!$this->recoveryExpiresAt()) {
-            return false;
-        }
-
-        return new DateTimeImmutable() < $this->recoveryExpiresAt();
-    }
-
-    public function finishRecovery(
-        PasswordHasherInterface $passwordHasher,
-        string $plainPassword,
-    ): void {
-        $this->updatePassword($passwordHasher, $plainPassword);
-
-        $this->recoveryToken = null;
-    }
 
     public function disable(): void
     {
@@ -145,5 +115,10 @@ class User
     public function isDisabled(): bool
     {
         return null !== $this->disabledAt;
+    }
+
+    public static function recoveryTimeout(): DateInterval
+    {
+        return new DateInterval(self::RECOVERY_TIMEOUT);
     }
 }
