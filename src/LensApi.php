@@ -2,31 +2,48 @@
 
 namespace Lens\Bundle\LensApiBundle;
 
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use InvalidArgumentException;
 use RuntimeException;
 
+/**
+ * @property Repository\AddressRepository $addresses
+ * @property Repository\AdvertisementRepository $advertisements
+ * @property Repository\CompanyRepository $companies
+ * @property Repository\ContactMethodRepository $contactMethods
+ * @property Repository\DealerRepository $dealers
+ * @property Repository\DebitRepository $debits
+ * @property Repository\DriversLicenceRepository $driversLicences
+ * @property Repository\DrivingSchoolRepository $drivingSchools
+ * @property Repository\EmployeeRepository $employees
+ * @property Repository\PaymentMethodRepository $paymentMethods
+ * @property Repository\PersonalRepository $personals
+ * @property Repository\RemarkRepository $remarks
+ * @property Repository\ResultRepository $results
+ * @property Repository\UserRepository $users
+ */
 class LensApi
 {
     private readonly EntityManagerInterface $lensApiEntityManager;
 
     public function __construct(
         ManagerRegistry $managerRegistry,
-        public readonly Repository\AddressRepository $addresses,
-        public readonly Repository\AdvertisementRepository $advertisements,
-        public readonly Repository\CompanyRepository $companies,
-        public readonly Repository\ContactMethodRepository $contactMethods,
-        public readonly Repository\DealerRepository $dealers,
-        public readonly Repository\DebitRepository $debits,
-        public readonly Repository\DriversLicenceRepository $driversLicences,
-        public readonly Repository\DrivingSchoolRepository $drivingSchools,
-        public readonly Repository\EmployeeRepository $employees,
-        public readonly Repository\PaymentMethodRepository $paymentMethods,
-        public readonly Repository\PersonalRepository $personals,
-        public readonly Repository\RemarkRepository $remarks,
-        public readonly Repository\ResultRepository $results,
-        public readonly Repository\UserRepository $users,
+        public readonly ServiceEntityRepositoryInterface $addresses,
+        public readonly ServiceEntityRepositoryInterface $advertisements,
+        public readonly ServiceEntityRepositoryInterface $companies,
+        public readonly ServiceEntityRepositoryInterface $contactMethods,
+        public readonly ServiceEntityRepositoryInterface $dealers,
+        public readonly ServiceEntityRepositoryInterface $debits,
+        public readonly ServiceEntityRepositoryInterface $driversLicences,
+        public readonly ServiceEntityRepositoryInterface $drivingSchools,
+        public readonly ServiceEntityRepositoryInterface $employees,
+        public readonly ServiceEntityRepositoryInterface $paymentMethods,
+        public readonly ServiceEntityRepositoryInterface $personals,
+        public readonly ServiceEntityRepositoryInterface $remarks,
+        public readonly ServiceEntityRepositoryInterface $results,
+        public readonly ServiceEntityRepositoryInterface $users,
     ) {
         try {
             $this->lensApiEntityManager = $managerRegistry->getManager('lens_api');

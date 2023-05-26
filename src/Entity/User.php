@@ -101,7 +101,6 @@ class User implements RecoveryInterface
         $this->password = $passwordHasher->hash($plainPassword);
     }
 
-
     public function disable(): void
     {
         $this->disabledAt = new DateTimeImmutable();
