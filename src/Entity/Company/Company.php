@@ -24,6 +24,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\InheritanceType('JOINED')]
 #[ORM\DiscriminatorColumn(name: 'type')]
 #[ORM\DiscriminatorMap(self::TYPE_TO_CLASS)]
+#[ORM\Index(fields: ['affiliate'])]
+#[ORM\UniqueConstraint(fields: ['affiliate'])]
 #[ORM\Index(fields: ['chamberOfCommerce'])]
 #[ORM\Index(fields: ['name'])]
 #[UniqueEntity(fields: ['chamberOfCommerce'], message: 'company.chamber_of_commerce.unique_entity')]
@@ -55,8 +57,14 @@ class Company
     #[ORM\Column(unique: true, nullable: true)]
     public ?string $chamberOfCommerce = null;
 
+    #[Assert\NotBlank]
     #[ORM\Column]
     public string $name;
+
+    #[Assert\Range(min: 0, max: 65535)]
+    #[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    public int $affiliate;
 
     #[ORM\Column(type: 'datetime_immutable', options: ['default' => 'CURRENT_TIMESTAMP'])]
     public DateTimeImmutable $createdAt;
