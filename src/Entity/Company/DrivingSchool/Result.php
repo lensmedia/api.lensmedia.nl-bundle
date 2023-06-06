@@ -38,7 +38,7 @@ class Result
     #[ORM\Column(options: ['default' => 0])]
     public int $firstExamsInsufficientTotal = 0;
 
-    #[ORM\Column(type: 'decimal', precision: 5, scale: 4, options: ['default' => 0])]
+    #[ORM\Column(type: 'decimal', precision: 5, scale: 4)]
     public float $firstExamsPercentage = 0;
 
     #[ORM\Column(options: ['default' => 0])]
@@ -47,7 +47,7 @@ class Result
     #[ORM\Column(options: ['default' => 0])]
     public int $reExamsInsufficientTotal = 0;
 
-    #[ORM\Column(type: 'decimal', precision: 5, scale: 4, options: ['default' => 0])]
+    #[ORM\Column(type: 'decimal', precision: 5, scale: 4)]
     public float $reExamsPercentage = 0;
 
     /**
