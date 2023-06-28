@@ -4,7 +4,7 @@ namespace Lens\Bundle\LensApiBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Lens\Bundle\LensApiBundle\Entity\Company\DrivingSchool\Statistics\ActiveDrivingSchools;
+use Lens\Bundle\LensApiBundle\Entity\Statistics\ActiveDrivingSchools;
 
 class ActiveDrivingSchoolsRepository extends ServiceEntityRepository
 {

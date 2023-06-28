@@ -120,6 +120,8 @@ return static function (ContainerConfigurator $container): void {
             param('kernel.debug'),
         ])->autoconfigure()
 
+        ->set(Repository\ActiveDealersRepository::class)->autoWire()->autoConfigure()
+        ->set(Repository\ActiveDrivingSchoolsRepository::class)->autoWire()->autoConfigure()
         ->set(Repository\AddressRepository::class)->autoWire()->autoConfigure()
         ->set(Repository\AdvertisementRepository::class)->autoWire()->autoConfigure()
         ->set(Repository\CompanyRepository::class)->autoWire()->autoConfigure()
