@@ -24,10 +24,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\InheritanceType('JOINED')]
 #[ORM\DiscriminatorColumn(name: 'type')]
 #[ORM\DiscriminatorMap(self::TYPE_TO_CLASS)]
-#[ORM\Index(fields: ['affiliate'])]
-#[ORM\UniqueConstraint(fields: ['affiliate'])]
 #[ORM\Index(fields: ['chamberOfCommerce'])]
 #[ORM\Index(fields: ['name'])]
+#[ORM\Index(fields: ['affiliate'])]
 #[UniqueEntity(fields: ['chamberOfCommerce'], message: 'company.chamber_of_commerce.unique_entity')]
 class Company
 {
@@ -61,9 +60,13 @@ class Company
     #[ORM\Column]
     public string $name;
 
+    /**
+     * @var int 0-65535 **WARNING** Using `#[ORM\GeneratedValue(strategy: 'AUTO')]`
+     *          does not work and breaks the ID column when, at least persisting
+     *          new entities KEEP THE COLUMN DEFINITION AND SUFFER THROUGH THE MIGRATIONS
+     */
     #[Assert\Range(min: 0, max: 65535)]
-    #[ORM\Column(type: 'smallint', options: ['unsigned' => true, 'default' => 0])]
-    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'smallint', columnDefinition: 'SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE')]
     public int $affiliate;
 
     #[ORM\Column(type: 'datetime_immutable', options: ['default' => 'CURRENT_TIMESTAMP'])]
