@@ -8,7 +8,7 @@ use Throwable;
 
 class GeoLocate
 {
-    private const API = 'https://geodata.nationaalgeoregister.nl/locatieserver/v3/free';
+    private const API = 'https://api.pdok.nl/bzk/locatieserver/search/v3_1/free';
 
     public function __construct(
         private readonly HttpClientInterface $geoApiClient,
