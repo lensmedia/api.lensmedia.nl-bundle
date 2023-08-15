@@ -2,9 +2,7 @@
 
 namespace Lens\Bundle\LensApiBundle\Repository;
 
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface;
-use Doctrine\Common\Collections\Selectable;
 use Doctrine\Persistence\ObjectRepository;
 use Symfony\Component\DependencyInjection\Attribute\AutowireDecorated;
 
