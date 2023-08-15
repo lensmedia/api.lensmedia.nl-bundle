@@ -4,34 +4,50 @@ namespace Lens\Bundle\LensApiBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface;
-use Symfony\Component\DependencyInjection\Attribute\MapDecorated;
+use Doctrine\Common\Collections\Selectable;
+use Doctrine\Persistence\ObjectRepository;
+use Symfony\Component\DependencyInjection\Attribute\AutowireDecorated;
 
-/**
- * @property ServiceEntityRepository $inner
- */
 trait RepositoryDecoratorTrait
 {
-    public function __construct(
-        #[MapDecorated]
-        private readonly ServiceEntityRepositoryInterface $inner,
-    ) {
-    }
+    private readonly ServiceEntityRepositoryInterface $inner;
 
-    public function __get(string $name)
+    public function __construct(#[AutowireDecorated] ServiceEntityRepositoryInterface $inner)
     {
-        return $this->inner->{$name};
+        $this->inner = $inner;
     }
 
-    public function __set(string $name, $value): void
+    /** @see ObjectRepository::find() */
+    public function find($id)
     {
-        $this->inner->{$name} = $value;
+        return $this->inner->find($id);
     }
 
-    public function __isset(string $name): bool
+    /** @see ObjectRepository::findAll() */
+    public function findAll()
     {
-        return isset($this->inner->{$name});
+        return $this->inner->findAll();
     }
 
+    /** @see ObjectRepository::findBy() */
+    public function findBy(array $criteria, ?array $orderBy = null, ?int $limit = null, ?int $offset = null)
+    {
+        return $this->inner->findBy($criteria, $orderBy, $limit, $offset);
+    }
+
+    /** @see ObjectRepository::findOneBy() */
+    public function findOneBy(array $criteria)
+    {
+        return $this->inner->findOneBy($criteria);
+    }
+
+    /** @see ObjectRepository::getClassName() */
+    public function getClassName()
+    {
+        return $this->inner->getClassName();
+    }
+
+    // Pass any other class to the inner repository
     public function __call(string $name, array $arguments)
     {
         return $this->inner->{$name}(...$arguments);
