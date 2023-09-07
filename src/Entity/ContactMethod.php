@@ -136,6 +136,9 @@ class ContactMethod
             self::WEBSITE => $this->isValidDomain($context, $payload),
             self::EMAIL => $this->isValidEmail($context, $payload),
             self::PHONE => $this->isValidPhoneNumber($context, $payload),
+
+            // All other types are valid by default, can't really validate that based on random user input.
+            default => null,
         };
     }
 
