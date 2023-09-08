@@ -174,6 +174,11 @@ class Company
             && new DateTimeImmutable() >= $this->disabledAt;
     }
 
+    public function isDrivingSchool(): bool
+    {
+        return $this instanceof DrivingSchool;
+    }
+
     public function addAddress(Address $address): void
     {
         if (!$this->addresses->contains($address)) {
