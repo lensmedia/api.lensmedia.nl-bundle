@@ -26,7 +26,7 @@ class Employee
     #[ORM\Column(name: '`function`', nullable: true)]
     public string $function;
 
-    #[ORM\Column(type: 'simple_array')]
+    #[ORM\Column(type: 'simple_array', nullable: true)]
     public array $roles = [];
 
     public function __construct()
