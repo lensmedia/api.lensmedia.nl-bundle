@@ -96,7 +96,7 @@ class Company
     public Collection $contactMethods;
 
     /** @var Collection<Employee> */
-    #[ORM\OneToMany(mappedBy: 'company', targetEntity: Employee::class, cascade: ['all'], orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'company', targetEntity: Employee::class, cascade: ['persist'])]
     #[Assert\Valid]
     public Collection $employees;
 
