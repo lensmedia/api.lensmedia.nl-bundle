@@ -4,7 +4,8 @@
     "license": "proprietary",
     "type": "symfony-bundle",
     "require": {
-        "php": "^8.1",
+        "php": "^8.2",
+        "ext-openssl": "*",
         "beberlei/doctrineextensions": "dev-master",
         "brick/math": "^0.11.0",
         "brick/money": "^0.8.0",
