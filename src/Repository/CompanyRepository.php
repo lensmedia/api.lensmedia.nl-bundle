@@ -4,10 +4,14 @@ namespace Lens\Bundle\LensApiBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Exception;
 use Lens\Bundle\LensApiBundle\Entity\Company\Company;
 use RuntimeException;
 use Symfony\Component\Uid\BinaryUtil;
+
+use function chr;
+
+use const OPENSSL_RAW_DATA;
+use const OPENSSL_ZERO_PADDING;
 
 class CompanyRepository extends ServiceEntityRepository
 {
@@ -46,11 +50,7 @@ class CompanyRepository extends ServiceEntityRepository
 
     public function fromLinkingCode(string $linkingCode): Company
     {
-        try {
-            $decoded = BinaryUtil::fromBase($linkingCode, BinaryUtil::BASE58);
-        } catch (Exception $e) {
-            throw new DecryptException('Invalid linking code, decoding failed.');
-        }
+        $decoded = BinaryUtil::fromBase($linkingCode, BinaryUtil::BASE58);
 
         $decrypted = openssl_decrypt(
             $decoded,
@@ -61,7 +61,7 @@ class CompanyRepository extends ServiceEntityRepository
         );
 
         if (false === $decrypted) {
-            return throw new DecryptException('Invalid linking code, decryption failed.');
+            return throw new RuntimeException('Invalid linking code, decryption failed.');
         }
 
         $id = substr($decrypted, 0, -2);
@@ -69,11 +69,11 @@ class CompanyRepository extends ServiceEntityRepository
 
         $company = $this->findOneByAffiliate($affiliate);
         if (!$company) {
-            throw new DecryptException('Invalid linking code, affiliate not found.');
+            throw new RuntimeException('Invalid linking code, affiliate not found.');
         }
 
         if (substr($company->id->toBinary(), -6) !== $id) {
-            throw new DecryptException('Invalid linking code, affiliate and id do not match.');
+            throw new RuntimeException('Invalid linking code, affiliate and id do not match.');
         }
 
         return $company;
