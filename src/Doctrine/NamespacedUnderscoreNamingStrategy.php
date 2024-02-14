@@ -15,9 +15,9 @@ class NamespacedUnderscoreNamingStrategy extends UnderscoreNamingStrategy
 {
     private Inflector $inflector;
 
-    public function __construct($case = CASE_LOWER, bool $numberAware = false)
+    public function __construct($case = CASE_LOWER)
     {
-        parent::__construct($case, $numberAware);
+        parent::__construct($case, true);
 
         $this->inflector = InflectorFactory::createForLanguage(Language::ENGLISH)
             ->build();
