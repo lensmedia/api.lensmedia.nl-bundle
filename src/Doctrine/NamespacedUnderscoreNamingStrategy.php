@@ -15,12 +15,11 @@ class NamespacedUnderscoreNamingStrategy extends UnderscoreNamingStrategy
 {
     private Inflector $inflector;
 
-    public function __construct($case = CASE_LOWER)
+    public function __construct(string $language)
     {
-        parent::__construct($case, true);
+        parent::__construct(CASE_LOWER, true);
 
-        $this->inflector = InflectorFactory::createForLanguage(Language::ENGLISH)
-            ->build();
+        $this->inflector = InflectorFactory::createForLanguage($language)->build();
     }
 
     public function classToTableName($className): string

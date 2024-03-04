@@ -82,8 +82,7 @@ return static function (ContainerConfigurator $container): void {
 
         ->set(NamespacedUnderscoreNamingStrategy::class)
         ->args([
-            CASE_LOWER,
-            true,
+            Language::ENGLISH,
         ])
 
         ->set(SendInBlue::class)
