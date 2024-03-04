@@ -44,12 +44,6 @@ return static function (ContainerConfigurator $container): void {
             service(Repository\UserRepository::class),
         ])
 
-        ->set(CompanyType::class)
-        ->tag('form.type')
-        ->args([
-            service(LensApi::class),
-        ])
-
         ->set(DealerChoiceType::class)
         ->tag('form.type')
         ->args([
@@ -88,7 +82,6 @@ return static function (ContainerConfigurator $container): void {
 
         ->set(NamespacedUnderscoreNamingStrategy::class)
         ->args([
-            Language::ENGLISH,
             CASE_LOWER,
             true,
         ])
