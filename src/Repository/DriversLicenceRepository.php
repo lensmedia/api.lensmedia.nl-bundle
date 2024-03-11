@@ -2,11 +2,11 @@
 
 namespace Lens\Bundle\LensApiBundle\Repository;
 
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Lens\Bundle\LensApiBundle\Doctrine\LensServiceEntityRepository;
 use Lens\Bundle\LensApiBundle\Entity\Company\DrivingSchool\DriversLicence;
 
-class DriversLicenceRepository extends ServiceEntityRepository
+class DriversLicenceRepository extends LensServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

@@ -26,8 +26,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\DiscriminatorMap(self::TYPE_TO_CLASS)]
 #[ORM\Index(fields: ['chamberOfCommerce'])]
 #[ORM\Index(fields: ['name'])]
-#[ORM\Index(fields: ['affiliate'])]
+#[ORM\UniqueConstraint(fields: ['affiliate'])]
 #[UniqueEntity(fields: ['chamberOfCommerce'], message: 'company.chamber_of_commerce.unique_entity')]
+#[UniqueEntity(fields: ['affiliate'], message: 'company.affiliate.unique_entity')]
 class Company
 {
     use AddressTrait;
@@ -87,26 +88,26 @@ class Company
     #[ORM\Column(type: 'text', nullable: true)]
     public ?string $disabledReason = null;
 
-    #[ORM\OneToMany(mappedBy: 'company', targetEntity: Address::class, cascade: ['all'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Address::class, mappedBy: 'company', cascade: ['all'], orphanRemoval: true)]
     #[Assert\Valid]
     public Collection $addresses;
 
-    #[ORM\OneToMany(mappedBy: 'company', targetEntity: ContactMethod::class, cascade: ['all'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: ContactMethod::class, mappedBy: 'company', cascade: ['all'], orphanRemoval: true)]
     #[Assert\Valid]
     public Collection $contactMethods;
 
     /** @var Collection<Employee> */
-    #[ORM\OneToMany(mappedBy: 'company', targetEntity: Employee::class, cascade: ['persist'])]
+    #[ORM\OneToMany(targetEntity: Employee::class, mappedBy: 'company', cascade: ['persist'])]
     #[Assert\Valid]
     public Collection $employees;
 
     #[ORM\ManyToMany(targetEntity: Dealer::class, mappedBy: 'companies', cascade: ['persist'])]
     public Collection $dealers;
 
-    #[ORM\OneToMany(mappedBy: 'company', targetEntity: PaymentMethod::class, cascade: ['all'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: PaymentMethod::class, mappedBy: 'company', cascade: ['all'], orphanRemoval: true)]
     public Collection $paymentMethods;
 
-    #[ORM\OneToMany(mappedBy: 'company', targetEntity: Remark::class, cascade: ['all'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Remark::class, mappedBy: 'company', cascade: ['all'], orphanRemoval: true)]
     #[ORM\OrderBy(['createdAt' => 'desc'])]
     public Collection $remarks;
 
@@ -114,7 +115,7 @@ class Company
     #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     public ?Company $parent = null;
 
-    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
+    #[ORM\OneToMany(targetEntity: self::class, mappedBy: 'parent')]
     public Collection $children;
 
     public int $weight = 0;

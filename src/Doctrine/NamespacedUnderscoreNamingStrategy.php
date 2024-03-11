@@ -9,17 +9,15 @@ use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 
 use function count;
 
-use const CASE_LOWER;
-
 class NamespacedUnderscoreNamingStrategy extends UnderscoreNamingStrategy
 {
     private Inflector $inflector;
 
-    public function __construct(string $language)
+    public function __construct()
     {
-        parent::__construct(CASE_LOWER, true);
+        parent::__construct();
 
-        $this->inflector = InflectorFactory::createForLanguage($language)->build();
+        $this->inflector = InflectorFactory::createForLanguage(Language::ENGLISH)->build();
     }
 
     public function classToTableName($className): string

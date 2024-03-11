@@ -62,7 +62,7 @@ class User implements RecoveryInterface
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     public ?DateTimeInterface $disabledAt = null;
 
-    #[ORM\OneToOne(mappedBy: 'user', targetEntity: Personal::class, cascade: ['persist'])]
+    #[ORM\OneToOne(targetEntity: Personal::class, mappedBy: 'user', cascade: ['persist'])]
     public ?Personal $personal = null;
 
     public int $weight = 0;

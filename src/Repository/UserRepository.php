@@ -2,14 +2,14 @@
 
 namespace Lens\Bundle\LensApiBundle\Repository;
 
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\ManagerRegistry;
+use Lens\Bundle\LensApiBundle\Doctrine\LensServiceEntityRepository;
 use Lens\Bundle\LensApiBundle\Entity\User;
 
 use const PREG_SPLIT_NO_EMPTY;
 
-class UserRepository extends ServiceEntityRepository
+class UserRepository extends LensServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

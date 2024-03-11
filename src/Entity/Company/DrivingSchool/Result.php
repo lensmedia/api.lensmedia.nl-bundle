@@ -39,7 +39,7 @@ class Result
     public int $firstExamsInsufficientTotal = 0;
 
     #[ORM\Column(type: 'decimal', precision: 5, scale: 4)]
-    public float $firstExamsPercentage = 0;
+    public string $firstExamsPercentage = '0.0';
 
     #[ORM\Column(options: ['default' => 0])]
     public int $reExamsSufficientTotal = 0;
@@ -48,7 +48,7 @@ class Result
     public int $reExamsInsufficientTotal = 0;
 
     #[ORM\Column(type: 'decimal', precision: 5, scale: 4)]
-    public float $reExamsPercentage = 0;
+    public string $reExamsPercentage = '0.0';
 
     /**
      * @var bool Whether this result is locked or not. If locked, it can not be updated.
@@ -123,12 +123,12 @@ class Result
     {
         $totalFirstExams = $this->firstExamsSufficientTotal + $this->firstExamsInsufficientTotal;
         if ($totalFirstExams > 0) {
-            $this->firstExamsPercentage = $this->firstExamsSufficientTotal / $totalFirstExams;
+            $this->firstExamsPercentage = (string)($this->firstExamsSufficientTotal / $totalFirstExams);
         }
 
         $totalReExams = $this->reExamsSufficientTotal + $this->reExamsInsufficientTotal;
         if ($totalReExams > 0) {
-            $this->reExamsPercentage = $this->reExamsSufficientTotal / $totalReExams;
+            $this->reExamsPercentage = (string)($this->reExamsSufficientTotal / $totalReExams);
         }
     }
 }

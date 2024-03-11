@@ -2,9 +2,9 @@
 
 namespace Lens\Bundle\LensApiBundle\Repository;
 
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
+use Lens\Bundle\LensApiBundle\Doctrine\LensServiceEntityRepository;
 use Lens\Bundle\LensApiBundle\Entity\Address;
 use Lens\Bundle\LensApiBundle\Entity\Company\Company;
 use Lens\Bundle\LensApiBundle\Entity\Company\Dealer;
@@ -12,7 +12,7 @@ use Lens\Bundle\LensApiBundle\Entity\Company\DrivingSchool\DrivingSchool;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Validator\Constraints\Ulid;
 
-class DealerRepository extends ServiceEntityRepository
+class DealerRepository extends LensServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

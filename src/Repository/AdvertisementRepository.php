@@ -2,11 +2,11 @@
 
 namespace Lens\Bundle\LensApiBundle\Repository;
 
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Lens\Bundle\LensApiBundle\Doctrine\LensServiceEntityRepository;
 use Lens\Bundle\LensApiBundle\Entity\Personal\Advertisement;
 
-class AdvertisementRepository extends ServiceEntityRepository
+class AdvertisementRepository extends LensServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

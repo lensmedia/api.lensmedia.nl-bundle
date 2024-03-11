@@ -42,19 +42,19 @@ class Personal
     #[ORM\Column(nullable: true)]
     public ?string $surname = null;
 
-    #[ORM\OneToOne(inversedBy: 'personal', targetEntity: User::class)]
+    #[ORM\OneToOne(targetEntity: User::class, inversedBy: 'personal')]
     #[Assert\Valid]
     public ?User $user = null;
 
-    #[ORM\OneToMany(mappedBy: 'personal', targetEntity: ContactMethod::class, cascade: ['all'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: ContactMethod::class, mappedBy: 'personal', cascade: ['all'], orphanRemoval: true)]
     #[Assert\Valid]
     public Collection $contactMethods;
 
-    #[ORM\OneToMany(mappedBy: 'personal', targetEntity: Address::class, orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Address::class, mappedBy: 'personal', orphanRemoval: true)]
     #[Assert\Valid]
     public Collection $addresses;
 
-    #[ORM\OneToMany(mappedBy: 'personal', targetEntity: Employee::class, orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Employee::class, mappedBy: 'personal', orphanRemoval: true)]
     #[Assert\Valid]
     public Collection $companies;
 
@@ -62,7 +62,7 @@ class Personal
     #[Assert\Valid]
     public Collection $advertisements;
 
-    #[ORM\OneToMany(mappedBy: 'personal', targetEntity: Remark::class, cascade: ['all'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Remark::class, mappedBy: 'personal', cascade: ['all'], orphanRemoval: true)]
     #[ORM\OrderBy(['createdAt' => 'desc'])]
     #[Assert\Valid]
     public Collection $remarks;

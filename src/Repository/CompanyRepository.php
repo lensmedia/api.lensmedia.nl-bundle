@@ -2,8 +2,8 @@
 
 namespace Lens\Bundle\LensApiBundle\Repository;
 
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Lens\Bundle\LensApiBundle\Doctrine\LensServiceEntityRepository;
 use Lens\Bundle\LensApiBundle\Entity\Company\Company;
 use RuntimeException;
 use Symfony\Component\Uid\BinaryUtil;
@@ -13,7 +13,7 @@ use function chr;
 use const OPENSSL_RAW_DATA;
 use const OPENSSL_ZERO_PADDING;
 
-class CompanyRepository extends ServiceEntityRepository
+class CompanyRepository extends LensServiceEntityRepository
 {
     use CompanyRepositoryTrait;
 

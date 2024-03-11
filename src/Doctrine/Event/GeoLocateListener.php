@@ -13,12 +13,12 @@ use Psr\Log\LoggerInterface;
 
 #[AsDoctrineListener(event: Events::prePersist, connection: 'lens_api')]
 #[AsDoctrineListener(event: Events::preUpdate, connection: 'lens_api')]
-class GeoLocateListener
+readonly class GeoLocateListener
 {
     public function __construct(
-        private readonly GeoLocate $geoLocate,
-        private readonly LoggerInterface $logger,
-        private readonly bool $isDebug,
+        private GeoLocate $geoLocate,
+        private LoggerInterface $logger,
+        private bool $isDebug,
     ) {
     }
 

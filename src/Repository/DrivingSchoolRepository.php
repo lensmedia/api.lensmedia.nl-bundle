@@ -2,15 +2,15 @@
 
 namespace Lens\Bundle\LensApiBundle\Repository;
 
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
+use Lens\Bundle\LensApiBundle\Doctrine\LensServiceEntityRepository;
 use Lens\Bundle\LensApiBundle\Entity\Address;
 use Lens\Bundle\LensApiBundle\Entity\Company\DrivingSchool\DrivingSchool;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Uid\Ulid;
 
-class DrivingSchoolRepository extends ServiceEntityRepository
+class DrivingSchoolRepository extends LensServiceEntityRepository
 {
     use CompanyRepositoryTrait;
 

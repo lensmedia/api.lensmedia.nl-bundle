@@ -2,11 +2,11 @@
 
 namespace Lens\Bundle\LensApiBundle\Repository;
 
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Lens\Bundle\LensApiBundle\Doctrine\LensServiceEntityRepository;
 use Lens\Bundle\LensApiBundle\Entity\Remark;
 
-class RemarkRepository extends ServiceEntityRepository
+class RemarkRepository extends LensServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
