@@ -2,20 +2,11 @@
 
 namespace Lens\Bundle\LensApiBundle\Repository;
 
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface;
 use Doctrine\DBAL\LockMode;
 use Doctrine\Persistence\ObjectRepository;
-use Symfony\Component\DependencyInjection\Attribute\AutowireDecorated;
 
 trait RepositoryDecoratorTrait
 {
-    private readonly ServiceEntityRepositoryInterface $inner;
-
-    public function __construct(#[AutowireDecorated] ServiceEntityRepositoryInterface $inner)
-    {
-        $this->inner = $inner;
-    }
-
     /** @see ObjectRepository::find() */
     public function find(mixed $id, LockMode|int|null $lockMode = null, ?int $lockVersion = null): ?object
     {
