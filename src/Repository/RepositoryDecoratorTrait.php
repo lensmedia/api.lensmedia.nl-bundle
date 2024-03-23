@@ -3,6 +3,7 @@
 namespace Lens\Bundle\LensApiBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface;
+use Doctrine\DBAL\LockMode;
 use Doctrine\Persistence\ObjectRepository;
 use Symfony\Component\DependencyInjection\Attribute\AutowireDecorated;
 
@@ -16,9 +17,9 @@ trait RepositoryDecoratorTrait
     }
 
     /** @see ObjectRepository::find() */
-    public function find($id): ?object
+    public function find(mixed $id, LockMode|int|null $lockMode = null, ?int $lockVersion = null): ?object
     {
-        return $this->inner->find($id);
+        return $this->inner->find($id, $lockMode, $lockVersion);
     }
 
     /** @see ObjectRepository::findAll() */
@@ -34,9 +35,9 @@ trait RepositoryDecoratorTrait
     }
 
     /** @see ObjectRepository::findOneBy() */
-    public function findOneBy(array $criteria): ?object
+    public function findOneBy(array $criteria, ?array $orderBy = null): ?object
     {
-        return $this->inner->findOneBy($criteria);
+        return $this->inner->findOneBy($criteria, $orderBy);
     }
 
     /** @see ObjectRepository::getClassName() */
