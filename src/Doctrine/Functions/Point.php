@@ -2,11 +2,11 @@
 
 namespace Lens\Bundle\LensApiBundle\Doctrine\Functions;
 
-class STDistanceSphere extends AbstractSpatialDQLFunction
+class Point extends AbstractSpatialDQLFunction
 {
     protected array $platforms = ['mysql'];
 
-    protected string $functionName = 'ST_Distance_SPHERE';
+    protected string $functionName = 'Point';
 
     protected int $minGeomExpr = 2;
 
