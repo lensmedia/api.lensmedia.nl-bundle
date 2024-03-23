@@ -9,7 +9,6 @@
         "beberlei/doctrineextensions": "dev-master",
         "brick/math": "*",
         "brick/money": "*",
-        "creof/doctrine2-spatial": "^1.2",
         "egulias/email-validator": "^4.0",
         "giggsey/libphonenumber-for-php": "^8.0",
         "sendinblue/api-v3-sdk": "^8.4",
@@ -21,12 +20,19 @@
         "symfony/security-core": "*",
         "symfony/serializer": "*",
         "symfony/uid": "*",
-        "symfony/validator": "*"
+        "symfony/validator": "*",
+        "lensmedia/doctrine2-spatial": "dev-master"
     },
     "require-dev": {
         "ergebnis/composer-normalize": "^2.30",
         "friendsofphp/php-cs-fixer": "^3.13"
     },
+    "repositories": [
+        {
+            "url": "https://github.com/lensmedia/doctrine2-spatial.git",
+            "type": "git"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "Lens\\Bundle\\LensApiBundle\\": "src/"
