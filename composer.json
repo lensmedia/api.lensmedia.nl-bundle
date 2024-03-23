@@ -27,12 +27,6 @@
         "ergebnis/composer-normalize": "^2.30",
         "friendsofphp/php-cs-fixer": "^3.13"
     },
-    "repositories": [
-        {
-            "url": "https://github.com/lensmedia/doctrine2-spatial.git",
-            "type": "git"
-        }
-    ],
     "autoload": {
         "psr-4": {
             "Lens\\Bundle\\LensApiBundle\\": "src/"
