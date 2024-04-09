@@ -3,6 +3,7 @@
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Doctrine\Persistence\ManagerRegistry;
+use Lens\Bundle\LensApiBundle\Command\UlidDetails;
 use Lens\Bundle\LensApiBundle\Doctrine\Event\GeoLocateListener;
 use Lens\Bundle\LensApiBundle\Doctrine\Event\UpdateSendInBlueListener;
 use Lens\Bundle\LensApiBundle\Doctrine\NamespacedUnderscoreNamingStrategy;
@@ -104,6 +105,8 @@ return static function (ContainerConfigurator $container): void {
             service(LoggerInterface::class),
             param('kernel.debug'),
         ])->autoconfigure()
+
+        ->set(UlidDetails::class)
 
         ->set(Repository\AddressRepository::class)->autoWire()->autoConfigure()
         ->set(Repository\AdvertisementRepository::class)->autoWire()->autoConfigure()
