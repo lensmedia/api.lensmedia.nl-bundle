@@ -107,6 +107,7 @@ return static function (ContainerConfigurator $container): void {
         ])->autoconfigure()
 
         ->set(UlidDetails::class)
+        ->tag('console.command')
 
         ->set(Repository\AddressRepository::class)->autoWire()->autoConfigure()
         ->set(Repository\AdvertisementRepository::class)->autoWire()->autoConfigure()
