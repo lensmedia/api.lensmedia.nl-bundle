@@ -12,16 +12,16 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder('lens_lens_api');
         $rootNode = $treeBuilder->getRootNode();
 
-        $this->addSendInBlueSection($rootNode);
+        $this->addBrevoSection($rootNode);
 
         return $treeBuilder;
     }
 
-    private function addSendInBlueSection($rootNode): void
+    private function addBrevoSection($rootNode): void
     {
         $rootNode
             ->children()
-                ->arrayNode('send_in_blue')
+                ->arrayNode('brevo')
                     ->children()
                         ->scalarNode('api_key')->isRequired()->end()
                         ->scalarNode('subscriber_list')->isRequired()->end()

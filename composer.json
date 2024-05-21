@@ -11,7 +11,6 @@
         "brick/money": "*",
         "egulias/email-validator": "^4.0",
         "giggsey/libphonenumber-for-php": "^8.0",
-        "sendinblue/api-v3-sdk": "^8.4",
         "symfony/cache": "*",
         "symfony/form": "*",
         "symfony/framework-bundle": "*",
@@ -20,7 +19,8 @@
         "symfony/security-core": "*",
         "symfony/serializer": "*",
         "symfony/uid": "*",
-        "symfony/validator": "*"
+        "symfony/validator": "*",
+        "getbrevo/brevo-php": "^2.0"
     },
     "require-dev": {
         "ergebnis/composer-normalize": "^2.30",

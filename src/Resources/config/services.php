@@ -5,7 +5,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 use Doctrine\Persistence\ManagerRegistry;
 use Lens\Bundle\LensApiBundle\Command\UlidDetails;
 use Lens\Bundle\LensApiBundle\Doctrine\Event\GeoLocateListener;
-use Lens\Bundle\LensApiBundle\Doctrine\Event\UpdateSendInBlueListener;
+use Lens\Bundle\LensApiBundle\Doctrine\Event\UpdateBrevoListener;
 use Lens\Bundle\LensApiBundle\Doctrine\NamespacedUnderscoreNamingStrategy;
 use Lens\Bundle\LensApiBundle\Form\Type\AdvertisementChoiceType;
 use Lens\Bundle\LensApiBundle\Form\Type\DealerChoiceType;
@@ -13,7 +13,7 @@ use Lens\Bundle\LensApiBundle\Form\Type\DriversLicenceChoiceType;
 use Lens\Bundle\LensApiBundle\GeoLocate\GeoLocate;
 use Lens\Bundle\LensApiBundle\LensApi;
 use Lens\Bundle\LensApiBundle\Repository;
-use Lens\Bundle\LensApiBundle\SendInBlue\SendInBlue;
+use Lens\Bundle\LensApiBundle\Brevo\Brevo;
 use Lens\Bundle\LensApiBundle\Validator\UniqueAdvertisementValidator;
 use Lens\Bundle\LensApiBundle\Validator\UniqueDealerValidator;
 use Lens\Bundle\LensApiBundle\Validator\UniqueUserValidator;
@@ -79,7 +79,7 @@ return static function (ContainerConfigurator $container): void {
 
         ->set(NamespacedUnderscoreNamingStrategy::class)
 
-        ->set(SendInBlue::class)
+        ->set(Brevo::class)
         ->args([
             service(LensApi::class),
             null,
@@ -87,9 +87,9 @@ return static function (ContainerConfigurator $container): void {
             null,
         ])
 
-        ->set(UpdateSendInBlueListener::class)
+        ->set(UpdateBrevoListener::class)
         ->args([
-            service(SendInBlue::class),
+            service(Brevo::class),
             service(LoggerInterface::class),
             param('kernel.debug'),
         ])->autoConfigure()

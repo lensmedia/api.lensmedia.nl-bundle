@@ -2,6 +2,7 @@
 
 namespace Lens\Bundle\LensApiBundle\Doctrine\Event;
 
+use Brevo\Client\ApiException;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
@@ -11,12 +12,11 @@ use Exception;
 use Lens\Bundle\LensApiBundle\Entity\Company\Company;
 use Lens\Bundle\LensApiBundle\Entity\ContactMethod;
 use Lens\Bundle\LensApiBundle\Entity\Personal\Personal;
-use Lens\Bundle\LensApiBundle\SendInBlue\SendInBlue;
+use Lens\Bundle\LensApiBundle\Brevo\Brevo;
 use Psr\Log\LoggerInterface;
-use SendinBlue\Client\ApiException;
 
 /**
- * Synchronize personal with SendInBlue when doctrine updates entities/collections.
+ * Synchronize personal with Brevo when doctrine updates entities/collections.
  *
  * Works when:
  * Personal object is added, updated or deleted
@@ -25,7 +25,7 @@ use SendinBlue\Client\ApiException;
  * Company where personal works at start or stops becoming a dealer
  */
 #[AsDoctrineListener(event: Events::onFlush, connection: 'lens_api')]
-class UpdateSendInBlueListener
+class UpdateBrevoListener
 {
     private array $isHandled = [];
     private static ObjectManager $manager;
@@ -35,7 +35,7 @@ class UpdateSendInBlueListener
     private const DELETE = 'delete';
 
     public function __construct(
-        private readonly SendInBlue $sendInBlue,
+        private readonly Brevo $brevo,
         private readonly LoggerInterface $logger,
         private readonly bool $isDebug,
     ) {
@@ -45,11 +45,11 @@ class UpdateSendInBlueListener
     {
         self::$manager = $event->getObjectManager();
 
-        $this->listRequiredSendInBlueSynchronizationChanges();
-        $this->synchronizeHandledChangesWithSendInBlue();
+        $this->listRequiredBrevoSynchronizationChanges();
+        $this->synchronizeHandledChangesWithBrevo();
     }
 
-    private function listRequiredSendInBlueSynchronizationChanges(): void
+    private function listRequiredBrevoSynchronizationChanges(): void
     {
         $uow = self::$manager->getUnitOfWork();
 
@@ -133,7 +133,7 @@ class UpdateSendInBlueListener
         ];
     }
 
-    private function synchronizeHandledChangesWithSendInBlue(): void
+    private function synchronizeHandledChangesWithBrevo(): void
     {
         foreach ($this->isHandled as ['personal' => $personal, 'operation' => $operation]) {
             switch ($operation) {
@@ -155,7 +155,7 @@ class UpdateSendInBlueListener
     private function synchronizeCreate(Personal $personal): void
     {
         try {
-            $this->sendInBlue->createContact($personal);
+            $this->brevo->createContact($personal);
         } catch (ApiException $exception) {
             $this->handleException($exception);
         }
@@ -175,7 +175,7 @@ class UpdateSendInBlueListener
         }
 
         try {
-            $this->sendInBlue->updateContact($personal, $oldEmail);
+            $this->brevo->updateContact($personal, $oldEmail);
         } catch (ApiException $exception) {
             $this->handleException($exception);
         }
@@ -184,7 +184,7 @@ class UpdateSendInBlueListener
     private function synchronizeDelete(Personal $personal): void
     {
         try {
-            $this->sendInBlue->deleteContact($personal);
+            $this->brevo->deleteContact($personal);
         } catch (ApiException $exception) {
             $this->handleException($exception);
         }
