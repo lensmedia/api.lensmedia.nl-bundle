@@ -34,7 +34,7 @@ class CompanyRepository extends LensServiceEntityRepository
             throw new RuntimeException('Company has no affiliate id yet, make sure it has generated.');
         }
 
-        $string = substr($company->id->toBinary(), -6) // 6 bytes
+        $string = mb_substr($company->id->toBinary(), -6) // 6 bytes
             .pack('n', $company->affiliate); // 2 bytes
 
         $encrypted = openssl_encrypt(
@@ -64,15 +64,15 @@ class CompanyRepository extends LensServiceEntityRepository
             return throw new RuntimeException('Invalid linking code, decryption failed.');
         }
 
-        $id = substr($decrypted, 0, -2);
-        $affiliate = unpack('n', substr($decrypted, -2))[1];
+        $id = mb_substr($decrypted, 0, -2);
+        $affiliate = unpack('n', mb_substr($decrypted, -2))[1];
 
         $company = $this->findOneByAffiliate($affiliate);
         if (!$company) {
             throw new RuntimeException('Invalid linking code, affiliate not found.');
         }
 
-        if (substr($company->id->toBinary(), -6) !== $id) {
+        if (mb_substr($company->id->toBinary(), -6) !== $id) {
             throw new RuntimeException('Invalid linking code, affiliate and id do not match.');
         }
 

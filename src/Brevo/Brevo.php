@@ -1,19 +1,19 @@
 <?php
 
-namespace Lens\Bundle\LensApiBundle\SendInBlue;
+namespace Lens\Bundle\LensApiBundle\Brevo;
 
+use Brevo\Client\Api\ContactsApi;
+use Brevo\Client\ApiException;
+use Brevo\Client\Configuration;
+use Brevo\Client\Model\CreateContact;
+use Brevo\Client\Model\UpdateContact;
 use Exception;
 use GuzzleHttp\Client;
 use Lens\Bundle\LensApiBundle\Entity\Company\Dealer;
 use Lens\Bundle\LensApiBundle\Entity\Personal\Personal;
 use Lens\Bundle\LensApiBundle\LensApi;
-use SendinBlue\Client\Api\ContactsApi;
-use SendinBlue\Client\ApiException;
-use SendinBlue\Client\Configuration;
-use SendinBlue\Client\Model\CreateContact;
-use SendinBlue\Client\Model\UpdateContact;
 
-class SendInBlue
+class Brevo
 {
     private int $subscriberListId;
     private array $subscriberDealerListIds;
@@ -66,7 +66,7 @@ class SendInBlue
             // Allows invalid called contact creates to pass without a problem.
             ->setUpdateEnabled(true);
 
-        $listData = $this->sendInBlueListContexts($personal);
+        $listData = $this->brevoListContexts($personal);
         $createContact->setListIds($listData['listIds']);
 
         $this->api()->createContact($createContact);
@@ -96,7 +96,7 @@ class SendInBlue
                 'LASTNAME' => $this->lastNameFromPersonal($personal),
             ]);
 
-        $listData = $this->sendInBlueListContexts($personal);
+        $listData = $this->brevoListContexts($personal);
         $updateContact->setListIds($listData['listIds']);
         $updateContact->setUnlinkListIds($listData['unlinkListIds']);
 
@@ -147,7 +147,7 @@ class SendInBlue
         return $api;
     }
 
-    private function sendInBlueListContexts(Personal $personal): array
+    private function brevoListContexts(Personal $personal): array
     {
         $listContext = [
             'listIds' => [],
