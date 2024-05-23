@@ -3,6 +3,7 @@
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Doctrine\Persistence\ManagerRegistry;
+use Lens\Bundle\LensApiBundle\Brevo\Brevo;
 use Lens\Bundle\LensApiBundle\Command\UlidDetails;
 use Lens\Bundle\LensApiBundle\Doctrine\Event\GeoLocateListener;
 use Lens\Bundle\LensApiBundle\Doctrine\Event\UpdateBrevoListener;
@@ -13,7 +14,6 @@ use Lens\Bundle\LensApiBundle\Form\Type\DriversLicenceChoiceType;
 use Lens\Bundle\LensApiBundle\GeoLocate\GeoLocate;
 use Lens\Bundle\LensApiBundle\LensApi;
 use Lens\Bundle\LensApiBundle\Repository;
-use Lens\Bundle\LensApiBundle\Brevo\Brevo;
 use Lens\Bundle\LensApiBundle\Validator\UniqueAdvertisementValidator;
 use Lens\Bundle\LensApiBundle\Validator\UniqueDealerValidator;
 use Lens\Bundle\LensApiBundle\Validator\UniqueUserValidator;

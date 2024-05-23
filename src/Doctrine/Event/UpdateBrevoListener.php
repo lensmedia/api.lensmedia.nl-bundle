@@ -9,10 +9,10 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Persistence\ObjectManager;
 use Exception;
+use Lens\Bundle\LensApiBundle\Brevo\Brevo;
 use Lens\Bundle\LensApiBundle\Entity\Company\Company;
 use Lens\Bundle\LensApiBundle\Entity\ContactMethod;
 use Lens\Bundle\LensApiBundle\Entity\Personal\Personal;
-use Lens\Bundle\LensApiBundle\Brevo\Brevo;
 use Psr\Log\LoggerInterface;
 
 /**
