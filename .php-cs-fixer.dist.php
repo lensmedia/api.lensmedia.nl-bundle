@@ -40,7 +40,9 @@
     'explicit_string_variable' => true,
     'explicit_indirect_variable' => true,
     'get_class_to_class_keyword' => true,
-    'mb_str_functions' => true,
+    // Causes issue with the `linkingCode` method, there is no way to exclude single statements yet.
+    // https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/issues/3871
+    'mb_str_functions' => false,
     'multiline_comment_opening_closing' => true,
     'no_superfluous_elseif' => true,
     'no_unset_on_property' => true,
