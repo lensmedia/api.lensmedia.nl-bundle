@@ -42,7 +42,8 @@ class Personal
     #[ORM\Column(nullable: true)]
     public ?string $surname = null;
 
-    #[ORM\OneToOne(targetEntity: User::class, inversedBy: 'personal')]
+    #[ORM\OneToOne(targetEntity: User::class, inversedBy: 'personal', cascade: ['all'])]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     #[Assert\Valid]
     public ?User $user = null;
 
