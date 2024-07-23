@@ -19,6 +19,7 @@ class DriversLicence
     #[ORM\Column(unique: true)]
     public string $label;
 
+    /** @var Collection<int, DrivingSchool> */
     #[ORM\ManyToMany(targetEntity: DrivingSchool::class, mappedBy: 'driversLicences')]
     public Collection $drivingSchools;
 

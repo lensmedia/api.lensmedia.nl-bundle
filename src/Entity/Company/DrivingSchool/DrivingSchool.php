@@ -15,7 +15,11 @@ class DrivingSchool extends Company
     #[ORM\Column(length: 32, nullable: true)]
     public ?string $cbr = null;
 
-    /** List of all drivers licences for a driving school that it gives lessons in */
+    /**
+     * List of all drivers licences for a driving school that it gives lessons in.
+     *
+     * @var Collection<int, DriversLicence>
+     */
     #[ORM\ManyToMany(targetEntity: DriversLicence::class, inversedBy: 'drivingSchools')]
     public Collection $driversLicences;
 

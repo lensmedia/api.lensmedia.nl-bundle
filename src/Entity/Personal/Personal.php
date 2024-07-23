@@ -47,22 +47,27 @@ class Personal
     #[Assert\Valid]
     public ?User $user = null;
 
+    /** @var Collection<int, ContactMethod> */
     #[ORM\OneToMany(targetEntity: ContactMethod::class, mappedBy: 'personal', cascade: ['all'], orphanRemoval: true)]
     #[Assert\Valid]
     public Collection $contactMethods;
 
+    /** @var Collection<int, Address> */
     #[ORM\OneToMany(targetEntity: Address::class, mappedBy: 'personal', orphanRemoval: true)]
     #[Assert\Valid]
     public Collection $addresses;
 
+    /** @var Collection<int, Employee> */
     #[ORM\OneToMany(targetEntity: Employee::class, mappedBy: 'personal', orphanRemoval: true)]
     #[Assert\Valid]
     public Collection $companies;
 
+    /** @var Collection<int, Advertisement> */
     #[ORM\ManyToMany(targetEntity: Advertisement::class, inversedBy: 'personals')]
     #[Assert\Valid]
     public Collection $advertisements;
 
+    /** @var Collection<int, Remark> */
     #[ORM\OneToMany(targetEntity: Remark::class, mappedBy: 'personal', cascade: ['all'], orphanRemoval: true)]
     #[ORM\OrderBy(['createdAt' => 'desc'])]
     #[Assert\Valid]

@@ -88,25 +88,30 @@ class Company
     #[ORM\Column(type: 'text', nullable: true)]
     public ?string $disabledReason = null;
 
+    /** @var Collection<int, Address> */
     #[ORM\OneToMany(targetEntity: Address::class, mappedBy: 'company', cascade: ['all'], orphanRemoval: true)]
     #[Assert\Valid]
     public Collection $addresses;
 
+    /** @var Collection<int, ContactMethod> */
     #[ORM\OneToMany(targetEntity: ContactMethod::class, mappedBy: 'company', cascade: ['all'], orphanRemoval: true)]
     #[Assert\Valid]
     public Collection $contactMethods;
 
-    /** @var Collection<Employee> */
+    /** @var Collection<int, Employee> */
     #[ORM\OneToMany(targetEntity: Employee::class, mappedBy: 'company', cascade: ['persist'])]
     #[Assert\Valid]
     public Collection $employees;
 
+    /** @var Collection<int, Dealer> */
     #[ORM\ManyToMany(targetEntity: Dealer::class, mappedBy: 'companies', cascade: ['persist'])]
     public Collection $dealers;
 
+    /** @var Collection<int, PaymentMethod> */
     #[ORM\OneToMany(targetEntity: PaymentMethod::class, mappedBy: 'company', cascade: ['all'], orphanRemoval: true)]
     public Collection $paymentMethods;
 
+    /** @var Collection<int, Remark> */
     #[ORM\OneToMany(targetEntity: Remark::class, mappedBy: 'company', cascade: ['all'], orphanRemoval: true)]
     #[ORM\OrderBy(['createdAt' => 'desc'])]
     public Collection $remarks;
@@ -115,6 +120,7 @@ class Company
     #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     public ?Company $parent = null;
 
+    /** @var Collection<int, self> */
     #[ORM\OneToMany(targetEntity: self::class, mappedBy: 'parent')]
     public Collection $children;
 

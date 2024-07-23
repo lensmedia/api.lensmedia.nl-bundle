@@ -19,6 +19,7 @@ class Dealer
     #[ORM\Column(unique: true)]
     public string $name;
 
+    /** @var Collection<int, Company> */
     #[ORM\ManyToMany(targetEntity: Company::class, inversedBy: 'dealers')]
     public Collection $companies;
 

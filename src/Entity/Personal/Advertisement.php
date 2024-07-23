@@ -40,6 +40,7 @@ class Advertisement
     #[ORM\Column(unique: true)]
     public string $type;
 
+    /** @var Collection<int, Personal> */
     #[ORM\ManyToMany(targetEntity: Personal::class, mappedBy: 'advertisements')]
     public Collection $personals;
 
