@@ -35,6 +35,19 @@ class ContactMethod
         self::SOCIAL => self::SOCIAL,
     ];
 
+    public const SOCIAL_LABELS = [
+        'LinkedIn' => 'linkedin',
+        'Twitter' => 'twitter',
+        'Facebook' => 'facebook',
+        'Instagram' => 'instagram',
+        'TikTok' => 'tiktok',
+        'Snapchat' => 'snapchat',
+        'YouTube' => 'youtube',
+        'Telegram' => 'telegram',
+        'Signal' => 'signal',
+        'Discord' => 'discord',
+    ];
+
     #[ORM\Id]
     #[ORM\Column(type: 'ulid')]
     public Ulid $id;
