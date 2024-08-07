@@ -15,7 +15,44 @@ class GeoLocate
     ) {
     }
 
-    public function __invoke(Address $address): array
+    public function locate(string $query): array
+    {
+        static $requests = [];
+        if (isset($requests[$query])) {
+            return $requests[$query];
+        }
+
+        try {
+            return $requests[$query] = $this->geoApiClient->request('GET', self::API, [
+                'query' => [
+                    'q' => $query,
+                    'rows' => 1,
+                ],
+            ])->toArray();
+        } catch (Throwable $e) {
+            throw new GeoLocateException('GeoLocate Error: '.$e->getMessage(), previous: $e);
+        }
+    }
+
+    public function latLong(string $query): ?array
+    {
+        $response = $this->locate($query);
+
+        return $this->latLongFromResponse($response);
+    }
+
+    public function latLongFromResponse(array $response): ?array
+    {
+        $docs = $response['response']['docs'][0] ?? null;
+        if ($docs && preg_match('/POINT\((\d+\.\d+) (\d+\.\d+)\)/', $docs['centroide_ll'], $matches)) {
+            // POINT is in lon lat, swappage around for lat long as is normal?
+            return [$matches[2], $matches[1]];
+        }
+
+        return null;
+    }
+
+    public function latLongFromAddress(Address $address): array
     {
         if (empty($address->zipCode)) {
             return [null, null];
@@ -29,46 +66,12 @@ class GeoLocate
                 $address->addition,
             );
 
-            $result = $this->request($searchTerm);
+            $result = $this->locate($searchTerm);
             if ($result) {
                 return $result;
             }
         }
 
-        return $this->request('postcode:'.$address->zipCode.' AND type:postcode') ?? [null, null];
-    }
-
-    private function request(string $query): ?array
-    {
-        static $tracker = [];
-        if (isset($tracker[$query])) {
-            return $tracker[$query];
-        }
-
-        try {
-            $response = $this->geoApiClient->request('GET', self::API, [
-                'query' => [
-                    'q' => $query,
-                    'rows' => 1,
-                ],
-            ])->toArray();
-
-            return $tracker[$query] = $this->match($response);
-        } catch (Throwable $e) {
-            $tracker[$query] = null;
-
-            throw new GeoLocateException('GeoLocate Error: '.$e->getMessage(), previous: $e);
-        }
-    }
-
-    private function match(array $response): ?array
-    {
-        $docs = $response['response']['docs'][0] ?? null;
-        if ($docs && preg_match('/POINT\((\d+\.\d+) (\d+\.\d+)\)/', $docs['centroide_ll'], $matches)) {
-            // POINT is in lon lat, swappage around for lat long as is normal?
-            return [$matches[2], $matches[1]];
-        }
-
-        return null;
+        return $this->coords('postcode:'.$address->zipCode.' AND type:postcode') ?? [null, null];
     }
 }

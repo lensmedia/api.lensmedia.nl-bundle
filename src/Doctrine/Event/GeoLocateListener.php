@@ -40,7 +40,7 @@ readonly class GeoLocateListener
         }
 
         try {
-            [$address->latitude, $address->longitude] = ($this->geoLocate)($address);
+            [$address->latitude, $address->longitude] = $this->geoLocate->latLongFromAddress($address);
         } catch (GeoLocateException $e) {
             if ($this->isDebug) {
                 throw $e;
