@@ -66,12 +66,15 @@ class GeoLocate
                 $address->addition,
             );
 
-            $result = $this->locate($searchTerm);
+            $result = $this->latLong($searchTerm);
             if ($result) {
                 return $result;
             }
         }
 
-        return $this->coords('postcode:'.$address->zipCode.' AND type:postcode') ?? [null, null];
+        return $this->latLong(sprintf(
+            'postcode: %s AND type:postcode',
+            $address->zipCode,
+        )) ?? [null, null];
     }
 }
