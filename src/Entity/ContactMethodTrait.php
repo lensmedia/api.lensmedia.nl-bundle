@@ -39,7 +39,7 @@ trait ContactMethodTrait
     public function socialContactMethods(): Collection
     {
         return $this->contactMethods->filter(
-            static fn (int $index, ContactMethod $contactMethod) => $contactMethod->isSocial()
+            static fn (ContactMethod $contactMethod) => $contactMethod->isSocial()
         );
     }
 }
