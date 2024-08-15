@@ -7,13 +7,12 @@ use Doctrine\Persistence\ManagerRegistry;
 use Lens\Bundle\LensApiBundle\Doctrine\LensServiceEntityRepository;
 use Lens\Bundle\LensApiBundle\Entity\Address;
 use Lens\Bundle\LensApiBundle\Entity\Company\DrivingSchool\DrivingSchool;
+use RuntimeException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Uid\Ulid;
 
 class DrivingSchoolRepository extends LensServiceEntityRepository
 {
-    use CompanyRepositoryTrait;
-
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, DrivingSchool::class);
@@ -22,17 +21,19 @@ class DrivingSchoolRepository extends LensServiceEntityRepository
     /**
      * List driving schools that are nearby the provided driving school.
      */
-    public function nearby(Ulid|string $drivingSchoolId, int $limit = 10): array
+    public function nearby(Ulid|string $companyId, int $limit = 10): array
     {
         try {
             /** @var DrivingSchool $drivingSchoolEntity */
             $drivingSchoolEntity = $this->createQueryBuilder('drivingSchool')
-                ->andWhere('drivingSchool.id = :drivingSchool')
-                ->setParameter('drivingSchool', $drivingSchoolId, 'ulid')
+                ->join('drivingSchool.company', 'company')
+                ->addSelect('company')
+                ->andWhere('company.id = :company')
+                ->setParameter('company', $companyId, 'ulid')
 
-                ->andWhere('drivingSchool.publishedAt IS NOT NULL AND drivingSchool.publishedAt <= CURRENT_TIMESTAMP()')
+                ->andWhere('company.publishedAt IS NOT NULL AND company.publishedAt <= CURRENT_TIMESTAMP()')
 
-                ->join('drivingSchool.addresses', 'address')
+                ->join('company.addresses', 'address')
                 ->addSelect('address')
                 ->andWhere('address.type IN (:address_types) AND address.latitude IS NOT NULL AND address.longitude IS NOT NULL')
                 ->setParameter('address_types', [Address::OPERATING, Address::DEFAULT])
@@ -42,19 +43,24 @@ class DrivingSchoolRepository extends LensServiceEntityRepository
         } catch (NoResultException) {
             throw new NotFoundHttpException(sprintf(
                 'Provided driving school "%s" does not exist, has no default address or is missing its latitude and/or longitude values.',
-                $drivingSchoolId,
+                $companyId,
             ));
         }
 
-        $drivingSchoolAddress = $drivingSchoolEntity->operatingAddress() ?? $drivingSchoolEntity->defaultAddress();
+        $drivingSchoolAddress = $drivingSchoolEntity->company->operatingAddress() ?? $drivingSchoolEntity->company->defaultAddress();
+        if (!$drivingSchoolAddress) {
+            throw new RuntimeException('Company has no addresses, this is not allowed.');
+        }
 
         $qb = $this->createQueryBuilder('drivingSchool')
-            ->andWhere('drivingSchool.id != :drivingSchool')
-            ->setParameter('drivingSchool', $drivingSchoolId, 'ulid')
+            ->join('drivingSchool.company', 'company')
+            ->addSelect('company')
+            ->andWhere('company.id != :company')
+            ->setParameter('company', $companyId, 'ulid')
 
-            ->andWhere('drivingSchool.publishedAt IS NOT NULL AND drivingSchool.publishedAt <= CURRENT_TIMESTAMP()')
+            ->andWhere('company.publishedAt IS NOT NULL AND company.publishedAt <= CURRENT_TIMESTAMP()')
 
-            ->join('drivingSchool.addresses', 'address')
+            ->join('company.addresses', 'address')
             ->addSelect('address')
             ->andWhere('address.type IN (:address_types) AND address.latitude IS NOT NULL AND address.longitude IS NOT NULL')
             ->setParameter('address_types', [Address::OPERATING, Address::DEFAULT])
