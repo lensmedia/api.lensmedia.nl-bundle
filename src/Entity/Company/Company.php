@@ -111,7 +111,9 @@ class Company
     #[ORM\OneToMany(targetEntity: self::class, mappedBy: 'parent')]
     public Collection $children;
 
+    // These are mapped after search and nearby queries.
     public int $weight = 0;
+    public float $distance = 0;
 
     public function __construct()
     {

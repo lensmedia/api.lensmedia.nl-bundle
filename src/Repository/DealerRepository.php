@@ -55,6 +55,8 @@ class DealerRepository extends LensServiceEntityRepository
 
     /**
      * Returns a list of the closest dealers next to the specified company.
+     *
+     * @return Company[]
      */
     public function nearby(Ulid|string $dealerId, Ulid|string $companyId, int $maxResults = 10): array
     {
@@ -66,8 +68,11 @@ class DealerRepository extends LensServiceEntityRepository
                 ->createQueryBuilder('company')
                 ->andWhere('company.id = :company')
                 ->setParameter('company', $companyId, 'ulid')
-
                 ->andWhere('company.publishedAt IS NOT NULL AND company.publishedAt <= CURRENT_TIMESTAMP()')
+
+                // Only select driving schools so far.
+                ->join('company.drivingSchool', 'drivingSchool')
+                ->addSelect('drivingSchool')
 
                 ->join('company.addresses', 'address')
                 ->addSelect('address')
@@ -83,7 +88,10 @@ class DealerRepository extends LensServiceEntityRepository
             ));
         }
 
-        $companyAddress = $company->operatingAddress() ?? $company->defaultAddress();
+        $originCoords = $company->operatingCoords();
+        if (null === $originCoords) {
+            return [];
+        }
 
         $qb = $this->getEntityManager()
             ->getRepository(Company::class)
@@ -91,6 +99,9 @@ class DealerRepository extends LensServiceEntityRepository
             ->andWhere('company.id != :company')
             ->setParameter('company', $companyId, 'ulid')
             ->andWhere('company.publishedAt IS NOT NULL AND company.publishedAt <= CURRENT_TIMESTAMP()')
+
+            ->join('company.drivingSchool', 'drivingSchool')
+            ->addSelect('drivingSchool')
 
             ->join('company.dealers', 'dealer')
             ->andWhere('dealer.id = :dealer')
@@ -105,8 +116,8 @@ class DealerRepository extends LensServiceEntityRepository
                 POINT(:longitude, :latitude),
                 POINT(address.longitude, address.latitude)
             ) AS distance')
-            ->setParameter('latitude', $companyAddress->latitude)
-            ->setParameter('longitude', $companyAddress->longitude)
+            ->setParameter('latitude', $originCoords[0])
+            ->setParameter('longitude', $originCoords[1])
             ->orderBy('distance')
             ->setMaxResults($maxResults);
 

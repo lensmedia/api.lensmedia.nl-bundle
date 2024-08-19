@@ -36,6 +36,14 @@ class DrivingSchool
         $this->driversLicences = new ArrayCollection();
     }
 
+    public static function forCompany(Company $company): self
+    {
+        $drivingSchool = new self();
+        $drivingSchool->setCompany($company);
+
+        return $drivingSchool;
+    }
+
     public function setCompany(Company $company): void
     {
         $this->company = $company;
