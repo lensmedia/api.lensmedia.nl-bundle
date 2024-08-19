@@ -10,6 +10,7 @@ use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\TokenType;
 
 use function count;
+use function sprintf;
 
 abstract class AbstractSpatialDQLFunction extends FunctionNode
 {

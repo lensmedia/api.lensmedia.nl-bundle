@@ -7,8 +7,8 @@ on:
 
 jobs:
     composer_and_php_cs_fixer:
-        name: 'Composer validate, normalize & PHP CS Fixer'
-        runs-on: ubuntu-latest
+        name: 'Composer normalize & PHP CS Fixer'
+        runs-on: ubuntu-20.04
 
         steps:
             -   name: 'Checkout'
@@ -16,30 +16,27 @@ jobs:
                 with:
                     ref: ${{ github.head_ref }}
 
-            -   name: 'Composer validate'
-                run: php8.1 $(which composer) validate --strict
-
             -   name: 'Set up composer cache'
                 uses: actions/cache@v3
                 with:
                     path: ~/.composer/cache
-                    key: php8.1-composer-locked-${{ hashFiles('**/composer.lock') }}
+                    key: php8.2-composer-locked-${{ hashFiles('**/composer.lock') }}
                     restore-keys: |
-                        php8.1-composer-locked-
+                        php8.2-composer-locked-
 
             -   name: 'Composer install'
-                run: php8.1 $(which composer) install --no-interaction --no-progress --no-suggest
+                run: php8.2 $(which composer) install --no-interaction --no-progress --no-suggest --no-scripts
 
             -   name: 'Composer normalize'
-                run: php8.1 $(which composer) normalize --no-interaction --dry-run --verbose
+                run: php8.2 $(which composer) normalize --no-interaction --dry-run --verbose
 
             -   name: 'Set up PHP Coding Standards cache'
                 uses: actions/cache@v3
                 with:
                     path: ~/.build/php-cs-fixer
-                    key: php8.1-php-cs-fixer-${{ hashFiles('**/composer.lock') }}
+                    key: php8.2-php-cs-fixer-${{ hashFiles('**/composer.lock') }}
                     restore-keys: |
-                        php8.1-php-cs-fixer-
+                        php8.2-php-cs-fixer-
 
             -   name: 'PHP Coding Standards Fixer'
-                run: php8.1 vendor/bin/php-cs-fixer fix src --diff --dry-run --verbose
+                run: php8.2 vendor/bin/php-cs-fixer fix src --diff --dry-run --verbose

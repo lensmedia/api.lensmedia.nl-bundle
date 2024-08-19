@@ -28,4 +28,25 @@ trait AddressTrait
     {
         return $this->addresses->findFirst(static fn (int $index, Address $address) => $address->isOperating());
     }
+
+    public function operatingCoords(): ?array
+    {
+        if ($address = $this->operatingAddress()) {
+            if (null === $address->latitude || null === $address->longitude) {
+                return null;
+            }
+
+            return [$address->latitude, $address->longitude];
+        }
+
+        if ($address = $this->defaultAddress()) {
+            if (null === $address->latitude || null === $address->longitude) {
+                return null;
+            }
+
+            return [$address->latitude, $address->longitude];
+        }
+
+        return null;
+    }
 }

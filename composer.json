@@ -10,6 +10,7 @@
         "brick/math": "*",
         "brick/money": "*",
         "egulias/email-validator": "^4.0",
+        "getbrevo/brevo-php": "^2.0",
         "giggsey/libphonenumber-for-php": "^8.0",
         "symfony/cache": "*",
         "symfony/form": "*",
@@ -19,8 +20,7 @@
         "symfony/security-core": "*",
         "symfony/serializer": "*",
         "symfony/uid": "*",
-        "symfony/validator": "*",
-        "getbrevo/brevo-php": "^2.0"
+        "symfony/validator": "*"
     },
     "require-dev": {
         "ergebnis/composer-normalize": "^2.30",

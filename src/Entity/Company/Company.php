@@ -21,9 +21,6 @@ use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
-#[ORM\InheritanceType('JOINED')]
-#[ORM\DiscriminatorColumn(name: 'type')]
-#[ORM\DiscriminatorMap(self::TYPE_TO_CLASS)]
 #[ORM\Index(fields: ['chamberOfCommerce'])]
 #[ORM\Index(fields: ['name'])]
 #[ORM\UniqueConstraint(fields: ['affiliate'])]
@@ -36,19 +33,6 @@ class Company
     use EmployeeTrait;
     use PaymentMethodTrait;
 
-    public const COMPANY = 'company';
-    public const DRIVING_SCHOOL = 'driving_school';
-
-    private const TYPE_TO_CLASS = [
-        self::COMPANY => self::class,
-        self::DRIVING_SCHOOL => DrivingSchool::class,
-    ];
-
-    public const TYPES = [
-        self::COMPANY => self::COMPANY,
-        self::DRIVING_SCHOOL => self::DRIVING_SCHOOL,
-    ];
-
     #[ORM\Id]
     #[ORM\Column(type: 'ulid')]
     public Ulid $id;
@@ -60,6 +44,9 @@ class Company
     #[Assert\NotBlank]
     #[ORM\Column]
     public string $name;
+
+    #[ORM\OneToOne(targetEntity: DrivingSchool::class, mappedBy: 'company', cascade: ['all'])]
+    public ?DrivingSchool $drivingSchool = null;
 
     /**
      * @var int 0-65535 **WARNING** Using `#[ORM\GeneratedValue(strategy: 'AUTO')]`
@@ -124,7 +111,9 @@ class Company
     #[ORM\OneToMany(targetEntity: self::class, mappedBy: 'parent')]
     public Collection $children;
 
+    // These are mapped after search and nearby queries.
     public int $weight = 0;
+    public float $distance = 0;
 
     public function __construct()
     {
@@ -181,9 +170,20 @@ class Company
             && new DateTimeImmutable() >= $this->disabledAt;
     }
 
+    public function getDrivingSchool(): ?DrivingSchool
+    {
+        return $this->drivingSchool;
+    }
+
+    public function setDrivingSchool(?DrivingSchool $drivingSchool): void
+    {
+        $this->drivingSchool = $drivingSchool;
+        $this->drivingSchool?->setCompany($this);
+    }
+
     public function isDrivingSchool(): bool
     {
-        return $this instanceof DrivingSchool;
+        return null !== $this->drivingSchool;
     }
 
     public function addAddress(Address $address): void

@@ -10,6 +10,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use LogicException;
 
+use function sprintf;
+
 abstract class LensServiceEntityRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry, ?string $class = null)

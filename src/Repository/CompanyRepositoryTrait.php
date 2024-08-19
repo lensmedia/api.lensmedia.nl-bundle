@@ -6,6 +6,7 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\SqlFormatter\SqlFormatter;
 
 use function count;
+use function sprintf;
 
 use const PREG_SPLIT_NO_EMPTY;
 

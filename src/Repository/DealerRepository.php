@@ -8,9 +8,10 @@ use Lens\Bundle\LensApiBundle\Doctrine\LensServiceEntityRepository;
 use Lens\Bundle\LensApiBundle\Entity\Address;
 use Lens\Bundle\LensApiBundle\Entity\Company\Company;
 use Lens\Bundle\LensApiBundle\Entity\Company\Dealer;
-use Lens\Bundle\LensApiBundle\Entity\Company\DrivingSchool\DrivingSchool;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Validator\Constraints\Ulid;
+
+use function sprintf;
 
 class DealerRepository extends LensServiceEntityRepository
 {
@@ -26,23 +27,27 @@ class DealerRepository extends LensServiceEntityRepository
     {
         // Approaching from other side, its easier due to joins.
         return $this->getEntityManager()
-            ->getRepository(DrivingSchool::class)
-            ->createQueryBuilder('driving_school')
-            ->andWhere('driving_school.disabledAt IS NULL')
-            ->andWhere('driving_school.publishedAt IS NOT NULL AND driving_school.publishedAt < CURRENT_TIMESTAMP()')
+            ->getRepository(Company::class)
+            ->createQueryBuilder('company')
 
-            ->leftJoin('driving_school.driversLicences', 'driversLicence')
+            ->andWhere('company.disabledAt IS NULL')
+            ->andWhere('company.publishedAt IS NOT NULL AND company.publishedAt < CURRENT_TIMESTAMP()')
+
+            ->join('company.drivingSchool', 'drivingSchool')
+            ->addSelect('drivingSchool')
+
+            ->leftJoin('drivingSchool.driversLicences', 'driversLicence')
             ->addSelect('driversLicence')
 
-            ->join('driving_school.addresses', 'address')
+            ->join('company.addresses', 'address')
             ->addSelect('address')
             ->andWhere('address.type IN (:address_types) AND address.latitude IS NOT NULL AND address.longitude IS NOT NULL')
             ->setParameter('address_types', [Address::OPERATING, Address::DEFAULT])
 
-            ->leftJoin('driving_school.contactMethods', 'contactMethod')
+            ->leftJoin('company.contactMethods', 'contactMethod')
             ->addSelect('contactMethod')
 
-            ->join('driving_school.dealers', 'dealer')
+            ->join('company.dealers', 'dealer')
             ->andWhere('dealer.id = :dealer')
             ->setParameter('dealer', $dealerId, 'ulid')
 
@@ -52,6 +57,8 @@ class DealerRepository extends LensServiceEntityRepository
 
     /**
      * Returns a list of the closest dealers next to the specified company.
+     *
+     * @return Company[]
      */
     public function nearby(Ulid|string $dealerId, Ulid|string $companyId, int $maxResults = 10): array
     {
@@ -63,8 +70,11 @@ class DealerRepository extends LensServiceEntityRepository
                 ->createQueryBuilder('company')
                 ->andWhere('company.id = :company')
                 ->setParameter('company', $companyId, 'ulid')
-
                 ->andWhere('company.publishedAt IS NOT NULL AND company.publishedAt <= CURRENT_TIMESTAMP()')
+
+                // Only select driving schools so far.
+                ->join('company.drivingSchool', 'drivingSchool')
+                ->addSelect('drivingSchool')
 
                 ->join('company.addresses', 'address')
                 ->addSelect('address')
@@ -80,7 +90,10 @@ class DealerRepository extends LensServiceEntityRepository
             ));
         }
 
-        $companyAddress = $company->operatingAddress() ?? $company->defaultAddress();
+        $originCoords = $company->operatingCoords();
+        if (null === $originCoords) {
+            return [];
+        }
 
         $qb = $this->getEntityManager()
             ->getRepository(Company::class)
@@ -88,6 +101,9 @@ class DealerRepository extends LensServiceEntityRepository
             ->andWhere('company.id != :company')
             ->setParameter('company', $companyId, 'ulid')
             ->andWhere('company.publishedAt IS NOT NULL AND company.publishedAt <= CURRENT_TIMESTAMP()')
+
+            ->join('company.drivingSchool', 'drivingSchool')
+            ->addSelect('drivingSchool')
 
             ->join('company.dealers', 'dealer')
             ->andWhere('dealer.id = :dealer')
@@ -102,8 +118,8 @@ class DealerRepository extends LensServiceEntityRepository
                 POINT(:longitude, :latitude),
                 POINT(address.longitude, address.latitude)
             ) AS distance')
-            ->setParameter('latitude', $companyAddress->latitude)
-            ->setParameter('longitude', $companyAddress->longitude)
+            ->setParameter('latitude', $originCoords[0])
+            ->setParameter('longitude', $originCoords[1])
             ->orderBy('distance')
             ->setMaxResults($maxResults);
 
