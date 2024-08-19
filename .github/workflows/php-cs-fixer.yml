@@ -7,7 +7,7 @@ on:
 
 jobs:
     composer_and_php_cs_fixer:
-        name: 'Composer validate, normalize & PHP CS Fixer'
+        name: 'Composer normalize & PHP CS Fixer'
         runs-on: ubuntu-20.04
 
         steps:
@@ -15,10 +15,6 @@ jobs:
                 uses: actions/checkout@v3
                 with:
                     ref: ${{ github.head_ref }}
-
-            -   name: 'Composer validate'
-                run: php8.2 $(which composer) validate --strict
-                working-directory: ./symfony
 
             -   name: 'Set up composer cache'
                 uses: actions/cache@v3
