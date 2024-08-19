@@ -6,6 +6,8 @@ use Brick\Math\BigDecimal;
 use Brick\Math\BigNumber;
 use OutOfRangeException;
 
+use function sprintf;
+
 class Coords
 {
     // Values are rounded to 10ths just for DX readability.

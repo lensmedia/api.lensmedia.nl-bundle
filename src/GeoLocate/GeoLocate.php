@@ -6,6 +6,8 @@ use Lens\Bundle\LensApiBundle\Entity\Address;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Throwable;
 
+use function sprintf;
+
 class GeoLocate
 {
     private const API = 'https://api.pdok.nl/bzk/locatieserver/search/v3_1/free';

@@ -9,6 +9,8 @@ use Exception;
 use LogicException;
 use Symfony\Component\Uid\Ulid;
 
+use function sprintf;
+
 trait RecoveryTrait
 {
     #[ORM\Column(unique: true, nullable: true)]

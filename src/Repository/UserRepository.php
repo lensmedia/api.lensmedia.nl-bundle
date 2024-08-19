@@ -7,6 +7,8 @@ use Doctrine\Persistence\ManagerRegistry;
 use Lens\Bundle\LensApiBundle\Doctrine\LensServiceEntityRepository;
 use Lens\Bundle\LensApiBundle\Entity\User;
 
+use function sprintf;
+
 use const PREG_SPLIT_NO_EMPTY;
 
 class UserRepository extends LensServiceEntityRepository

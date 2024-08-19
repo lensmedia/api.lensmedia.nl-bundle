@@ -12,6 +12,8 @@ use RuntimeException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Uid\Ulid;
 
+use function sprintf;
+
 class DrivingSchoolRepository extends LensServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
