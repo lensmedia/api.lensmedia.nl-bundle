@@ -52,7 +52,7 @@ class CompanyRepository extends LensServiceEntityRepository
 
     public function fromLinkingCode(string $linkingCode, string $passphrase): Company
     {
-        $decoded = BinaryUtil::fromBase($linkingCode, BinaryUtil::BASE58);
+        $decoded = @BinaryUtil::fromBase($linkingCode, BinaryUtil::BASE58);
 
         $decrypted = openssl_decrypt(
             $decoded,
