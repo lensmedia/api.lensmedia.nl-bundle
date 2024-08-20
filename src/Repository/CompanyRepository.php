@@ -18,7 +18,6 @@ class CompanyRepository extends LensServiceEntityRepository
     use CompanyRepositoryTrait;
 
     private const LINKING_CODE_CIPHER = 'aes-256-cfb';
-    private const LINKING_CODE_KEY = '22HBy88OB8ROcRSM';
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -26,12 +25,15 @@ class CompanyRepository extends LensServiceEntityRepository
     }
 
     /**
-     * Create linking code for company using partial ID and affiliate id.
+     * @param Company $company
+     * @param string $passphrase allows us to create different variants
+     *
+     * @return string
      */
-    public function linkingCode(Company $company): string
+    public function linkingCode(Company $company, string $passphrase): string
     {
         if (!$company->affiliate) {
-            throw new RuntimeException('Company has no affiliate id yet, make sure it has generated.');
+            throw new RuntimeException('Company has no affiliate id yet, make sure it has generated/persisted (auto incr column).');
         }
 
         $string = substr($company->id->toBinary(), -6) // 6 bytes
@@ -40,7 +42,7 @@ class CompanyRepository extends LensServiceEntityRepository
         $encrypted = openssl_encrypt(
             $string,
             self::LINKING_CODE_CIPHER,
-            self::LINKING_CODE_KEY,
+            $passphrase,
             OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING,
             self::iv(),
         );
@@ -48,20 +50,20 @@ class CompanyRepository extends LensServiceEntityRepository
         return BinaryUtil::toBase($encrypted, BinaryUtil::BASE58);
     }
 
-    public function fromLinkingCode(string $linkingCode): Company
+    public function fromLinkingCode(string $linkingCode, string $passphrase): Company
     {
         $decoded = BinaryUtil::fromBase($linkingCode, BinaryUtil::BASE58);
 
         $decrypted = openssl_decrypt(
             $decoded,
             self::LINKING_CODE_CIPHER,
-            self::LINKING_CODE_KEY,
+            $passphrase,
             OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING,
             self::iv(),
         );
 
         if (false === $decrypted) {
-            return throw new RuntimeException('Invalid linking code, decryption failed.');
+            return throw new RuntimeException('Invalid code, decryption failed.');
         }
 
         $id = substr($decrypted, 0, -2);
@@ -69,11 +71,11 @@ class CompanyRepository extends LensServiceEntityRepository
 
         $company = $this->findOneByAffiliate($affiliate);
         if (!$company) {
-            throw new RuntimeException('Invalid linking code, affiliate not found.');
+            throw new RuntimeException('Invalid code, affiliate not found.');
         }
 
         if (substr($company->id->toBinary(), -6) !== $id) {
-            throw new RuntimeException('Invalid linking code, affiliate and id do not match.');
+            throw new RuntimeException('Invalid code, affiliate and id do not match.');
         }
 
         return $company;
