@@ -22,13 +22,10 @@ use Symfony\Component\Uid\Ulid;
 #[UniqueEntity(fields: 'type', message: 'advertisement.type.unique_entity')]
 class Advertisement
 {
-    /** @deprecated  */
-    private const PHONE = 'phone';
     public const EMAIL = 'email';
     public const MAIL = 'mail';
 
     public const TYPES = [
-        self::PHONE => self::PHONE,
         self::EMAIL => self::EMAIL,
         self::MAIL => self::MAIL,
     ];
