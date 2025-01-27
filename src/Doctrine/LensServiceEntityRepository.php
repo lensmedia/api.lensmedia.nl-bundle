@@ -83,7 +83,8 @@ abstract class LensServiceEntityRepository extends ServiceEntityRepository
         $this->manager()->flush();
     }
 
-    public function dump(QueryBuilder|Query $query, bool $sql = false): string
+    /** Two debug helpers */
+    public static function dump(QueryBuilder|Query $query, bool $sql = false): string
     {
         if ($query instanceof QueryBuilder) {
             $query = $query->getQuery();
@@ -96,7 +97,7 @@ abstract class LensServiceEntityRepository extends ServiceEntityRepository
         return (new SqlFormatter())->format($string);
     }
 
-    public function dd(QueryBuilder|Query $query, bool $sql = false): never
+    public static function dd(QueryBuilder|Query $query, bool $sql = false): never
     {
         if ($query instanceof QueryBuilder) {
             $query = $query->getQuery();
