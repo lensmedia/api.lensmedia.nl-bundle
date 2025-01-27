@@ -83,9 +83,19 @@ abstract class LensServiceEntityRepository extends ServiceEntityRepository
         $this->manager()->flush();
     }
 
-    /** Two debug helpers */
-    public static function dump(QueryBuilder|Query $query, bool $sql = false): string
+    /**
+     * Return the SQL or DQL of a query formatted, as html string.
+     *
+     * @param QueryBuilder|Query $query
+     * @param bool $sql Dump SQL instead of DQL
+     * @param bool $disable Changes the function to pass through the query, allows to keep debug in place and disable it
+     */
+    public static function dump(QueryBuilder|Query $query, bool $disable = false, bool $sql = false): QueryBuilder|Query|string
     {
+        if ($disable) {
+            return $query;
+        }
+
         if ($query instanceof QueryBuilder) {
             $query = $query->getQuery();
         }
@@ -97,8 +107,19 @@ abstract class LensServiceEntityRepository extends ServiceEntityRepository
         return (new SqlFormatter())->format($string);
     }
 
-    public static function dd(QueryBuilder|Query $query, bool $sql = false): never
+    /**
+     * Dump the SQL or DQL of a query (HTML formatted) and exit.
+     *
+     * @param QueryBuilder|Query $query
+     * @param bool $sql Dump SQL instead of DQL
+     * @param bool $disable Changes the function to pass through the query, allows to keep debug in place and disable it
+     */
+    public static function dd(QueryBuilder|Query $query, bool $disable = false, bool $sql = false): QueryBuilder|Query
     {
+        if ($disable) {
+            return $query;
+        }
+
         if ($query instanceof QueryBuilder) {
             $query = $query->getQuery();
         }
