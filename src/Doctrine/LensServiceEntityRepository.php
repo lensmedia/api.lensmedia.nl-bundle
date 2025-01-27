@@ -7,7 +7,10 @@ namespace Lens\Bundle\LensApiBundle\Doctrine;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\SqlFormatter\SqlFormatter;
 use LogicException;
 
 use function sprintf;
@@ -78,5 +81,31 @@ abstract class LensServiceEntityRepository extends ServiceEntityRepository
     public function flush(): void
     {
         $this->manager()->flush();
+    }
+
+    public function dump(QueryBuilder|Query $query, bool $sql = false): string
+    {
+        if ($query instanceof QueryBuilder) {
+            $query = $query->getQuery();
+        }
+
+        $string = $sql
+            ? $query->getSQL()
+            : $query->getDQL();
+
+        return (new SqlFormatter())->format($string);
+    }
+
+    public function dd(QueryBuilder|Query $query, bool $sql = false): never
+    {
+        if ($query instanceof QueryBuilder) {
+            $query = $query->getQuery();
+        }
+
+        $string = $sql
+            ? $query->getSQL()
+            : $query->getDQL();
+
+        exit((new SqlFormatter())->format($string));
     }
 }
