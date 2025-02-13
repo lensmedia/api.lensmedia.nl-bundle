@@ -170,6 +170,13 @@ class Company
             && new DateTimeImmutable() >= $this->disabledAt;
     }
 
+    public function customerNumber(): string
+    {
+        return 'A'.sprintf('%06d', $this->affiliate ?? 0);
+    }
+
+    // Associations
+
     public function getDrivingSchool(): ?DrivingSchool
     {
         return $this->drivingSchool;

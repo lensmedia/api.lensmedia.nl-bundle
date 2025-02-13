@@ -7,16 +7,19 @@ use Lens\Bundle\LensApiBundle\Brevo\Brevo;
 use Lens\Bundle\LensApiBundle\Command\UlidDetails;
 use Lens\Bundle\LensApiBundle\Doctrine\Event\GeoLocateListener;
 use Lens\Bundle\LensApiBundle\Doctrine\Event\UpdateBrevoListener;
+use Lens\Bundle\LensApiBundle\Doctrine\Event\UpdateMeiliSearchListener;
 use Lens\Bundle\LensApiBundle\Doctrine\NamespacedUnderscoreNamingStrategy;
 use Lens\Bundle\LensApiBundle\Form\Type\AdvertisementChoiceType;
 use Lens\Bundle\LensApiBundle\Form\Type\DealerChoiceType;
 use Lens\Bundle\LensApiBundle\Form\Type\DriversLicenceChoiceType;
 use Lens\Bundle\LensApiBundle\GeoLocate\GeoLocate;
 use Lens\Bundle\LensApiBundle\LensApi;
+use Lens\Bundle\LensApiBundle\MeiliSearch\CompanySearch;
 use Lens\Bundle\LensApiBundle\Repository;
 use Lens\Bundle\LensApiBundle\Validator\UniqueAdvertisementValidator;
 use Lens\Bundle\LensApiBundle\Validator\UniqueDealerValidator;
 use Lens\Bundle\LensApiBundle\Validator\UniqueUserValidator;
+use Lens\Bundle\MeiliSearchBundle\LensMeiliSearch;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -93,6 +96,14 @@ return static function (ContainerConfigurator $container): void {
             service(LoggerInterface::class),
             param('kernel.debug'),
         ])->autoConfigure()
+
+        ->set(UpdateMeiliSearchListener::class)
+        ->args([
+            service(LensMeiliSearch::class),
+        ])->autoConfigure()
+
+        ->set(CompanySearch::class)
+        ->autoConfigure()
 
         ->set(GeoLocate::class)
         ->args([

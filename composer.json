@@ -20,7 +20,8 @@
         "symfony/security-core": "*",
         "symfony/serializer": "*",
         "symfony/uid": "*",
-        "symfony/validator": "*"
+        "symfony/validator": "*",
+        "lensmedia/symfony-meili-search": "dev-main"
     },
     "require-dev": {
         "ergebnis/composer-normalize": "^2.30",
@@ -33,7 +34,8 @@
     },
     "config": {
         "allow-plugins": {
-            "ergebnis/composer-normalize": true
+            "ergebnis/composer-normalize": true,
+            "php-http/discovery": false
         }
     },
     "scripts": {
