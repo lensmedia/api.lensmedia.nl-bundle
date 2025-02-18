@@ -84,28 +84,6 @@ return static function (ContainerConfigurator $container): void {
 
         ->set(NamespacedUnderscoreNamingStrategy::class)
 
-        ->set(Brevo::class)
-        ->args([
-            service(LensApi::class),
-            null,
-            0,
-            null,
-        ])
-
-        ->set(UpdateBrevoListener::class)
-        ->args([
-            service(Brevo::class),
-            service(LoggerInterface::class),
-        ])->autoConfigure()
-
-        ->set(UpdateMeiliSearchListener::class)
-        ->args([
-            service(LensMeiliSearch::class),
-        ])->autoConfigure()
-
-        ->set(CompanySearch::class)
-        ->autoConfigure()
-
         ->set(GeoLocate::class)
         ->args([
             service(HttpClientInterface::class),
@@ -135,5 +113,28 @@ return static function (ContainerConfigurator $container): void {
         ->set(Repository\RemarkRepository::class)->autoWire()->autoConfigure()
         ->set(Repository\ResultRepository::class)->autoWire()->autoConfigure()
         ->set(Repository\UserRepository::class)->autoWire()->autoConfigure()
+
+        // Brevo
+        ->set(Brevo::class)
+        ->args([
+            service(LensApi::class),
+            param('lens_lens_api.brevo.api_key'),
+            param('lens_lens_api.brevo.subscriber_list'),
+            param('lens_lens_api.brevo.dealer_lists'),
+        ])
+
+        ->set(UpdateBrevoListener::class)
+        ->args([
+            service(Brevo::class),
+            service(LoggerInterface::class),
+        ])->autoConfigure()
+
+        // MeiliSearch
+        ->set(UpdateMeiliSearchListener::class)
+        ->args([
+            service(LensMeiliSearch::class),
+        ])->autoConfigure()
+
+        ->set(CompanySearch::class)
     ;
 };

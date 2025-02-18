@@ -20,26 +20,30 @@ class LensLensApiBundle extends AbstractBundle
         $definition->import('../config/definition.php');
     }
 
+    public function prependExtension(ContainerConfigurator $container, ContainerBuilder $builder): void
+    {
+        $container->import('../config/packages/doctrine.php');
+    }
+
     public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
     {
         $container->import('../config/services.php');
 
+        $builder->setParameter('lens_lens_api.brevo.api_key', $brevoApiKey = $config['brevo']['api_key'] ?? null);
+        $builder->setParameter('lens_lens_api.brevo.subscriber_list', $brevoSubscriberList = $config['brevo']['subscriber_list'] ?? null);
+        $builder->setParameter('lens_lens_api.brevo.dealer_lists', $brevoDealerLists = $config['brevo']['dealer_lists'] ?? null);
+
+        $builder->setParameter('lens_lens_api.meili_search.url', $meiliSearchUrl = $config['meili_search']['url'] ?? null);
+        $builder->setParameter('lens_lens_api.meili_search.key', $meiliSearchKey = $config['meili_search']['key'] ?? null);
+
         // Brevo services toggle
-        if (empty($config['brevo'])) {
+        if (empty($brevoApiKey) || empty($brevoSubscriberList) || empty($brevoDealerLists)) {
             $builder->removeDefinition(Brevo::class);
             $builder->removeDefinition(UpdateBrevoListener::class);
-        } else {
-            $brevo = $builder->getDefinition(Brevo::class);
-            $brevo->replaceArgument(1, $config['brevo']['api_key']);
-            $brevo->replaceArgument(2, $config['brevo']['subscriber_list']);
-            $brevo->replaceArgument(3, $config['brevo']['dealer_lists']);
         }
 
         // MeiliSearch services toggle
-        if (ContainerBuilder::willBeAvailable('lensmedia/symfony-meili-search', LensMeiliSearch::class, ['lensmedia/api.lensmedia.nl-bundle'])) {
-            $builder->setParameter('lens_lens_api.meili_search.url', $config['meili_search']['url'] ?? null);
-            $builder->setParameter('lens_lens_api.meili_search.key', $config['meili_search']['key'] ?? null);
-        } else {
+        if (empty($meiliSearchUrl) || empty($meiliSearchKey) || !ContainerBuilder::willBeAvailable('lensmedia/symfony-meili-search', LensMeiliSearch::class, ['lensmedia/api.lensmedia.nl-bundle'])) {
             $builder->removeDefinition(CompanySearch::class);
             $builder->removeDefinition(UpdateMeiliSearchListener::class);
         }

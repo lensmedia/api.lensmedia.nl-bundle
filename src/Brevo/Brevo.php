@@ -13,6 +13,7 @@ use Lens\Bundle\LensApiBundle\Entity\Company\Dealer;
 use Lens\Bundle\LensApiBundle\Entity\Personal\Personal;
 use Lens\Bundle\LensApiBundle\LensApi;
 use RuntimeException;
+use SensitiveParameter;
 
 class Brevo
 {
@@ -21,6 +22,7 @@ class Brevo
 
     public function __construct(
         private readonly LensApi $lensApi,
+        #[SensitiveParameter]
         private readonly string $apikey,
         string|int $subscriberListId,
         string $subscriberDealerListIds,
