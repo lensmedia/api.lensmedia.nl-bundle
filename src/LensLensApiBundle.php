@@ -20,6 +20,13 @@ class LensLensApiBundle extends AbstractBundle
         $definition->import('../config/definition.php');
     }
 
+    public function build(ContainerBuilder $container): void
+    {
+        parent::build($container);
+
+        $container->addCompilerPass(new MeiliSearchCompilerPass());
+    }
+
     public function prependExtension(ContainerConfigurator $container, ContainerBuilder $builder): void
     {
         $container->import('../config/packages/doctrine.php');
@@ -47,10 +54,5 @@ class LensLensApiBundle extends AbstractBundle
             $builder->removeDefinition(CompanySearch::class);
             $builder->removeDefinition(UpdateMeiliSearchListener::class);
         }
-    }
-
-    public function process(ContainerBuilder $container): void
-    {
-        $container->addCompilerPass(new MeiliSearchCompilerPass());
     }
 }
