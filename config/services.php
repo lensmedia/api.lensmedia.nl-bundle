@@ -135,6 +135,6 @@ return static function (ContainerConfigurator $container): void {
             service(LensMeiliSearch::class),
         ])->autoConfigure()
 
-        ->set(CompanySearch::class)
+        ->set(CompanySearch::class)->autoConfigure()
     ;
 };
