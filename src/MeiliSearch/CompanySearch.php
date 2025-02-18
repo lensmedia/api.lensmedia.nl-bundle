@@ -32,7 +32,7 @@ readonly class CompanySearch implements LensMeiliSearchIndexLoaderInterface, Len
             throw new InvalidTransformData($data, Company::class);
         }
 
-        return new Document('company', [
+        return new Document([
             'id' => $data->id,
             'type' => $data->isDrivingSchool() ? 'driving_school' : 'company',
             'name' => $data->name,

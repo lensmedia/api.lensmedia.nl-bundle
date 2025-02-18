@@ -30,12 +30,16 @@ class UpdateMeiliSearchListener
     private const DELETE = 'delete';
 
     public function __construct(
-        private readonly LensMeiliSearch $lensMeiliSearch,
+        private readonly ?LensMeiliSearch $lensMeiliSearch,
     ) {
     }
 
     public function onFlush(OnFlushEventArgs $event): void
     {
+        if (!$this->lensMeiliSearch) {
+            return;
+        }
+
         self::$manager = $event->getObjectManager();
 
         $this->listRequiredMeiliSearchSynchronizationChanges();
@@ -219,12 +223,12 @@ class UpdateMeiliSearchListener
 
     private function synchronizeCreate(array $companies): void
     {
-        $this->lensMeiliSearch->addDocuments($companies);
+        $this->lensMeiliSearch->addDocuments('company', $companies);
     }
 
     private function synchronizeUpdate(array $companies): void
     {
-        $this->lensMeiliSearch->addDocuments($companies);
+        $this->lensMeiliSearch->addDocuments('company', $companies);
     }
 
     private function synchronizeDelete(array $companies): void

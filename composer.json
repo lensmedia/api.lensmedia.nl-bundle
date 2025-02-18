@@ -20,8 +20,10 @@
         "symfony/security-core": "*",
         "symfony/serializer": "*",
         "symfony/uid": "*",
-        "symfony/validator": "*",
-        "lensmedia/symfony-meili-search": "dev-main"
+        "symfony/validator": "*"
+    },
+    "recommend": {
+        "lensmedia/symfony-meili-search": "If you are editing lens-api data, you should install this package to automatically update the search indexes on entity changes"
     },
     "require-dev": {
         "ergebnis/composer-normalize": "^2.30",
@@ -34,8 +36,7 @@
     },
     "config": {
         "allow-plugins": {
-            "ergebnis/composer-normalize": true,
-            "php-http/discovery": false
+            "ergebnis/composer-normalize": true
         }
     },
     "scripts": {

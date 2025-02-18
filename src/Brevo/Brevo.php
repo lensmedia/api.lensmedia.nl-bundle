@@ -12,6 +12,7 @@ use GuzzleHttp\Client;
 use Lens\Bundle\LensApiBundle\Entity\Company\Dealer;
 use Lens\Bundle\LensApiBundle\Entity\Personal\Personal;
 use Lens\Bundle\LensApiBundle\LensApi;
+use RuntimeException;
 
 class Brevo
 {
@@ -121,6 +122,10 @@ class Brevo
 
     private function mapDealerListIdsFromEnv(string $subscriberDealerListIds): array
     {
+        if (!preg_match('/^(([a-z_]+:\d+),)*([a-z_]+:\d+)$/', $subscriberDealerListIds)) {
+            throw new RuntimeException('Subscriber dealer list values must match the format "dealer:1,other_dealer:2". And the dealer name must match those from the Dealer entity records for it to work.');
+        }
+
         $subscriberDealerListIds = explode(',', $subscriberDealerListIds);
         if (empty($subscriberDealerListIds)) {
             return [];

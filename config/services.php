@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Doctrine\Persistence\ManagerRegistry;
@@ -94,7 +96,6 @@ return static function (ContainerConfigurator $container): void {
         ->args([
             service(Brevo::class),
             service(LoggerInterface::class),
-            param('kernel.debug'),
         ])->autoConfigure()
 
         ->set(UpdateMeiliSearchListener::class)

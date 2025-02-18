@@ -35,14 +35,17 @@ class UpdateBrevoListener
     private const DELETE = 'delete';
 
     public function __construct(
-        private readonly Brevo $brevo,
+        private readonly ?Brevo $brevo,
         private readonly LoggerInterface $logger,
-        private readonly bool $isDebug,
     ) {
     }
 
     public function onFlush(OnFlushEventArgs $event): void
     {
+        if (!$this->brevo) {
+            return;
+        }
+
         self::$manager = $event->getObjectManager();
 
         $this->listRequiredBrevoSynchronizationChanges();
