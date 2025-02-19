@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use Doctrine\ORM\Events;
 use Doctrine\Persistence\ManagerRegistry;
 use Lens\Bundle\LensApiBundle\Brevo\Brevo;
 use Lens\Bundle\LensApiBundle\Command\UlidDetails;
@@ -127,13 +128,15 @@ return static function (ContainerConfigurator $container): void {
         ->args([
             service(Brevo::class),
             service(LoggerInterface::class),
-        ])->autoConfigure()
+        ])
+        ->tag('doctrine.event_listener', ['event' => Events::onFlush, 'connection' => 'lens_api'])
 
         // MeiliSearch
         ->set(UpdateMeiliSearchListener::class)
         ->args([
             service(LensMeiliSearch::class),
-        ])->autoConfigure()
+        ])
+        ->tag('doctrine.event_listener', ['event' => Events::onFlush, 'connection' => 'lens_api'])
 
         ->set(CompanySearch::class)->autoConfigure()
     ;

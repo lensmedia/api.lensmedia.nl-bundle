@@ -9,7 +9,7 @@ return static function (ContainerConfigurator $container): void {
         'dbal' => [
             'connections' => [
                 'lens_api' => [
-                    'url' => env('LENS_API_DATABASE_URL'),
+                    'url' => env('resolve:LENS_API_DATABASE_URL'),
                 ],
             ],
         ],
