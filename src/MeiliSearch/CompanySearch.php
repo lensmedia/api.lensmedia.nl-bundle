@@ -19,10 +19,7 @@ readonly class CompanySearch implements LensMeiliSearchIndexLoaderInterface, Len
     public function getIndexes(): array
     {
         return [
-            new Index(
-                uid: 'company',
-                client: 'lens_api',
-            ),
+            new Index(uid: 'company', client: 'lens_api'),
         ];
     }
 
@@ -36,9 +33,9 @@ readonly class CompanySearch implements LensMeiliSearchIndexLoaderInterface, Len
             'id' => $data->id,
             'type' => $data->isDrivingSchool() ? 'driving_school' : 'company',
             'name' => $data->name,
-            'chamber_of_commerce' => $data->chamberOfCommerce,
-            // 'affiliate' => $data->affiliate,
-            'customer_number' => $data->customerNumber(),
+            'chamberOfCommerce' => $data->chamberOfCommerce,
+            'affiliate' => sprintf('A%06d', $data->affiliate),
+            'customerNumber' => $data->customerNumber(),
 
             'addresses' => $this->mapAddresses($data->addresses),
             'contact' => $this->mapContactMethods($data->contactMethods),
@@ -50,10 +47,14 @@ readonly class CompanySearch implements LensMeiliSearchIndexLoaderInterface, Len
             'cbr' => $data->drivingSchool?->cbr,
             'licenses' => $data->drivingSchool?->driversLicences->map(fn (DriversLicence $licence) => $licence->label)->toArray() ?? [],
 
-            'created_at' => $data->createdAt,
-            'updated_at' => $data->updatedAt,
-            'published_at' => $data->publishedAt,
-            'disabled_at' => $data->disabledAt,
+            'createdAt' => $data->createdAt->getTimestamp(),
+            'createdAtDate' => $data->createdAt->format('c'),
+            'updatedAt' => $data->updatedAt->getTimestamp(),
+            'updatedAtDate' => $data->updatedAt->format('c'),
+            'publishedAt' => $data->publishedAt?->getTimestamp(),
+            'publishedAtDate' => $data->publishedAt?->format('c'),
+            'disabledAt' => $data->disabledAt?->getTimestamp(),
+            'disabledAtDate' => $data->disabledAt?->format('c'),
 
             // Not sure yet on the details but something can be done with this.
             // https://www.meilisearch.com/docs/learn/filtering_and_sorting/geosearch#sorting-results-with-_geopoint
@@ -103,7 +104,7 @@ readonly class CompanySearch implements LensMeiliSearchIndexLoaderInterface, Len
                 }
 
                 if (null === $contactMethod->label || '' === $contactMethod->label) {
-                   continue;
+                    continue;
                 }
 
                 $output[$contactMethod->method][$contactMethod->label] = $contactMethod->value;
