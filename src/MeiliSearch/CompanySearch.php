@@ -42,7 +42,7 @@ readonly class CompanySearch implements LensMeiliSearchIndexLoaderInterface, Len
             throw new InvalidTransformData($data, Company::class);
         }
 
-        return new Document([
+        $document = [
             'id' => $data->id,
             'type' => $data->isDrivingSchool() ? 'driving_school' : 'company',
             'name' => $data->name,
@@ -69,13 +69,20 @@ readonly class CompanySearch implements LensMeiliSearchIndexLoaderInterface, Len
             'disabledAt' => $data->disabledAt?->getTimestamp(),
             'disabledAtDate' => $data->disabledAt?->format('c'),
 
-            // Not sure yet on the details but something can be done with this.
-            // https://www.meilisearch.com/docs/learn/filtering_and_sorting/geosearch#sorting-results-with-_geopoint
-            '_geo' => [
-                'lat' => ($data->operatingAddress() ?? $data->defaultAddress())?->latitude,
-                'lng' => ($data->operatingAddress() ?? $data->defaultAddress())?->longitude,
-            ],
-        ]);
+            '_geo' => null,
+        ];
+
+        // Not sure yet on the details but something can be done with this.
+        // https://www.meilisearch.com/docs/learn/filtering_and_sorting/geosearch#sorting-results-with-_geopoint
+        $address = $data->operatingAddress() ?? $data->defaultAddress();
+        if (isset($address, $address->latitude, $address->longitude)) {
+            $document['_geo'] = [
+                'lat' => $address->latitude,
+                'lng' => $address->longitude,
+            ];
+        }
+
+        return new Document($document);
     }
 
     public function supports(): array
