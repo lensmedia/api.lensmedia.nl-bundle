@@ -19,7 +19,20 @@ readonly class CompanySearch implements LensMeiliSearchIndexLoaderInterface, Len
     public function getIndexes(): array
     {
         return [
-            new Index(uid: 'company', client: 'lens_api'),
+            new Index(uid: 'company', settings: [
+                'filterableAttributes'=> [
+                    'type',
+                    'chamberOfCommerce',
+                    'affiliate',
+                    'cbr',
+                    'licenses',
+                    'createdAt',
+                    'updatedAt',
+                    'publishedAt',
+                    'disabledAt',
+                    '_geo',
+                ],
+            ], client: 'lens_api'),
         ];
     }
 
@@ -34,7 +47,7 @@ readonly class CompanySearch implements LensMeiliSearchIndexLoaderInterface, Len
             'type' => $data->isDrivingSchool() ? 'driving_school' : 'company',
             'name' => $data->name,
             'chamberOfCommerce' => $data->chamberOfCommerce,
-            'affiliate' => sprintf('A%06d', $data->affiliate),
+            'affiliate' => $data->affiliate ?? 0,
             'customerNumber' => $data->customerNumber(),
 
             'addresses' => $this->mapAddresses($data->addresses),
