@@ -110,7 +110,7 @@ class UpdateMeiliSearchListener
             case ContactMethod::class:
                 if ($entity->company) {
                     $this->markAsHandled($entity->company, $operation);
-                } else {
+                } elseif ($entity->personal) {
                     foreach ($entity->personal->companies as $employment) {
                         $this->markAsHandled($employment->company, $operation);
                     }
