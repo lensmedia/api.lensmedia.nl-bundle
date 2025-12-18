@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle\Repository;
 
 use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
 use Lens\Bundle\LensApiBundle\Doctrine\LensServiceEntityRepository;
-use Lens\Bundle\LensApiBundle\Entity\Address;
+use Lens\Bundle\LensApiBundle\Entity\AddressType;
 use Lens\Bundle\LensApiBundle\Entity\Company\Company;
 use Lens\Bundle\LensApiBundle\Entity\Company\Dealer;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -42,7 +44,7 @@ class DealerRepository extends LensServiceEntityRepository
             ->join('company.addresses', 'address')
             ->addSelect('address')
             ->andWhere('address.type IN (:address_types) AND address.latitude IS NOT NULL AND address.longitude IS NOT NULL')
-            ->setParameter('address_types', [Address::OPERATING, Address::DEFAULT])
+            ->setParameter('address_types', [AddressType::Operating->value, AddressType::Default->value])
 
             ->leftJoin('company.contactMethods', 'contactMethod')
             ->addSelect('contactMethod')
@@ -79,7 +81,7 @@ class DealerRepository extends LensServiceEntityRepository
                 ->join('company.addresses', 'address')
                 ->addSelect('address')
                 ->andWhere('address.type IN (:address_types) AND address.latitude IS NOT NULL AND address.longitude IS NOT NULL')
-                ->setParameter('address_types', [Address::OPERATING, Address::DEFAULT])
+                ->setParameter('address_types', [AddressType::Operating->value, AddressType::Default->value])
 
                 ->getQuery()
                 ->getSingleResult();
@@ -112,7 +114,7 @@ class DealerRepository extends LensServiceEntityRepository
             ->join('company.addresses', 'address')
             ->addSelect('address')
             ->andWhere('address.type IN (:address_types) AND address.latitude IS NOT NULL AND address.longitude IS NOT NULL')
-            ->setParameter('address_types', [Address::OPERATING, Address::DEFAULT])
+            ->setParameter('address_types', [AddressType::Operating->value, AddressType::Default->value])
 
             ->addSelect('ST_Distance_Sphere(
                 POINT(:longitude, :latitude),

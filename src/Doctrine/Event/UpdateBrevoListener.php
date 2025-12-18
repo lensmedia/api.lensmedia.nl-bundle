@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle\Doctrine\Event;
 
 use Brevo\Client\ApiException;
@@ -30,9 +32,9 @@ class UpdateBrevoListener
     private array $isHandled = [];
     private static ObjectManager $manager;
 
-    private const CREATE = 'create';
-    private const UPDATE = 'update';
-    private const DELETE = 'delete';
+    private const string CREATE = 'create';
+    private const string UPDATE = 'update';
+    private const string DELETE = 'delete';
 
     public function __construct(
         private readonly ?Brevo $brevo,

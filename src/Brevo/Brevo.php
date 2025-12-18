@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle\Brevo;
 
 use Brevo\Client\Api\ContactsApi;
@@ -60,7 +62,7 @@ class Brevo
             return;
         }
 
-        $createContact = (new CreateContact())
+        $createContact = new CreateContact()
             ->setEmail($email)
             ->setAttributes((object)[
                 'FIRSTNAME' => $this->firstNameFromPersonal($personal),
@@ -92,7 +94,7 @@ class Brevo
             return;
         }
 
-        $updateContact = (new UpdateContact())
+        $updateContact = new UpdateContact()
             ->setAttributes((object)[
                 'EMAIL' => $email,
                 'FIRSTNAME' => $this->firstNameFromPersonal($personal),

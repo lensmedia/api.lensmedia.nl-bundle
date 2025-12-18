@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle\Entity;
 
 use DateTimeImmutable;
@@ -13,20 +15,32 @@ use Symfony\Component\Uid\Ulid;
 #[ORM\Entity(repositoryClass: RemarkRepository::class)]
 class Remark
 {
-    public const DEFAULT = 'default';
-    public const INFO = 'info';
-    public const QUESTION = 'question';
-    public const IMPORTANT = 'important';
-    public const WARNING = 'warning';
-    public const DANGER = 'danger';
+    /** @deprecated use RemarkLevel::Default enum (value) instead */
+    public const string DEFAULT = RemarkLevel::Default->value;
 
-    public const LEVELS = [
-        self::DEFAULT => self::DEFAULT,
-        self::INFO => self::INFO,
-        self::QUESTION => self::QUESTION,
-        self::IMPORTANT => self::IMPORTANT,
-        self::WARNING => self::WARNING,
-        self::DANGER => self::DANGER,
+    /** @deprecated use RemarkLevel::Info enum (value) instead */
+    public const string INFO = RemarkLevel::Info->value;
+
+    /** @deprecated use RemarkLevel::Question enum (value) instead */
+    public const string QUESTION = RemarkLevel::Question->value;
+
+    /** @deprecated use RemarkLevel::Important enum (value) instead */
+    public const string IMPORTANT = RemarkLevel::Important->value;
+
+    /** @deprecated use RemarkLevel::Warning enum (value) instead */
+    public const string WARNING = RemarkLevel::Warning->value;
+
+    /** @deprecated use RemarkLevel::Danger enum (value) instead */
+    public const string DANGER = RemarkLevel::Danger->value;
+
+    /** @deprecated see RemarkLevel enum and use cases() */
+    public const array LEVELS = [
+        RemarkLevel::Default->value => RemarkLevel::Default->value,
+        RemarkLevel::Info->value => RemarkLevel::Info->value,
+        RemarkLevel::Question->value => RemarkLevel::Question->value,
+        RemarkLevel::Important->value => RemarkLevel::Important->value,
+        RemarkLevel::Warning->value => RemarkLevel::Warning->value,
+        RemarkLevel::Danger->value => RemarkLevel::Danger->value,
     ];
 
     #[ORM\Id]
@@ -34,7 +48,7 @@ class Remark
     public Ulid $id;
 
     #[ORM\Column]
-    public string $level = self::DEFAULT;
+    public string $level = RemarkLevel::Default->value;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]

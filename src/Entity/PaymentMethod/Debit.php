@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle\Entity\PaymentMethod;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -9,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: DebitRepository::class)]
 class Debit extends PaymentMethod
 {
-    public const METHOD = 'debit';
+    public const string METHOD = 'debit';
 
     #[ORM\Column]
     public string $accountHolder;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -21,21 +23,31 @@ use const FILTER_VALIDATE_URL;
 #[ORM\Index(fields: ['value'])]
 class ContactMethod
 {
-    public const UNDEFINED = 'undefined';
-    public const PHONE = 'phone';
-    public const EMAIL = 'email';
-    public const WEBSITE = 'website';
-    public const SOCIAL = 'social';
+    /** @deprecated use ContactMethodMethod enum instead */
+    public const string UNDEFINED = ContactMethodMethod::Undefined->value;
 
-    public const METHODS = [
-        self::UNDEFINED => self::UNDEFINED,
-        self::PHONE => self::PHONE,
-        self::EMAIL => self::EMAIL,
-        self::WEBSITE => self::WEBSITE,
-        self::SOCIAL => self::SOCIAL,
+    /** @deprecated use ContactMethodMethod enum instead */
+    public const string PHONE = ContactMethodMethod::Phone->value;
+
+    /** @deprecated use ContactMethodMethod enum instead */
+    public const string EMAIL = ContactMethodMethod::Email->value;
+
+    /** @deprecated use ContactMethodMethod enum instead */
+    public const string WEBSITE = ContactMethodMethod::Website->value;
+
+    /** @deprecated use ContactMethodMethod enum instead */
+    public const string SOCIAL = ContactMethodMethod::Social->value;
+
+    /** @deprecated see ContactMethodMethod enum and use cases() instead */
+    public const array METHODS = [
+        ContactMethodMethod::Undefined->value => ContactMethodMethod::Undefined->value,
+        ContactMethodMethod::Phone->value => ContactMethodMethod::Phone->value,
+        ContactMethodMethod::Email->value => ContactMethodMethod::Email->value,
+        ContactMethodMethod::Website->value => ContactMethodMethod::Website->value,
+        ContactMethodMethod::Social->value => ContactMethodMethod::Social->value,
     ];
 
-    public const SOCIAL_LABELS = [
+    public const array SOCIAL_LABELS = [
         'LinkedIn' => 'linkedin',
         'Twitter' => 'twitter',
         'Facebook' => 'facebook',
@@ -93,27 +105,27 @@ class ContactMethod
 
     public function isUndefined(): bool
     {
-        return self::UNDEFINED === $this->method;
+        return ContactMethodMethod::Undefined->value === $this->method;
     }
 
     public function isPhone(): bool
     {
-        return self::PHONE === $this->method;
+        return ContactMethodMethod::Phone->value === $this->method;
     }
 
     public function isEmail(): bool
     {
-        return self::EMAIL === $this->method;
+        return ContactMethodMethod::Email->value === $this->method;
     }
 
     public function isWebsite(): bool
     {
-        return self::WEBSITE === $this->method;
+        return ContactMethodMethod::Website->value === $this->method;
     }
 
     public function isSocial(): bool
     {
-        return self::SOCIAL === $this->method;
+        return ContactMethodMethod::Social->value === $this->method;
     }
 
     public function setPersonal(?Personal $personal): void
@@ -146,9 +158,9 @@ class ContactMethod
         }
 
         match ($this->method) {
-            self::WEBSITE => $this->isValidDomain($context, $payload),
-            self::EMAIL => $this->isValidEmail($context, $payload),
-            self::PHONE => $this->isValidPhoneNumber($context, $payload),
+            ContactMethodMethod::Website->value => $this->isValidDomain($context, $payload),
+            ContactMethodMethod::Email->value => $this->isValidEmail($context, $payload),
+            ContactMethodMethod::Phone->value => $this->isValidPhoneNumber($context, $payload),
 
             // All other types are valid by default, can't really validate that based on random user input.
             default => null,

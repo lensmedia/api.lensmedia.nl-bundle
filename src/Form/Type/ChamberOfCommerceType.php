@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle\Form\Type;
 
 use Lens\Bundle\LensApiBundle\Validator\ChamberOfCommerce;
@@ -11,14 +13,12 @@ class ChamberOfCommerceType extends AbstractType
 {
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefault('attr', function (OptionsResolver $resolver): void {
-            $resolver->setDefaults([
-                'class' => null,
-                'placeholder' => null,
-                'pattern' => '\d{8}',
-                'inputmode' => 'numeric',
-            ]);
-        });
+        $resolver->setDefault('attr', [
+            'class' => null,
+            'placeholder' => null,
+            'pattern' => '\d{8}',
+            'inputmode' => 'numeric',
+        ]);
 
         $resolver->setDefault('constraints', [
             new ChamberOfCommerce(),

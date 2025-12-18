@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle\Repository;
 
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -34,6 +36,7 @@ class UserRepository extends LensServiceEntityRepository
             ->getSingleScalarResult() > 0;
     }
 
+    /** @deprecated move to meili search */
     public function search(string $terms): array
     {
         $weights = $this->calculateUserSearchWeights($terms);

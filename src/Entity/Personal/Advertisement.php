@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle\Entity\Personal;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -22,10 +24,14 @@ use Symfony\Component\Uid\Ulid;
 #[UniqueEntity(fields: 'type', message: 'advertisement.type.unique_entity')]
 class Advertisement
 {
-    public const EMAIL = 'email';
-    public const MAIL = 'mail';
+    /** @deprecated use AdvertisementType::Email enum instead */
+    public const string EMAIL = AdvertisementType::Email->value;
 
-    public const TYPES = [
+    /** @deprecated use AdvertisementType::Mail enum instead */
+    public const string MAIL = AdvertisementType::Mail->value;
+
+    /** @deprecated see AdvertisementType enum and use cases() instead */
+    public const array TYPES = [
         self::EMAIL => self::EMAIL,
         self::MAIL => self::MAIL,
     ];
@@ -49,12 +55,12 @@ class Advertisement
 
     public function isEmail(): bool
     {
-        return self::EMAIL === $this->type;
+        return AdvertisementType::Email->value === $this->type;
     }
 
     public function isMail(): bool
     {
-        return self::MAIL === $this->type;
+        return AdvertisementType::Mail->value === $this->type;
     }
 
     public function addPersonal(Personal $personal): void

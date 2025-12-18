@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle\Entity;
 
 use DateInterval;
@@ -19,14 +21,17 @@ class User implements RecoveryInterface
 {
     use RecoveryTrait;
 
-    public const RECOVERY_TIMEOUT = 'PT3H';
+    public const string RECOVERY_TIMEOUT = 'PT3H';
 
-    public const ROLE_ADMIN = 'ROLE_ADMIN';
-    public const ROLE_USER = 'ROLE_USER';
+    /** @deprecated use Role::Admin enum instead */
+    public const string ROLE_ADMIN = 'ROLE_ADMIN';
 
-    public const ROLES = [
-        self::ROLE_ADMIN => self::ROLE_ADMIN,
-        self::ROLE_USER => self::ROLE_USER,
+    /** @deprecated use Role::User enum instead */
+    public const string ROLE_USER = 'ROLE_USER';
+
+    public const array ROLES = [
+        Role::Admin->value => Role::Admin->value,
+        Role::User->value => Role::User->value,
     ];
 
     #[ORM\Id]
@@ -46,7 +51,7 @@ class User implements RecoveryInterface
 
     #[Assert\NotBlank]
     #[ORM\Column(type: 'simple_array')]
-    public array $roles = [self::ROLE_USER];
+    public array $roles = [Role::User->value];
 
     #[Assert\NotBlank]
     #[ORM\Column(type: 'datetime_immutable', options: ['default' => 'CURRENT_TIMESTAMP'])]

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle;
 
 use Brick\Math\BigDecimal;
@@ -13,27 +15,27 @@ class Coords
     // Values are rounded to 10ths just for DX readability.
     // http://wiki.gis.com/wiki/index.php/Decimal_degrees
 
-    public const PRECISION_100KM = 0;
-    public const PRECISION_10KM = 1;
-    public const PRECISION_1KM = 2;
+    public const int PRECISION_100KM = 0;
+    public const int PRECISION_10KM = 1;
+    public const int PRECISION_1KM = 2;
 
-    public const PRECISION_100M = 3;
-    public const PRECISION_10M = 4;
-    public const PRECISION_1M = 5;
+    public const int PRECISION_100M = 3;
+    public const int PRECISION_10M = 4;
+    public const int PRECISION_1M = 5;
 
-    public const PRECISION_100CM = 5;
-    public const PRECISION_10CM = 6;
-    public const PRECISION_1CM = 7;
+    public const int PRECISION_100CM = 5;
+    public const int PRECISION_10CM = 6;
+    public const int PRECISION_1CM = 7;
 
-    public const PRECISION_100MM = 6;
-    public const PRECISION_10MM = 7;
-    public const PRECISION_1MM = 8;
+    public const int PRECISION_100MM = 6;
+    public const int PRECISION_10MM = 7;
+    public const int PRECISION_1MM = 8;
 
-    public const LATITUDE_MIN = -90;
-    public const LATITUDE_MAX = 90;
+    public const int LATITUDE_MIN = -90;
+    public const int LATITUDE_MAX = 90;
 
-    public const LONGITUDE_MIN = -180;
-    public const LONGITUDE_MAX = 180;
+    public const int LONGITUDE_MIN = -180;
+    public const int LONGITUDE_MAX = 180;
 
     private string $latitude;
     private string $longitude;

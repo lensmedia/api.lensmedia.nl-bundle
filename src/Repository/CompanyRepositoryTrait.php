@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle\Repository;
 
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -17,6 +19,7 @@ use const PREG_SPLIT_NO_EMPTY;
  */
 trait CompanyRepositoryTrait
 {
+    /** @deprecated switch to meili search */
     public function search(string $terms, int $limit = 25): array
     {
         $weights = $this->calculateCompanySearchWeights($terms, $limit);
@@ -147,8 +150,9 @@ trait CompanyRepositoryTrait
         // die((new SqlFormatter())->format($qb->getQuery()->getDQL()));
 
         $results = $qb->getQuery()->getResult();
+        /** @var \Lens\Bundle\LensApiBundle\Entity\Company\Company $result */
         foreach ($results as $index => $result) {
-            $result->weight = $weights[$index]['weight'];
+            $result->weight = (int)$weights[$index]['weight'];
         }
 
         return $results;

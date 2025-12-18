@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle\Entity\Company\DrivingSchool;
 
 use Doctrine\Common\Collections\ArrayCollection;

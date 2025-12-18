@@ -4,14 +4,14 @@
     "license": "proprietary",
     "type": "symfony-bundle",
     "require": {
-        "php": ">=8.2",
+        "php": ">=8.4",
         "ext-openssl": "*",
-        "beberlei/doctrineextensions": "dev-master",
+        "beberlei/doctrineextensions": "*",
         "brick/math": "*",
         "brick/money": "*",
         "egulias/email-validator": "^4.0",
         "getbrevo/brevo-php": "^2.0",
-        "giggsey/libphonenumber-for-php": "^8.0",
+        "giggsey/libphonenumber-for-php": "^9.0.20",
         "symfony/cache": "*",
         "symfony/form": "*",
         "symfony/framework-bundle": "*",
@@ -20,10 +20,8 @@
         "symfony/security-core": "*",
         "symfony/serializer": "*",
         "symfony/uid": "*",
-        "symfony/validator": "*"
-    },
-    "recommend": {
-        "lensmedia/symfony-meili-search": "If you are editing lens-api data, you should install this package to automatically update the search indexes on entity changes"
+        "symfony/validator": "*",
+        "lensmedia/symfony-meili-search": "dev-main"
     },
     "require-dev": {
         "ergebnis/composer-normalize": "^2.30",
@@ -36,10 +34,14 @@
     },
     "config": {
         "allow-plugins": {
-            "ergebnis/composer-normalize": true
+            "ergebnis/composer-normalize": true,
+            "php-http/discovery": false
         }
     },
     "scripts": {
         "fix": "php vendor/bin/php-cs-fixer fix src"
+    },
+    "recommend": {
+        "lensmedia/symfony-meili-search": "If you are editing lens-api data, you should install this package to automatically update the search indexes on entity changes"
     }
 }

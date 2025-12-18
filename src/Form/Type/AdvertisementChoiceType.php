@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle\Form\Type;
 
 use Lens\Bundle\LensApiBundle\Entity\Personal\Advertisement;

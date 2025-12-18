@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle\MeiliSearch;
 
 use Doctrine\Common\Collections\Collection;

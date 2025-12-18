@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle\Repository;
 
 use Doctrine\Persistence\ManagerRegistry;
@@ -17,7 +19,7 @@ class CompanyRepository extends LensServiceEntityRepository
 {
     use CompanyRepositoryTrait;
 
-    private const LINKING_CODE_CIPHER = 'aes-256-cfb';
+    private const string LINKING_CODE_CIPHER = 'aes-256-cfb';
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -39,6 +41,7 @@ class CompanyRepository extends LensServiceEntityRepository
         $string = substr($company->id->toBinary(), -6) // 6 bytes
             .pack('n', $company->affiliate); // 2 bytes
 
+        /** @noinspection EncryptionInitializationVectorRandomnessInspection IV is fixed as we did not store it to check validity */
         $encrypted = openssl_encrypt(
             $string,
             self::LINKING_CODE_CIPHER,

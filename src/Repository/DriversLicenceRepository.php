@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle\Repository;
 
 use Doctrine\Persistence\ManagerRegistry;

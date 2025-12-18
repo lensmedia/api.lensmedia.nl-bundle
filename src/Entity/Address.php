@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -17,18 +19,28 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Index(fields: ['zipCode'])]
 class Address
 {
-    public const DEFAULT = 'default';
-    public const MAILING = 'mailing';
-    public const SHIPPING = 'shipping';
-    public const BILLING = 'billing';
-    public const OPERATING = 'operating';
+    /** @deprecated use AddressType enum instead */
+    public const string DEFAULT = AddressType::Default->value;
 
-    public const TYPES = [
-        self::DEFAULT => self::DEFAULT,
-        self::MAILING => self::MAILING,
-        self::SHIPPING => self::SHIPPING,
-        self::BILLING => self::BILLING,
-        self::OPERATING => self::OPERATING,
+    /** @deprecated use AddressType enum instead */
+    public const string MAILING = AddressType::Mailing->value;
+
+    /** @deprecated use AddressType enum instead */
+    public const string SHIPPING = AddressType::Shipping->value;
+
+    /** @deprecated use AddressType enum instead */
+    public const string BILLING = AddressType::Billing->value;
+
+    /** @deprecated use AddressType enum instead */
+    public const string OPERATING = AddressType::Operating->value;
+
+    /** @deprecated see AddressType enum and use cases() instead */
+    public const array TYPES = [
+        AddressType::Default->value => AddressType::Default->value,
+        AddressType::Mailing->value => AddressType::Mailing->value,
+        AddressType::Shipping->value => AddressType::Shipping->value,
+        AddressType::Billing->value => AddressType::Billing->value,
+        AddressType::Operating->value => AddressType::Operating->value,
     ];
 
     #[ORM\Id]
@@ -55,7 +67,7 @@ class Address
     public string $country = 'NL';
 
     #[ORM\Column]
-    public string $type = self::DEFAULT;
+    public string $type = AddressType::Default->value;
 
     #[ORM\Column(type: 'decimal', precision: Coords::PRECISION_1M + 3, scale: Coords::PRECISION_1M, nullable: true)]
     public ?string $longitude = null;
@@ -98,27 +110,27 @@ class Address
 
     public function isDefault(): bool
     {
-        return self::DEFAULT === $this->type;
+        return AddressType::Default->value === $this->type;
     }
 
     public function isMailing(): bool
     {
-        return self::MAILING === $this->type;
+        return AddressType::Mailing->value === $this->type;
     }
 
     public function isShipping(): bool
     {
-        return self::SHIPPING === $this->type;
+        return AddressType::Shipping->value === $this->type;
     }
 
     public function isBilling(): bool
     {
-        return self::BILLING === $this->type;
+        return AddressType::Billing->value === $this->type;
     }
 
     public function isOperating(): bool
     {
-        return self::OPERATING === $this->type;
+        return AddressType::Operating->value === $this->type;
     }
 
     public function isLocatedAtTheSamePlaceAs(self $address): bool

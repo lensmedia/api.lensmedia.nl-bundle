@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle\Command;
 
 use Exception;
@@ -11,12 +13,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Uid\Ulid;
 
-#[AsCommand(name: 'lens-api:ulid-details')]
+#[AsCommand(name: 'lens-api:ulid-details', description: 'Converts input ulid(s) to various formats.')]
 class UlidDetails extends Command
 {
     protected function configure(): void
     {
-        $this->setDescription('Converts input ulid(s) to various formats.');
         $this->addArgument('codes', InputArgument::IS_ARRAY);
     }
 

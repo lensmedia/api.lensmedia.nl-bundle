@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle\Entity;
 
 use DateTimeImmutable;
@@ -20,7 +22,7 @@ trait RecoveryTrait
     {
         $this->checkRecoveryInterface();
 
-        $this->recoveryToken = (new Ulid())->toBase58();
+        $this->recoveryToken = new Ulid()->toBase58();
     }
 
     public function recoveryExpiresAt(): ?DateTimeImmutable

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle\Form\Type;
 
 use Lens\Bundle\LensApiBundle\Validator\Initials;
@@ -11,13 +13,11 @@ class InitialsType extends AbstractType
 {
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefault('attr', function (OptionsResolver $resolver): void {
-            $resolver->setDefaults([
-                'class' => null,
-                'placeholder' => null,
-                'pattern' => Initials::PATTERN_HTML,
-            ]);
-        });
+        $resolver->setDefault('attr', [
+            'class' => null,
+            'placeholder' => null,
+            'pattern' => Initials::PATTERN_HTML,
+        ]);
     }
 
     public function getParent(): string

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle\Doctrine\Event;
 
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;

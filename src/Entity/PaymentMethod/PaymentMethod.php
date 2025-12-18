@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle\Entity\PaymentMethod;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -13,12 +15,12 @@ use Symfony\Component\Uid\Ulid;
 #[ORM\DiscriminatorMap(PaymentMethod::TYPE_TO_CLASS)]
 class PaymentMethod
 {
-    private const TYPE_TO_CLASS = [
+    private const array TYPE_TO_CLASS = [
         Debit::METHOD => Debit::class,
         Creditcard::METHOD => Creditcard::class,
     ];
 
-    public const METHODS = [
+    public const array METHODS = [
         Debit::METHOD => Debit::METHOD,
     ];
 

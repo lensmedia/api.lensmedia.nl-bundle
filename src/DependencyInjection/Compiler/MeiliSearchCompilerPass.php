@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle\DependencyInjection\Compiler;
 
 use Lens\Bundle\MeiliSearchBundle\LensMeiliSearch;

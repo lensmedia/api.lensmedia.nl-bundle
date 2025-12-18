@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle\GeoLocate;
 
 use Lens\Bundle\LensApiBundle\Entity\Address;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle\Validator;
 
 use Lens\Bundle\LensApiBundle\Entity\Company\Dealer;
@@ -17,7 +19,7 @@ class UniqueDealerValidator extends ConstraintValidator
 
     public function validate($value, Constraint $constraint): void
     {
-        if (!$constraint instanceof UniqueDealer) {
+        if (!($constraint instanceof UniqueDealer)) {
             throw new UnexpectedTypeException($constraint, UniqueDealer::class);
         }
 

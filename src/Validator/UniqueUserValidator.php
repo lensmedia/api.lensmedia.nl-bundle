@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lens\Bundle\LensApiBundle\Validator;
 
 use Lens\Bundle\LensApiBundle\LensApi;
@@ -16,7 +18,7 @@ class UniqueUserValidator extends ConstraintValidator
 
     public function validate($value, Constraint $constraint): void
     {
-        if (!$constraint instanceof UniqueUser) {
+        if (!($constraint instanceof UniqueUser)) {
             throw new UnexpectedTypeException($constraint, UniqueUser::class);
         }
 
