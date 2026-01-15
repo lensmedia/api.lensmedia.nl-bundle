@@ -43,6 +43,8 @@ class Address
         AddressType::Operating->value => AddressType::Operating->value,
     ];
 
+    public const string DEFAULT_COUNTRY = 'NL';
+
     #[ORM\Id]
     #[ORM\Column(type: 'ulid')]
     public Ulid $id;
@@ -64,7 +66,7 @@ class Address
 
     #[ORM\Column(length: 2)]
     #[Assert\Country]
-    public string $country = 'NL';
+    public string $country = self::DEFAULT_COUNTRY;
 
     #[ORM\Column]
     public string $type = AddressType::Default->value;
