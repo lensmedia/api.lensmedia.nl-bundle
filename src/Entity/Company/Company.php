@@ -315,8 +315,12 @@ class Company
         }
     }
 
-    public function isDealer(string $name): bool
+    public function isDealer(?string $name = null): bool
     {
+        if (null === $name) {
+            return !$this->dealers->isEmpty();
+        }
+
         return $this->dealers->exists(
             static fn (int $index, Dealer $dealer) => mb_strtolower($name) === $dealer->name,
         );
