@@ -41,8 +41,7 @@ class LensLensApiBundle extends AbstractBundle
         // Brevo services toggle
         $builder->setParameter('lens_lens_api.brevo.api_key', $brevoApiKey = $config['brevo']['api_key'] ?? null);
         $builder->setParameter('lens_lens_api.brevo.subscriber_list', $brevoSubscriberList = $config['brevo']['subscriber_list'] ?? null);
-        $builder->setParameter('lens_lens_api.brevo.dealer_lists', $brevoDealerLists = $config['brevo']['dealer_lists'] ?? null);
-        if (empty($brevoApiKey) || empty($brevoSubscriberList) || empty($brevoDealerLists)) {
+        if (empty($brevoApiKey) || empty($brevoSubscriberList)) {
             $builder->removeDefinition(Brevo::class);
             $builder->removeDefinition(UpdateBrevoListener::class);
         }

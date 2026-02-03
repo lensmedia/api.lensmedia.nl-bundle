@@ -28,15 +28,19 @@ class DrivingSchoolRepository extends LensServiceEntityRepository
      *
      * @return Company[]
      */
-    public function nearby(Ulid|string $companyId, int $limit = 10): array
+    public function nearby(Company|Ulid|string $company, int $limit = 10): array
     {
+        if ($company instanceof Company) {
+            $company = $company->id;
+        }
+
         try {
-            /** @var Company $company */
-            $company = $this->getEntityManager()
+            /** @var Company $companyResult */
+            $companyResult = $this->getEntityManager()
                 ->getRepository(Company::class)
                 ->createQueryBuilder('company')
                 ->andWhere('company.id = :company')
-                ->setParameter('company', $companyId, 'ulid')
+                ->setParameter('company', $company, 'ulid')
                 ->andWhere('company.publishedAt IS NOT NULL AND company.publishedAt <= CURRENT_TIMESTAMP()')
 
                 // Only select driving schools so far.
@@ -53,11 +57,11 @@ class DrivingSchoolRepository extends LensServiceEntityRepository
         } catch (NoResultException) {
             throw new NotFoundHttpException(sprintf(
                 'Provided driving school "%s" does not exist, has no default address or is missing its latitude and/or longitude values.',
-                $companyId,
+                $company,
             ));
         }
 
-        $originCoords = $company->operatingCoords();
+        $originCoords = $companyResult->operatingCoords();
         if (null === $originCoords) {
             throw new RuntimeException('Company has no coords on operating or default address.');
         }
@@ -66,7 +70,7 @@ class DrivingSchoolRepository extends LensServiceEntityRepository
             ->getRepository(Company::class)
             ->createQueryBuilder('company')
             ->andWhere('company.id != :company')
-            ->setParameter('company', $companyId, 'ulid')
+            ->setParameter('company', $company, 'ulid')
 
             ->andWhere('company.publishedAt IS NOT NULL AND company.publishedAt <= CURRENT_TIMESTAMP()')
             ->join('company.drivingSchool', 'drivingSchool')

@@ -19,8 +19,11 @@ use Lens\Bundle\LensApiBundle\Entity\Remark;
 use Lens\Bundle\LensApiBundle\Entity\User;
 use Lens\Bundle\LensApiBundle\Repository\CompanyRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Uid\AbstractUid;
 use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Constraints as Assert;
+
+use function sprintf;
 
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
 #[ORM\Index(fields: ['chamberOfCommerce'])]
@@ -92,8 +95,12 @@ class Company
     #[Assert\Valid]
     public Collection $employees;
 
-    /** @var Collection<int, Dealer> */
-    #[ORM\ManyToMany(targetEntity: Dealer::class, mappedBy: 'companies', cascade: ['persist'])]
+    /** @var Collection<int, Dealer> this company has purchased from these companies */
+    #[ORM\OneToMany(targetEntity: Dealer::class, mappedBy: 'supplier', cascade: ['persist'])]
+    public Collection $suppliers;
+
+    /** @var Collection<int, Dealer> this company has sold items to these companies */
+    #[ORM\OneToMany(targetEntity: Dealer::class, mappedBy: 'dealer', cascade: ['persist'])]
     public Collection $dealers;
 
     /** @var Collection<int, PaymentMethod> */
@@ -128,7 +135,7 @@ class Company
         $this->addresses = new ArrayCollection();
         $this->contactMethods = new ArrayCollection();
         $this->paymentMethods = new ArrayCollection();
-        $this->dealers = new ArrayCollection();
+        $this->suppliers = new ArrayCollection();
         $this->employees = new ArrayCollection();
         $this->remarks = new ArrayCollection();
 
@@ -240,22 +247,6 @@ class Company
         $this->paymentMethods->removeElement($paymentMethod);
     }
 
-    public function addDealer(Dealer $dealer): void
-    {
-        if (!$this->dealers->contains($dealer)) {
-            $this->dealers->add($dealer);
-            $dealer->addCompany($this);
-        }
-    }
-
-    public function removeDealer(Dealer $dealer): void
-    {
-        if ($this->dealers->contains($dealer)) {
-            $this->dealers->removeElement($dealer);
-            $dealer->removeCompany($this);
-        }
-    }
-
     public function addEmployee(Employee $employee): void
     {
         if (!$this->employees->contains($employee)) {
@@ -315,14 +306,37 @@ class Company
         }
     }
 
-    public function isDealer(?string $name = null): bool
+    public function isSupplierFor(self|AbstractUid|null $dealer = null): bool
     {
-        if (null === $name) {
-            return !$this->dealers->isEmpty();
+        if ($dealer instanceof self) {
+            return $this->suppliers->exists(
+                static fn (int $index, Dealer $supplier) => $supplier->dealer === $dealer,
+            );
         }
 
-        return $this->dealers->exists(
-            static fn (int $index, Dealer $dealer) => mb_strtolower($name) === $dealer->name,
-        );
+        if ($dealer instanceof AbstractUid) {
+            return $this->suppliers->exists(
+                static fn (int $index, Dealer $supplier) => $supplier->dealer->id->equals($dealer),
+            );
+        }
+
+        return !$this->suppliers->isEmpty();
+    }
+
+    public function isDealerFor(self|AbstractUid|null $supplier = null): bool
+    {
+        if ($supplier instanceof self) {
+            return $this->dealers->exists(
+                static fn (int $index, Dealer $dealer) => $dealer->supplier === $supplier,
+            );
+        }
+
+        if ($supplier instanceof AbstractUid) {
+            return $this->dealers->exists(
+                static fn (int $index, Dealer $dealer) => $dealer->supplier->id->equals($supplier),
+            );
+        }
+
+        return !$this->dealers->isEmpty();
     }
 }

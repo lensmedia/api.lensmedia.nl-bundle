@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lens\Bundle\LensApiBundle\Repository;
 
+use DateTimeImmutable;
 use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
 use Lens\Bundle\LensApiBundle\Doctrine\LensServiceEntityRepository;
@@ -11,9 +12,7 @@ use Lens\Bundle\LensApiBundle\Entity\AddressType;
 use Lens\Bundle\LensApiBundle\Entity\Company\Company;
 use Lens\Bundle\LensApiBundle\Entity\Company\Dealer;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Validator\Constraints\Ulid;
-
-use function sprintf;
+use Symfony\Component\Uid\Ulid;
 
 class DealerRepository extends LensServiceEntityRepository
 {
@@ -23,10 +22,49 @@ class DealerRepository extends LensServiceEntityRepository
     }
 
     /**
-     * Returns a list of driving schools for a given dealer optimized for the leaflet map displays.
+     * Marks a company as having sold something from a supplier (e.g. X purchased something of itheorie/theorieboek).
+     *
+     * Timestamp allows us to specify a timestamp of when the dealer was last active, this allows us to call updates
+     * from various places (and times) while keeping the most recent timestamp.
      */
-    public function map(Ulid|string $dealerId): array
+    public function mark(Company $company, Company $purchasedFrom, DateTimeImmutable $timestamp): Dealer
     {
+        // Cache created entries to avoid multiple queries within the same request.
+        // This also avoids unique (dealer/company) violations, if multiple calls are made for the same company+dealer,
+        // then the timestamp will just be updated if needed.
+        static $trackedEntries = [];
+
+        $index = $this->index($company, $purchasedFrom);
+        $result = $trackedEntries[$index] ?? null;
+
+        $result ??= $this->createQueryBuilder('dealers')
+            ->andWhere('dealers.dealer = :dealer')
+            ->setParameter('dealer', $company->id, 'ulid')
+
+            ->andWhere('dealers.supplier = :company')
+            ->setParameter('company', $purchasedFrom->id, 'ulid')
+
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        $result ??= Dealer::mark($company, $purchasedFrom);
+
+        $result->update($timestamp);
+
+        $trackedEntries[$index] = $result;
+
+        return $result;
+    }
+
+    /**
+     * Get all dealers for a specific company (companies that purchased from dealerId).
+     */
+    public function map(Company|Ulid|string $supplier): array
+    {
+        if ($supplier instanceof Company) {
+            $supplier = $supplier->id;
+        }
+
         // Approaching from other side, its easier due to joins.
         return $this->getEntityManager()
             ->getRepository(Company::class)
@@ -49,29 +87,37 @@ class DealerRepository extends LensServiceEntityRepository
             ->leftJoin('company.contactMethods', 'contactMethod')
             ->addSelect('contactMethod')
 
-            ->join('company.dealers', 'dealer')
-            ->andWhere('dealer.id = :dealer')
-            ->setParameter('dealer', $dealerId, 'ulid')
+            ->leftJoin('company.dealers', 'dealer')
+            ->andWhere('dealer.supplier = :supplier')
+            ->setParameter('supplier', $supplier, 'ulid')
 
             ->getQuery()
             ->getResult();
     }
 
     /**
-     * Returns a list of the closest dealers next to the specified company.
+     * Returns a list of the closest dealers for supplier next to the specified company (for those with latitude/longitude).
      *
      * @return Company[]
      */
-    public function nearby(Ulid|string $dealerId, Ulid|string $companyId, int $maxResults = 10): array
+    public function nearby(Company|Ulid|string $company, Company|Ulid|string $supplier, int $maxResults = 10): array
     {
+        if ($company instanceof Company) {
+            $company = $company->id;
+        }
+
+        if ($supplier instanceof Company) {
+            $supplier = $supplier->id;
+        }
+
         // Check if we have provided a company which can be used.
         try {
-            /** @var Company $company */
-            $company = $this->getEntityManager()
+            /** @var Company $companyResult */
+            $companyResult = $this->manager()
                 ->getRepository(Company::class)
                 ->createQueryBuilder('company')
                 ->andWhere('company.id = :company')
-                ->setParameter('company', $companyId, 'ulid')
+                ->setParameter('company', $company, 'ulid')
                 ->andWhere('company.publishedAt IS NOT NULL AND company.publishedAt <= CURRENT_TIMESTAMP()')
 
                 // Only select driving schools so far.
@@ -88,28 +134,28 @@ class DealerRepository extends LensServiceEntityRepository
         } catch (NoResultException) {
             throw new NotFoundHttpException(sprintf(
                 'Provided company "%s" does not exist, is not published, has no default address or is missing its latitude and/or longitude values.',
-                $companyId,
+                $company,
             ));
         }
 
-        $originCoords = $company->operatingCoords();
+        $originCoords = $companyResult->operatingCoords();
         if (null === $originCoords) {
             return [];
         }
 
-        $qb = $this->getEntityManager()
+        $qb = $this->manager()
             ->getRepository(Company::class)
             ->createQueryBuilder('company')
             ->andWhere('company.id != :company')
-            ->setParameter('company', $companyId, 'ulid')
+            ->setParameter('company', $company, 'ulid')
             ->andWhere('company.publishedAt IS NOT NULL AND company.publishedAt <= CURRENT_TIMESTAMP()')
 
             ->join('company.drivingSchool', 'drivingSchool')
             ->addSelect('drivingSchool')
 
-            ->join('company.dealers', 'dealer')
-            ->andWhere('dealer.id = :dealer')
-            ->setParameter('dealer', $dealerId, 'ulid')
+            ->join('company.suppliers', 'supplier')
+            ->andWhere('supplier.id = :supplier')
+            ->setParameter('supplier', $supplier, 'ulid')
 
             ->join('company.addresses', 'address')
             ->addSelect('address')
@@ -130,5 +176,10 @@ class DealerRepository extends LensServiceEntityRepository
 
             return $result[0];
         }, $qb->getQuery()->getResult());
+    }
+
+    private function index(Company $dealer, Company $supplier): string
+    {
+        return sprintf('%s_%s', $dealer->id->toHex(), $supplier->id->toHex());
     }
 }

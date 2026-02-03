@@ -36,9 +36,9 @@ abstract class LensServiceEntityRepository extends ServiceEntityRepository
         return $this->getEntityManager();
     }
 
-    public function reference(string $class, mixed $id): ?object
+    public function reference(mixed $id): ?object
     {
-        return $this->manager()->getReference($class, $id);
+        return $this->manager()->getReference($this->getClassName(), $id);
     }
 
     public function add(object $object, bool $flush = false, bool $refresh = false): void
@@ -83,6 +83,11 @@ abstract class LensServiceEntityRepository extends ServiceEntityRepository
         $this->manager()->flush();
     }
 
+    public function letMeSpeakToTheManager(): EntityManagerInterface
+    {
+        return $this->manager();
+    }
+
     /**
      * Return the SQL or DQL of a query formatted, as html string.
      *
@@ -104,7 +109,7 @@ abstract class LensServiceEntityRepository extends ServiceEntityRepository
             ? $query->getSQL()
             : $query->getDQL();
 
-        return (new SqlFormatter())->format($string);
+        return new SqlFormatter()->format($string);
     }
 
     /**
@@ -128,6 +133,6 @@ abstract class LensServiceEntityRepository extends ServiceEntityRepository
             ? $query->getSQL()
             : $query->getDQL();
 
-        exit((new SqlFormatter())->format($string));
+        exit(new SqlFormatter()->format($string));
     }
 }

@@ -13,14 +13,12 @@ use Lens\Bundle\LensApiBundle\Doctrine\Event\UpdateBrevoListener;
 use Lens\Bundle\LensApiBundle\Doctrine\Event\UpdateMeiliSearchListener;
 use Lens\Bundle\LensApiBundle\Doctrine\NamespacedUnderscoreNamingStrategy;
 use Lens\Bundle\LensApiBundle\Form\Type\AdvertisementChoiceType;
-use Lens\Bundle\LensApiBundle\Form\Type\DealerChoiceType;
 use Lens\Bundle\LensApiBundle\Form\Type\DriversLicenceChoiceType;
 use Lens\Bundle\LensApiBundle\GeoLocate\GeoLocate;
 use Lens\Bundle\LensApiBundle\LensApi;
 use Lens\Bundle\LensApiBundle\MeiliSearch\CompanySearch;
 use Lens\Bundle\LensApiBundle\Repository;
 use Lens\Bundle\LensApiBundle\Validator\UniqueAdvertisementValidator;
-use Lens\Bundle\LensApiBundle\Validator\UniqueDealerValidator;
 use Lens\Bundle\LensApiBundle\Validator\UniqueUserValidator;
 use Lens\Bundle\MeiliSearchBundle\LensMeiliSearch;
 use Psr\Log\LoggerInterface;
@@ -47,12 +45,6 @@ return static function (ContainerConfigurator $container): void {
             service(Repository\UserRepository::class),
         ])
 
-        ->set(DealerChoiceType::class)
-        ->tag('form.type')
-        ->args([
-            service(LensApi::class),
-        ])
-
         ->set(DriversLicenceChoiceType::class)
         ->tag('form.type')
         ->args([
@@ -66,12 +58,6 @@ return static function (ContainerConfigurator $container): void {
         ])
 
         ->set(UniqueAdvertisementValidator::class)
-        ->tag('validator.constraint_validator')
-        ->args([
-            service(LensApi::class),
-        ])
-
-        ->set(UniqueDealerValidator::class)
         ->tag('validator.constraint_validator')
         ->args([
             service(LensApi::class),
@@ -118,10 +104,8 @@ return static function (ContainerConfigurator $container): void {
         // Brevo
         ->set(Brevo::class)
         ->args([
-            service(LensApi::class),
             param('lens_lens_api.brevo.api_key'),
             param('lens_lens_api.brevo.subscriber_list'),
-            param('lens_lens_api.brevo.dealer_lists'),
         ])
 
         ->set(UpdateBrevoListener::class)

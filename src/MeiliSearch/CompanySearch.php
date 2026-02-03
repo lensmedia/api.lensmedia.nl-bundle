@@ -8,21 +8,21 @@ use Doctrine\Common\Collections\Collection;
 use Lens\Bundle\LensApiBundle\Entity\Company\Company;
 use Lens\Bundle\LensApiBundle\Entity\Company\DrivingSchool\DriversLicence;
 use Lens\Bundle\LensApiBundle\Entity\PaymentMethod\Debit;
+use Lens\Bundle\MeiliSearchBundle\Attribute\Index;
 use Lens\Bundle\MeiliSearchBundle\Document;
 use Lens\Bundle\MeiliSearchBundle\Exception\InvalidTransformData;
-use Lens\Bundle\MeiliSearchBundle\Attribute\Index;
 use Lens\Bundle\MeiliSearchBundle\LensMeiliSearchDocumentLoaderInterface;
 use Lens\Bundle\MeiliSearchBundle\LensMeiliSearchIndexLoaderInterface;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
 
-readonly class CompanySearch implements LensMeiliSearchIndexLoaderInterface, LensMeiliSearchDocumentLoaderInterface
+readonly class CompanySearch implements LensMeiliSearchDocumentLoaderInterface, LensMeiliSearchIndexLoaderInterface
 {
     public function getIndexes(): array
     {
         return [
             new Index(uid: 'company', settings: [
-                'filterableAttributes'=> [
+                'filterableAttributes' => [
                     'type',
                     'chamberOfCommerce',
                     'affiliate',
@@ -57,7 +57,6 @@ readonly class CompanySearch implements LensMeiliSearchIndexLoaderInterface, Len
 
             'payment' => $this->mapPaymentMethods($data->paymentMethods),
             'employees' => $this->mapEmployees($data->employees),
-            'dealer' => $this->mapDealers($data->dealers),
 
             'cbr' => $data->drivingSchool?->cbr,
             'licenses' => $data->drivingSchool?->driversLicences->map(fn (DriversLicence $licence) => $licence->label)->toArray() ?? [],
@@ -97,7 +96,7 @@ readonly class CompanySearch implements LensMeiliSearchIndexLoaderInterface, Len
         $output = [];
         /** @var \Lens\Bundle\LensApiBundle\Entity\Address $address */
         foreach ($collection as $address) {
-            $output[$address->type] = $address->streetName.' '.trim($address->streetNumber .' '.$address->addition).', '.$address->zipCode.' '.$address->city;
+            $output[$address->type] = $address->streetName.' '.trim($address->streetNumber.' '.$address->addition).', '.$address->zipCode.' '.$address->city;
         }
 
         return $output;
@@ -185,16 +184,6 @@ readonly class CompanySearch implements LensMeiliSearchIndexLoaderInterface, Len
                 'account' => $paymentMethod->accountHolder,
                 'iban' => $paymentMethod->iban,
             ];
-        }
-
-        return $output;
-    }
-
-    private function mapDealers(Collection $dealers): iterable
-    {
-        $output = [];
-        foreach ($dealers as $dealer) {
-            $output[] = $dealer->name;
         }
 
         return $output;

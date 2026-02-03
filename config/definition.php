@@ -11,7 +11,6 @@ return static function (DefinitionConfigurator $definition): void {
                 ->children()
                     ->scalarNode('api_key')->isRequired()->end()
                     ->scalarNode('subscriber_list')->isRequired()->end()
-                    ->scalarNode('dealer_lists')->isRequired()->end()
                 ->end()
             ->end()
 
