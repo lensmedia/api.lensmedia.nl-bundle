@@ -12,6 +12,7 @@
         "egulias/email-validator": "^4.0",
         "getbrevo/brevo-php": "^2.0",
         "giggsey/libphonenumber-for-php": "^9.0.20",
+        "lensmedia/symfony-meili-search": "dev-main",
         "symfony/cache": "*",
         "symfony/form": "*",
         "symfony/framework-bundle": "*",
@@ -20,12 +21,11 @@
         "symfony/security-core": "*",
         "symfony/serializer": "*",
         "symfony/uid": "*",
-        "symfony/validator": "*",
-        "lensmedia/symfony-meili-search": "dev-main"
+        "symfony/validator": "*"
     },
     "require-dev": {
-        "ergebnis/composer-normalize": "^2.30",
-        "friendsofphp/php-cs-fixer": "^3.13"
+        "ergebnis/composer-normalize": "*",
+        "friendsofphp/php-cs-fixer": "*"
     },
     "autoload": {
         "psr-4": {
