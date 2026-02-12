@@ -47,7 +47,7 @@ class DealerRepository extends LensServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
 
-        $result ??= Dealer::mark($company, $purchasedFrom);
+        $result ??= Dealer::mark($company, $purchasedFrom, $timestamp);
 
         $result->update($timestamp);
 
