@@ -37,10 +37,10 @@ class Dealer
     public Company $supplier;
 
     /**
-     * @var ?DateTimeImmutable the timestamp of the last purchase for this company from this dealer
+     * @var DateTimeImmutable the timestamp of the last purchase for this company from this dealer
      */
-    #[ORM\Column(type: 'datetime_immutable', nullable: true, options: ['default' => 'CURRENT_TIMESTAMP'])]
-    public ?DateTimeImmutable $timestamp = null;
+    #[ORM\Column(type: 'datetime_immutable', options: ['default' => 'CURRENT_TIMESTAMP'])]
+    public DateTimeImmutable $timestamp;
 
     /**
      * @var bool indicates whether this dealer-company association should be considered active regardless of timestamp
@@ -51,6 +51,7 @@ class Dealer
     public function __construct()
     {
         $this->id = new Ulid();
+        $this->timestamp = new DateTimeImmutable();
     }
 
     public static function mark(Company $company, Company $purchasedFrom, ?DateTimeImmutable $timestamp = null): self
@@ -67,7 +68,7 @@ class Dealer
     {
         $timestamp ??= new DateTimeImmutable();
 
-        if (!$this->timestamp || $this->timestamp < $timestamp) {
+        if ($this->timestamp < $timestamp) {
             $this->timestamp = $timestamp;
         }
     }
