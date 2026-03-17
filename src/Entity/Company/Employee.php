@@ -26,7 +26,7 @@ class Employee
     public Company $company;
 
     #[ORM\Column(name: '`function`', nullable: true)]
-    public string $function;
+    public ?string $function = null;
 
     #[ORM\Column(type: 'simple_array', nullable: true)]
     public array $roles = [];
