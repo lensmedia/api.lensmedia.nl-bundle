@@ -17,7 +17,7 @@ class DrivingSchool
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'NONE')]
     #[ORM\OneToOne(targetEntity: Company::class, inversedBy: 'drivingSchool', cascade: ['persist', 'refresh', 'detach'])]
-    #[ORM\JoinColumn(name: 'id', nullable: false)]
+    #[ORM\JoinColumn(name: 'id')]
     public Company $company;
 
     #[ORM\Column(length: 32, nullable: true)]

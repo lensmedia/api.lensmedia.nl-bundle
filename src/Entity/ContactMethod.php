@@ -49,7 +49,7 @@ class ContactMethod
 
     public const array SOCIAL_LABELS = [
         'LinkedIn' => 'linkedin',
-        'Twitter' => 'twitter',
+        'X' => 'x',
         'Facebook' => 'facebook',
         'Instagram' => 'instagram',
         'TikTok' => 'tiktok',
@@ -65,7 +65,6 @@ class ContactMethod
     public Ulid $id;
 
     #[ORM\Column]
-    #[Assert\Choice(choices: self::METHODS)]
     public string $method = self::UNDEFINED;
 
     /**

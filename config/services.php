@@ -10,17 +10,17 @@ use Lens\Bundle\LensApiBundle\Brevo\Brevo;
 use Lens\Bundle\LensApiBundle\Command\UlidDetails;
 use Lens\Bundle\LensApiBundle\Doctrine\Event\GeoLocateListener;
 use Lens\Bundle\LensApiBundle\Doctrine\Event\UpdateBrevoListener;
-use Lens\Bundle\LensApiBundle\Doctrine\Event\UpdateMeiliSearchListener;
 use Lens\Bundle\LensApiBundle\Doctrine\NamespacedUnderscoreNamingStrategy;
 use Lens\Bundle\LensApiBundle\Form\Type\AdvertisementChoiceType;
 use Lens\Bundle\LensApiBundle\Form\Type\DriversLicenceChoiceType;
 use Lens\Bundle\LensApiBundle\GeoLocate\GeoLocate;
 use Lens\Bundle\LensApiBundle\LensApi;
 use Lens\Bundle\LensApiBundle\MeiliSearch\CompanySearch;
+use Lens\Bundle\LensApiBundle\MeiliSearch\PersonalSearch;
+use Lens\Bundle\LensApiBundle\MeiliSearch\UserSearch;
 use Lens\Bundle\LensApiBundle\Repository;
 use Lens\Bundle\LensApiBundle\Validator\UniqueAdvertisementValidator;
 use Lens\Bundle\LensApiBundle\Validator\UniqueUserValidator;
-use Lens\Bundle\MeiliSearchBundle\LensMeiliSearch;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -108,20 +108,11 @@ return static function (ContainerConfigurator $container): void {
             param('lens_lens_api.brevo.subscriber_list'),
         ])
 
-        ->set(UpdateBrevoListener::class)
-        ->args([
-            service(Brevo::class),
-            service(LoggerInterface::class),
-        ])
-        ->tag('doctrine.event_listener', ['event' => Events::onFlush, 'connection' => 'lens_api'])
+        ->set(UpdateBrevoListener::class)->autoWire()->autoConfigure()
 
         // MeiliSearch
-        ->set(UpdateMeiliSearchListener::class)
-        ->args([
-            service(LensMeiliSearch::class),
-        ])
-        ->tag('doctrine.event_listener', ['event' => Events::onFlush, 'connection' => 'lens_api'])
-
-        ->set(CompanySearch::class)->autoConfigure()
+        ->set(CompanySearch::class)->autoWire()->autoConfigure()
+        ->set(PersonalSearch::class)->autoWire()->autoConfigure()
+        ->set(UserSearch::class)->autoWire()->autoConfigure()
     ;
 };
