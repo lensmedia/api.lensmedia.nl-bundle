@@ -29,6 +29,8 @@ readonly class PersonalSearch extends Search
     use MapPersonalTrait;
     use MapUserTrait;
 
+    public const string INDEX = 'personal';
+
     public function supports(): array
     {
         return [Personal::class];
@@ -37,7 +39,7 @@ readonly class PersonalSearch extends Search
     public function getIndexes(): array
     {
         return [
-            new Index(uid: 'personal', client: 'lens_api'),
+            new Index(uid: self::INDEX, client: 'lens_api'),
         ];
     }
 
@@ -49,7 +51,7 @@ readonly class PersonalSearch extends Search
 
         // When a company is updated, update all employees as well (might have name change)
         if ($object instanceof Company) {
-            $this->lensMeiliSearch->addDocuments('personal', $object->employees->map(
+            $this->lensMeiliSearch->addDocuments(self::INDEX, $object->employees->map(
                 static fn (Employee $employee) => $employee->personal,
             )->toArray());
 
@@ -61,7 +63,7 @@ readonly class PersonalSearch extends Search
         }
 
         if ($object instanceof Personal) {
-            $this->lensMeiliSearch->addDocuments('personal', [$object]);
+            $this->lensMeiliSearch->addDocuments(self::INDEX, [$object]);
         }
     }
 
@@ -79,7 +81,7 @@ readonly class PersonalSearch extends Search
         }
 
         if ($object instanceof Personal) {
-            $this->lensMeiliSearch->index('personal')->deleteDocument((string)$object->id);
+            $this->lensMeiliSearch->index(self::INDEX)->deleteDocument((string)$object->id);
         }
     }
 

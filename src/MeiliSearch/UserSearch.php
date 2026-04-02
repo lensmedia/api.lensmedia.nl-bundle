@@ -28,6 +28,8 @@ readonly class UserSearch extends Search
     use MapPersonalTrait;
     use MapUserTrait;
 
+    public const string INDEX = 'user';
+
     public function supports(): array
     {
         return [User::class];
@@ -36,7 +38,7 @@ readonly class UserSearch extends Search
     public function getIndexes(): array
     {
         return [
-            new Index(uid: 'user', client: 'lens_api'),
+            new Index(uid: self::INDEX, client: 'lens_api'),
         ];
     }
 
@@ -55,7 +57,7 @@ readonly class UserSearch extends Search
                 }
             }
 
-            $this->lensMeiliSearch->addDocuments('user', $users);
+            $this->lensMeiliSearch->addDocuments(self::INDEX, $users);
 
             return;
         }
@@ -65,7 +67,7 @@ readonly class UserSearch extends Search
         }
 
         if ($object instanceof User) {
-            $this->lensMeiliSearch->addDocuments('personal', [$object]);
+            $this->lensMeiliSearch->addDocuments(self::INDEX, [$object]);
         }
     }
 
@@ -83,7 +85,7 @@ readonly class UserSearch extends Search
         }
 
         if ($object instanceof User) {
-            $this->lensMeiliSearch->index('personal')->deleteDocument((string)$object->id);
+            $this->lensMeiliSearch->index(self::INDEX)->deleteDocument((string)$object->id);
         }
     }
 

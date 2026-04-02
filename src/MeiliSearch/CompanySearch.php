@@ -46,6 +46,8 @@ readonly class CompanySearch extends Search
     use MapContactMethodsTrait;
     use MapPersonalTrait;
 
+    public const string INDEX = 'company';
+
     public function supports(): array
     {
         return [Company::class];
@@ -54,7 +56,7 @@ readonly class CompanySearch extends Search
     public function getIndexes(): array
     {
         return [
-            new Index(uid: 'company', settings: [
+            new Index(uid: self::INDEX, settings: [
                 'filterableAttributes' => [
                     'type',
                     'chamberOfCommerce',
@@ -78,14 +80,14 @@ readonly class CompanySearch extends Search
         }
 
         if ($company = $this->companyFromParameter($object)) {
-            $this->lensMeiliSearch->addDocuments('company', [$company]);
+            $this->lensMeiliSearch->addDocuments(self::INDEX, [$company]);
         }
     }
 
     public function onRemove(object $object, LifecycleEventArgs $event): void
     {
         if ($company = $this->companyFromParameter($object)) {
-            $this->lensMeiliSearch->index('company')->deleteDocument((string)$company->id);
+            $this->lensMeiliSearch->index(self::INDEX)->deleteDocument((string)$company->id);
         }
     }
 

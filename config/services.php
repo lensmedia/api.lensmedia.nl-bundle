@@ -17,6 +17,7 @@ use Lens\Bundle\LensApiBundle\GeoLocate\GeoLocate;
 use Lens\Bundle\LensApiBundle\LensApi;
 use Lens\Bundle\LensApiBundle\MeiliSearch\CompanySearch;
 use Lens\Bundle\LensApiBundle\MeiliSearch\PersonalSearch;
+use Lens\Bundle\LensApiBundle\MeiliSearch\UserPersonalSearch;
 use Lens\Bundle\LensApiBundle\MeiliSearch\UserSearch;
 use Lens\Bundle\LensApiBundle\Repository;
 use Lens\Bundle\LensApiBundle\Validator\UniqueAdvertisementValidator;
@@ -112,6 +113,7 @@ return static function (ContainerConfigurator $container): void {
 
         // MeiliSearch
         ->set(CompanySearch::class)->autoWire()->autoConfigure()
+        ->set(UserPersonalSearch::class)->autoWire()->autoConfigure()
         ->set(PersonalSearch::class)->autoWire()->autoConfigure()
         ->set(UserSearch::class)->autoWire()->autoConfigure()
     ;
