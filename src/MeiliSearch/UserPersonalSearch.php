@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lens\Bundle\LensApiBundle\MeiliSearch;
 
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
+use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Lens\Bundle\LensApiBundle\Entity\Company\Company;
@@ -92,7 +93,7 @@ readonly class UserPersonalSearch extends Search
         if ($object instanceof User) {
             $this->lensMeiliSearch->index(self::INDEX)->deleteDocuments([
                 'filter' => [
-                    'user.id = :id' => ['id' => (string)$object->id],
+                    sprintf('user.id = %s', $object->id),
                 ],
             ]);
 
@@ -108,7 +109,7 @@ readonly class UserPersonalSearch extends Search
         if ($object instanceof Personal) {
             $this->lensMeiliSearch->index(self::INDEX)->deleteDocuments([
                 'filter' => [
-                    'personal.id = :id' => ['id' => (string)$object->id],
+                    sprintf('personal.id = %s', $object->id),
                 ],
             ]);
 
