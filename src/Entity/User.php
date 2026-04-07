@@ -92,9 +92,15 @@ class User implements RecoveryInterface
             return;
         }
 
-        $this->personal?->setUser(null);
+        if ($this->personal) {
+            $this->personal->user = null;
+        }
+
         $this->personal = $personal;
-        $personal?->setUser($this);
+
+        if ($this->personal) {
+            $this->personal->user = $this;
+        }
     }
 
     public function updatePassword(

@@ -92,9 +92,15 @@ class Personal
             return;
         }
 
-        $this->user?->setPersonal(null);
+        if ($this->user) {
+            $this->user->personal = null;
+        }
+
         $this->user = $user;
-        $user?->setPersonal($this);
+
+        if ($this->user) {
+            $this->user->personal = $this;
+        }
     }
 
     public function addAdvertisement(Advertisement $advertisement): void
