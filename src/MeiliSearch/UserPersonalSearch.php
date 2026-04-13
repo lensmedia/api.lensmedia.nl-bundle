@@ -129,8 +129,8 @@ readonly class UserPersonalSearch extends Search
 
         return new Document([
             'id' => $data->id(),
-            'user' => $this->mapUser($data->user),
-            'personal' => $this->mapPersonal($data->personal, mapCompanies: true),
+            'user' => $data->user ? $this->mapUser($data->user) : null,
+            'personal' => $data->personal ? $this->mapPersonal($data->personal, mapCompanies: true) : null,
         ]);
     }
 }
