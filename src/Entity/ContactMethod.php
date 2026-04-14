@@ -47,17 +47,34 @@ class ContactMethod
         ContactMethodMethod::Social->value => ContactMethodMethod::Social->value,
     ];
 
+    // Some predefined values we can associate with things on the front end (like icons and such).
+    // The label property does allow any string for custom options.
     public const array SOCIAL_LABELS = [
-        'LinkedIn' => 'linkedin',
-        'X' => 'x',
-        'Facebook' => 'facebook',
-        'Instagram' => 'instagram',
-        'TikTok' => 'tiktok',
-        'Snapchat' => 'snapchat',
-        'YouTube' => 'youtube',
-        'Telegram' => 'telegram',
-        'Signal' => 'signal',
-        'Discord' => 'discord',
+        'socialmedia' => [
+            'LinkedIn' => 'linkedin',
+            'Facebook' => 'facebook',
+            'Instagram' => 'instagram',
+            'BlueSky' => 'bsky',
+            'Snapchat' => 'snapchat',
+            'TikTok' => 'tiktok',
+            'X' => 'x',
+            'Reddit' => 'reddit',
+        ],
+        'messaging' => [
+            'WhatsApp' => 'whatsapp',
+            'Telegram' => 'telegram',
+            'Signal' => 'signal',
+            'Slack' => 'slack',
+            'Discord' => 'discord',
+        ],
+        'streaming' => [
+            'TikTok' => 'tiktok',
+            'YouTube' => 'youtube',
+            'Vimeo' => 'vimeo',
+            'Twitch' => 'twitch',
+            'Spotify' => 'spotify',
+            'Kick' => 'kick',
+        ],
     ];
 
     #[ORM\Id]
