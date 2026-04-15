@@ -18,8 +18,7 @@ trait MapPersonalTrait
 
         // Flatten the name
         $name = trim(implode(' ', [
-            $personal->initials,
-            $personal->nickname,
+            empty($personal->nickname) ? $personal->initials : $personal->nickname,
             trim($personal->surnameAffix.' '.$personal->surname),
         ]));
 
