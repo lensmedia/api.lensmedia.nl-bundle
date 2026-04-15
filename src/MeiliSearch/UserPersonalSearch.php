@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Lens\Bundle\LensApiBundle\MeiliSearch;
 
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
-use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Lens\Bundle\LensApiBundle\Entity\Company\Company;
@@ -15,6 +14,8 @@ use Lens\Bundle\LensApiBundle\MeiliSearch\Data\UserPersonalData;
 use Lens\Bundle\MeiliSearchBundle\Attribute\Index;
 use Lens\Bundle\MeiliSearchBundle\Document;
 use Lens\Bundle\MeiliSearchBundle\Exception\InvalidTransformData;
+
+use function sprintf;
 
 /**
  * This search is a merge of both User and Personal, as they are closely related in a one-to-one relationship and often

@@ -145,7 +145,7 @@ readonly class CompanySearch extends Search
     {
         $output = [];
 
-        /** @var \Lens\Bundle\LensApiBundle\Entity\Company\Employee $employee */
+        /** @var Employee $employee */
         foreach ($collection as $employee) {
             $personal = $this->mapPersonal($employee->personal);
             if (!empty($personal)) {
@@ -163,7 +163,7 @@ readonly class CompanySearch extends Search
     private function mapPaymentMethods(Collection $collection): array
     {
         $output = [];
-        /** @var \Lens\Bundle\LensApiBundle\Entity\PaymentMethod\PaymentMethod $paymentMethod */
+        /** @var PaymentMethod $paymentMethod */
         foreach ($collection as $paymentMethod) {
             if (!($paymentMethod instanceof Debit)) {
                 continue;

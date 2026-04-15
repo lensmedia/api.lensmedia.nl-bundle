@@ -14,6 +14,8 @@ use Lens\Bundle\LensApiBundle\Entity\Company\Dealer;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Uid\Ulid;
 
+use function sprintf;
+
 class DealerRepository extends LensServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)

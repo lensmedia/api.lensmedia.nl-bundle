@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Lens\Bundle\LensApiBundle\MeiliSearch;
 
 use Doctrine\Persistence\Event\LifecycleEventArgs;
-use Lens\Bundle\LensApiBundle\Entity\Company\Company;
 use Lens\Bundle\MeiliSearchBundle\LensMeiliSearch;
 use Lens\Bundle\MeiliSearchBundle\LensMeiliSearchDocumentLoaderInterface;
 use Lens\Bundle\MeiliSearchBundle\LensMeiliSearchIndexLoaderInterface;
@@ -23,5 +22,6 @@ abstract readonly class Search implements LensMeiliSearchDocumentLoaderInterface
     }
 
     abstract public function onUpdate(object $object, LifecycleEventArgs $event): void;
+
     abstract public function onRemove(object $object, LifecycleEventArgs $event): void;
 }

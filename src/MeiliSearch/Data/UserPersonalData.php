@@ -7,6 +7,8 @@ namespace Lens\Bundle\LensApiBundle\MeiliSearch\Data;
 use Lens\Bundle\LensApiBundle\Entity\Personal\Personal;
 use Lens\Bundle\LensApiBundle\Entity\User;
 
+use function sprintf;
+
 class UserPersonalData
 {
     private function __construct(

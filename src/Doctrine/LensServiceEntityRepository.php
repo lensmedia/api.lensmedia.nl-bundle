@@ -91,7 +91,6 @@ abstract class LensServiceEntityRepository extends ServiceEntityRepository
     /**
      * Return the SQL or DQL of a query formatted, as html string.
      *
-     * @param QueryBuilder|Query $query
      * @param bool $sql Dump SQL instead of DQL
      * @param bool $disable Changes the function to pass through the query, allows to keep debug in place and disable it
      */
@@ -115,7 +114,6 @@ abstract class LensServiceEntityRepository extends ServiceEntityRepository
     /**
      * Dump the SQL or DQL of a query (HTML formatted) and exit.
      *
-     * @param QueryBuilder|Query $query
      * @param bool $sql Dump SQL instead of DQL
      * @param bool $disable Changes the function to pass through the query, allows to keep debug in place and disable it
      */

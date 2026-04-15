@@ -7,6 +7,9 @@ namespace Lens\Bundle\LensApiBundle\Form;
 use InvalidArgumentException;
 use Symfony\Component\Form\DataTransformerInterface;
 
+use function is_string;
+use function sprintf;
+
 readonly class UppercaseDataTransformer implements DataTransformerInterface
 {
     public function __construct(

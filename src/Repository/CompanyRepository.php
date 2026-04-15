@@ -27,10 +27,7 @@ class CompanyRepository extends LensServiceEntityRepository
     }
 
     /**
-     * @param Company $company
      * @param string $passphrase allows us to create different variants
-     *
-     * @return string
      */
     public function linkingCode(Company $company, string $passphrase): string
     {
