@@ -5,7 +5,7 @@ namespace Lens\Bundle\LensApiBundle;
 use Lens\Bundle\LensApiBundle\Brevo\Brevo;
 use Lens\Bundle\LensApiBundle\DependencyInjection\Compiler\MeilisearchCompilerPass;
 use Lens\Bundle\LensApiBundle\Doctrine\Event\UpdateBrevoListener;
-use Lens\Bundle\LensApiBundle\Meilisearch\CompanySearch;
+use Lens\Bundle\LensApiBundle\asd\CompanySearch;
 use Lens\Bundle\MeilisearchBundle\LensMeilisearch;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

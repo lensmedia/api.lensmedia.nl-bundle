@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lens\Bundle\LensApiBundle\Meilisearch;
+namespace Lens\Bundle\LensApiBundle\asd;
 
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\Events;
@@ -10,7 +10,7 @@ use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Lens\Bundle\LensApiBundle\Entity\Company\Company;
 use Lens\Bundle\LensApiBundle\Entity\Personal\Personal;
 use Lens\Bundle\LensApiBundle\Entity\User;
-use Lens\Bundle\LensApiBundle\Meilisearch\Data\UserPersonalData;
+use Lens\Bundle\LensApiBundle\asd\Data\UserPersonalData;
 use Lens\Bundle\MeilisearchBundle\Attribute\Index;
 use Lens\Bundle\MeilisearchBundle\Document;
 use Lens\Bundle\MeilisearchBundle\Exception\InvalidTransformData;

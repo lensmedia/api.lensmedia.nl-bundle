@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lens\Bundle\LensApiBundle\Meilisearch;
+namespace Lens\Bundle\LensApiBundle\asd;
 
 use Lens\Bundle\LensApiBundle\Entity\Company\Employee;
 use Lens\Bundle\LensApiBundle\Entity\Personal\Personal;
