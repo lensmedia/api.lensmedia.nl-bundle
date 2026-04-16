@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lens\Bundle\LensApiBundle\MeiliSearch;
+namespace Lens\Bundle\LensApiBundle\Meilisearch;
 
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\Common\Collections\Collection;
@@ -17,9 +17,9 @@ use Lens\Bundle\LensApiBundle\Entity\ContactMethod;
 use Lens\Bundle\LensApiBundle\Entity\ContactMethodMethod;
 use Lens\Bundle\LensApiBundle\Entity\PaymentMethod\Debit;
 use Lens\Bundle\LensApiBundle\Entity\PaymentMethod\PaymentMethod;
-use Lens\Bundle\MeiliSearchBundle\Attribute\Index;
-use Lens\Bundle\MeiliSearchBundle\Document;
-use Lens\Bundle\MeiliSearchBundle\Exception\InvalidTransformData;
+use Lens\Bundle\MeilisearchBundle\Attribute\Index;
+use Lens\Bundle\MeilisearchBundle\Document;
+use Lens\Bundle\MeilisearchBundle\Exception\InvalidTransformData;
 use LogicException;
 
 #[AsEntityListener(event: Events::postPersist, method: 'onUpdate', entityManager: 'lens_api', entity: Company::class)]
@@ -80,14 +80,14 @@ readonly class CompanySearch extends Search
         }
 
         if ($company = $this->companyFromParameter($object)) {
-            $this->lensMeiliSearch->addDocuments(self::INDEX, [$company]);
+            $this->lensMeilisearch->addDocuments(self::INDEX, [$company]);
         }
     }
 
     public function onRemove(object $object, LifecycleEventArgs $event): void
     {
         if ($company = $this->companyFromParameter($object)) {
-            $this->lensMeiliSearch->index(self::INDEX)->deleteDocument((string)$company->id);
+            $this->lensMeilisearch->index(self::INDEX)->deleteDocument((string)$company->id);
         }
     }
 

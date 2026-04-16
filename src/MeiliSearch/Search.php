@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Lens\Bundle\LensApiBundle\MeiliSearch;
+namespace Lens\Bundle\LensApiBundle\Meilisearch;
 
 use Doctrine\Persistence\Event\LifecycleEventArgs;
-use Lens\Bundle\MeiliSearchBundle\LensMeiliSearch;
-use Lens\Bundle\MeiliSearchBundle\LensMeiliSearchDocumentLoaderInterface;
-use Lens\Bundle\MeiliSearchBundle\LensMeiliSearchIndexLoaderInterface;
+use Lens\Bundle\MeilisearchBundle\LensMeilisearch;
+use Lens\Bundle\MeilisearchBundle\LensMeilisearchDocumentLoaderInterface;
+use Lens\Bundle\MeilisearchBundle\LensMeilisearchIndexLoaderInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
-abstract readonly class Search implements LensMeiliSearchDocumentLoaderInterface, LensMeiliSearchIndexLoaderInterface
+abstract readonly class Search implements LensMeilisearchDocumentLoaderInterface, LensMeilisearchIndexLoaderInterface
 {
     use IsLoadingFixturesInDebugTrait;
 
     public function __construct(
-        protected LensMeiliSearch $lensMeiliSearch,
+        protected LensMeilisearch $lensMeilisearch,
         #[Autowire(param: 'kernel.debug')]
         protected bool $isDebug,
     ) {

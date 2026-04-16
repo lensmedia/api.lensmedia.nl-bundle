@@ -14,7 +14,7 @@ return static function (DefinitionConfigurator $definition): void {
                 ->end()
             ->end()
 
-            ->arrayNode('meili_search')
+            ->arrayNode('meilisearch')
                 ->children()
                     ->scalarNode('url')->isRequired()->end()
                     ->scalarNode('key')->isRequired()->end()

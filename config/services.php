@@ -15,10 +15,10 @@ use Lens\Bundle\LensApiBundle\Form\Type\AdvertisementChoiceType;
 use Lens\Bundle\LensApiBundle\Form\Type\DriversLicenceChoiceType;
 use Lens\Bundle\LensApiBundle\GeoLocate\GeoLocate;
 use Lens\Bundle\LensApiBundle\LensApi;
-use Lens\Bundle\LensApiBundle\MeiliSearch\CompanySearch;
-use Lens\Bundle\LensApiBundle\MeiliSearch\PersonalSearch;
-use Lens\Bundle\LensApiBundle\MeiliSearch\UserPersonalSearch;
-use Lens\Bundle\LensApiBundle\MeiliSearch\UserSearch;
+use Lens\Bundle\LensApiBundle\Meilisearch\CompanySearch;
+use Lens\Bundle\LensApiBundle\Meilisearch\PersonalSearch;
+use Lens\Bundle\LensApiBundle\Meilisearch\UserPersonalSearch;
+use Lens\Bundle\LensApiBundle\Meilisearch\UserSearch;
 use Lens\Bundle\LensApiBundle\Repository;
 use Lens\Bundle\LensApiBundle\Validator\UniqueAdvertisementValidator;
 use Lens\Bundle\LensApiBundle\Validator\UniqueUserValidator;
@@ -111,7 +111,7 @@ return static function (ContainerConfigurator $container): void {
 
         ->set(UpdateBrevoListener::class)->autoWire()->autoConfigure()
 
-        // MeiliSearch
+        // Meilisearch
         ->set(CompanySearch::class)->autoWire()->autoConfigure()
         ->set(UserPersonalSearch::class)->autoWire()->autoConfigure()
         ->set(PersonalSearch::class)->autoWire()->autoConfigure()

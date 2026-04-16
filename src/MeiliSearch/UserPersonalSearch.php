@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lens\Bundle\LensApiBundle\MeiliSearch;
+namespace Lens\Bundle\LensApiBundle\Meilisearch;
 
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\Events;
@@ -10,10 +10,10 @@ use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Lens\Bundle\LensApiBundle\Entity\Company\Company;
 use Lens\Bundle\LensApiBundle\Entity\Personal\Personal;
 use Lens\Bundle\LensApiBundle\Entity\User;
-use Lens\Bundle\LensApiBundle\MeiliSearch\Data\UserPersonalData;
-use Lens\Bundle\MeiliSearchBundle\Attribute\Index;
-use Lens\Bundle\MeiliSearchBundle\Document;
-use Lens\Bundle\MeiliSearchBundle\Exception\InvalidTransformData;
+use Lens\Bundle\LensApiBundle\Meilisearch\Data\UserPersonalData;
+use Lens\Bundle\MeilisearchBundle\Attribute\Index;
+use Lens\Bundle\MeilisearchBundle\Document;
+use Lens\Bundle\MeilisearchBundle\Exception\InvalidTransformData;
 
 use function sprintf;
 
@@ -77,7 +77,7 @@ readonly class UserPersonalSearch extends Search
             return;
         }
 
-        $this->lensMeiliSearch->addDocuments(self::INDEX, $documents);
+        $this->lensMeilisearch->addDocuments(self::INDEX, $documents);
     }
 
     public function onRemove(object $object, LifecycleEventArgs $event): void
@@ -92,7 +92,7 @@ readonly class UserPersonalSearch extends Search
         // When a user is removed we remove the entry and if there is an associated personal we add that back in
         // without the user data.
         if ($object instanceof User) {
-            $this->lensMeiliSearch->index(self::INDEX)->deleteDocuments([
+            $this->lensMeilisearch->index(self::INDEX)->deleteDocuments([
                 'filter' => [
                     sprintf('user.id = %s', $object->id),
                 ],
@@ -108,7 +108,7 @@ readonly class UserPersonalSearch extends Search
         // When a personal is removed we remove the entry and if there is an associated user we add that back in
         // without the personal data.
         if ($object instanceof Personal) {
-            $this->lensMeiliSearch->index(self::INDEX)->deleteDocuments([
+            $this->lensMeilisearch->index(self::INDEX)->deleteDocuments([
                 'filter' => [
                     sprintf('personal.id = %s', $object->id),
                 ],

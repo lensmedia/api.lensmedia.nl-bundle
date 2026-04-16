@@ -12,7 +12,7 @@
         "egulias/email-validator": "^4.0",
         "getbrevo/brevo-php": "^2.0",
         "giggsey/libphonenumber-for-php": "^9.0.20",
-        "lensmedia/symfony-meili-search": "dev-main",
+        "lensmedia/symfony-meilisearch": "dev-main",
         "symfony/cache": "*",
         "symfony/form": "*",
         "symfony/framework-bundle": "*",
@@ -42,6 +42,6 @@
         "fix": "php vendor/bin/php-cs-fixer fix src"
     },
     "recommend": {
-        "lensmedia/symfony-meili-search": "If you are editing lens-api data, you should install this package to automatically update the search indexes on entity changes"
+        "lensmedia/symfony-meilisearch": "If you are editing lens-api data, you should install this package to automatically update the search indexes on entity changes"
     }
 }

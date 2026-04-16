@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lens\Bundle\LensApiBundle\MeiliSearch;
+namespace Lens\Bundle\LensApiBundle\Meilisearch;
 
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\Events;
@@ -10,9 +10,9 @@ use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Lens\Bundle\LensApiBundle\Entity\Company\Company;
 use Lens\Bundle\LensApiBundle\Entity\Personal\Personal;
 use Lens\Bundle\LensApiBundle\Entity\User;
-use Lens\Bundle\MeiliSearchBundle\Attribute\Index;
-use Lens\Bundle\MeiliSearchBundle\Document;
-use Lens\Bundle\MeiliSearchBundle\Exception\InvalidTransformData;
+use Lens\Bundle\MeilisearchBundle\Attribute\Index;
+use Lens\Bundle\MeilisearchBundle\Document;
+use Lens\Bundle\MeilisearchBundle\Exception\InvalidTransformData;
 
 #[AsEntityListener(event: Events::postPersist, method: 'onUpdate', entityManager: 'lens_api', entity: User::class)]
 #[AsEntityListener(event: Events::postUpdate, method: 'onUpdate', entityManager: 'lens_api', entity: User::class)]
@@ -57,7 +57,7 @@ readonly class UserSearch extends Search
                 }
             }
 
-            $this->lensMeiliSearch->addDocuments(self::INDEX, $users);
+            $this->lensMeilisearch->addDocuments(self::INDEX, $users);
 
             return;
         }
@@ -67,7 +67,7 @@ readonly class UserSearch extends Search
         }
 
         if ($object instanceof User) {
-            $this->lensMeiliSearch->addDocuments(self::INDEX, [$object]);
+            $this->lensMeilisearch->addDocuments(self::INDEX, [$object]);
         }
     }
 
@@ -85,7 +85,7 @@ readonly class UserSearch extends Search
         }
 
         if ($object instanceof User) {
-            $this->lensMeiliSearch->index(self::INDEX)->deleteDocument((string)$object->id);
+            $this->lensMeilisearch->index(self::INDEX)->deleteDocument((string)$object->id);
         }
     }
 

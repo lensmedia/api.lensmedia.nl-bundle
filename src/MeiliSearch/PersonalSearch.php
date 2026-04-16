@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lens\Bundle\LensApiBundle\MeiliSearch;
+namespace Lens\Bundle\LensApiBundle\Meilisearch;
 
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\Events;
@@ -11,9 +11,9 @@ use Lens\Bundle\LensApiBundle\Entity\Company\Company;
 use Lens\Bundle\LensApiBundle\Entity\Company\Employee;
 use Lens\Bundle\LensApiBundle\Entity\Personal\Personal;
 use Lens\Bundle\LensApiBundle\Entity\User;
-use Lens\Bundle\MeiliSearchBundle\Attribute\Index;
-use Lens\Bundle\MeiliSearchBundle\Document;
-use Lens\Bundle\MeiliSearchBundle\Exception\InvalidTransformData;
+use Lens\Bundle\MeilisearchBundle\Attribute\Index;
+use Lens\Bundle\MeilisearchBundle\Document;
+use Lens\Bundle\MeilisearchBundle\Exception\InvalidTransformData;
 
 #[AsEntityListener(event: Events::postPersist, method: 'onUpdate', entityManager: 'lens_api', entity: Personal::class)]
 #[AsEntityListener(event: Events::postUpdate, method: 'onUpdate', entityManager: 'lens_api', entity: Personal::class)]
@@ -51,7 +51,7 @@ readonly class PersonalSearch extends Search
 
         // When a company is updated, update all employees as well (might have name change)
         if ($object instanceof Company) {
-            $this->lensMeiliSearch->addDocuments(self::INDEX, $object->employees->map(
+            $this->lensMeilisearch->addDocuments(self::INDEX, $object->employees->map(
                 static fn (Employee $employee) => $employee->personal,
             )->toArray());
 
@@ -63,7 +63,7 @@ readonly class PersonalSearch extends Search
         }
 
         if ($object instanceof Personal) {
-            $this->lensMeiliSearch->addDocuments(self::INDEX, [$object]);
+            $this->lensMeilisearch->addDocuments(self::INDEX, [$object]);
         }
     }
 
@@ -81,7 +81,7 @@ readonly class PersonalSearch extends Search
         }
 
         if ($object instanceof Personal) {
-            $this->lensMeiliSearch->index(self::INDEX)->deleteDocument((string)$object->id);
+            $this->lensMeilisearch->index(self::INDEX)->deleteDocument((string)$object->id);
         }
     }
 
