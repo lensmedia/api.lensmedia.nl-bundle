@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lens\Bundle\LensApiBundle\asd;
+namespace Lens\Bundle\LensApiBundle\Meilisearch;
 
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Lens\Bundle\MeilisearchBundle\LensMeilisearch;

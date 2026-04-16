@@ -2,38 +2,37 @@
 
 declare(strict_types=1);
 
-namespace Lens\Bundle\LensApiBundle\asd;
+namespace Lens\Bundle\LensApiBundle\Meilisearch;
 
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Lens\Bundle\LensApiBundle\Entity\Company\Company;
-use Lens\Bundle\LensApiBundle\Entity\Company\Employee;
 use Lens\Bundle\LensApiBundle\Entity\Personal\Personal;
 use Lens\Bundle\LensApiBundle\Entity\User;
 use Lens\Bundle\MeilisearchBundle\Attribute\Index;
 use Lens\Bundle\MeilisearchBundle\Document;
 use Lens\Bundle\MeilisearchBundle\Exception\InvalidTransformData;
 
-#[AsEntityListener(event: Events::postPersist, method: 'onUpdate', entityManager: 'lens_api', entity: Personal::class)]
-#[AsEntityListener(event: Events::postUpdate, method: 'onUpdate', entityManager: 'lens_api', entity: Personal::class)]
-#[AsEntityListener(event: Events::postRemove, method: 'onRemove', entityManager: 'lens_api', entity: Personal::class)]
 #[AsEntityListener(event: Events::postPersist, method: 'onUpdate', entityManager: 'lens_api', entity: User::class)]
 #[AsEntityListener(event: Events::postUpdate, method: 'onUpdate', entityManager: 'lens_api', entity: User::class)]
 #[AsEntityListener(event: Events::postRemove, method: 'onRemove', entityManager: 'lens_api', entity: User::class)]
+#[AsEntityListener(event: Events::postPersist, method: 'onUpdate', entityManager: 'lens_api', entity: Personal::class)]
+#[AsEntityListener(event: Events::postUpdate, method: 'onUpdate', entityManager: 'lens_api', entity: Personal::class)]
+#[AsEntityListener(event: Events::postRemove, method: 'onRemove', entityManager: 'lens_api', entity: Personal::class)]
 #[AsEntityListener(event: Events::postPersist, method: 'onUpdate', entityManager: 'lens_api', entity: Company::class)]
 #[AsEntityListener(event: Events::postUpdate, method: 'onUpdate', entityManager: 'lens_api', entity: Company::class)]
 #[AsEntityListener(event: Events::postRemove, method: 'onRemove', entityManager: 'lens_api', entity: Company::class)]
-readonly class PersonalSearch extends Search
+readonly class UserSearch extends Search
 {
     use MapPersonalTrait;
     use MapUserTrait;
 
-    public const string INDEX = 'personal';
+    public const string INDEX = 'user';
 
     public function supports(): array
     {
-        return [Personal::class];
+        return [User::class];
     }
 
     public function getIndexes(): array
@@ -49,20 +48,25 @@ readonly class PersonalSearch extends Search
             return;
         }
 
-        // When a company is updated, update all employees as well (might have name change)
         if ($object instanceof Company) {
-            $this->lensMeilisearch->addDocuments(self::INDEX, $object->employees->map(
-                static fn (Employee $employee) => $employee->personal,
-            )->toArray());
+            $users = [];
+            foreach ($object->employees as $employee) {
+                $user = $employee->personal->user;
+                if ($user) {
+                    $users[] = $user;
+                }
+            }
+
+            $this->lensMeilisearch->addDocuments(self::INDEX, $users);
 
             return;
         }
 
-        if ($object instanceof User) {
-            $object = $object->personal;
+        if ($object instanceof Personal) {
+            $object = $object->user;
         }
 
-        if ($object instanceof Personal) {
+        if ($object instanceof User) {
             $this->lensMeilisearch->addDocuments(self::INDEX, [$object]);
         }
     }
@@ -76,23 +80,23 @@ readonly class PersonalSearch extends Search
             return;
         }
 
-        if ($object instanceof User) {
-            $object = $object->personal;
+        if ($object instanceof Personal) {
+            $object = $object->user;
         }
 
-        if ($object instanceof Personal) {
+        if ($object instanceof User) {
             $this->lensMeilisearch->index(self::INDEX)->deleteDocument((string)$object->id);
         }
     }
 
     public function toDocument(object $data, array $context = []): Document
     {
-        if (!($data instanceof Personal)) {
-            throw new InvalidTransformData($data, Personal::class);
+        if (!($data instanceof User)) {
+            throw new InvalidTransformData($data, User::class);
         }
 
-        $document = $this->mapPersonal($data, mapUser: true, mapCompanies: true);
+        $user = $this->mapUser($data, mapPersonal: true);
 
-        return new Document($document);
+        return new Document($user);
     }
 }
