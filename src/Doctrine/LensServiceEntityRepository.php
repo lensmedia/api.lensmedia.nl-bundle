@@ -73,6 +73,11 @@ abstract class LensServiceEntityRepository extends ServiceEntityRepository
         }
     }
 
+    public function detach(object $object): void
+    {
+        $this->manager()->detach($object);
+    }
+
     public function refresh(object $object, LockMode|int|null $lockMode = null): void
     {
         $this->manager()->refresh($object, $lockMode);

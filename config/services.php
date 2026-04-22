@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-use Doctrine\ORM\Events;
 use Doctrine\Persistence\ManagerRegistry;
 use Lens\Bundle\LensApiBundle\Brevo\Brevo;
 use Lens\Bundle\LensApiBundle\Command\UlidDetails;
