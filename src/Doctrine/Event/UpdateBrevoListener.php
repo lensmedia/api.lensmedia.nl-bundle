@@ -181,19 +181,14 @@ class UpdateBrevoListener
             }
         }
 
-        if ($personal->emailAdvertisement()) {
-            try {
+        try {
+            if ($personal->emailAdvertisement()) {
                 $this->brevo->updateContact($personal, $oldEmail);
-            } catch (ApiException $exception) {
-                $this->handleException($exception);
-            }
-        } else {
-            try {
-                // Old email is used here in case one updates email and removes advertisement simultaneously
+            } else {
                 $this->brevo->deleteContact($oldEmail ?? $personal);
-            } catch (ApiException $exception) {
-                $this->handleException($exception);
             }
+        } catch (ApiException $exception) {
+            $this->handleException($exception);
         }
     }
 
