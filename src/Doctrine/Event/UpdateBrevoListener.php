@@ -140,6 +140,8 @@ class UpdateBrevoListener
 
     private function synchronizeHandledChangesWithBrevo(): void
     {
+        // After inspection, all operations are 'updates' since we compare personal object,
+        // leaving these as is though in case doctrine decides to be different suddenly
         foreach ($this->isHandled as ['personal' => $personal, 'operation' => $operation]) {
             switch ($operation) {
                 case self::CREATE:
@@ -179,10 +181,19 @@ class UpdateBrevoListener
             }
         }
 
-        try {
-            $this->brevo->updateContact($personal, $oldEmail);
-        } catch (ApiException $exception) {
-            $this->handleException($exception);
+        if ($personal->emailAdvertisement()) {
+            try {
+                $this->brevo->updateContact($personal, $oldEmail);
+            } catch (ApiException $exception) {
+                $this->handleException($exception);
+            }
+        } else {
+            try {
+                // Old email is used here in case one updates email and removes advertisement simultaneously
+                $this->brevo->deleteContact($oldEmail ?? $personal);
+            } catch (ApiException $exception) {
+                $this->handleException($exception);
+            }
         }
     }
 
