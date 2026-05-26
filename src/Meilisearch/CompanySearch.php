@@ -15,6 +15,7 @@ use Lens\Bundle\LensApiBundle\Entity\Company\DrivingSchool\DrivingSchool;
 use Lens\Bundle\LensApiBundle\Entity\Company\Employee;
 use Lens\Bundle\LensApiBundle\Entity\ContactMethod;
 use Lens\Bundle\LensApiBundle\Entity\ContactMethodMethod;
+use Lens\Bundle\LensApiBundle\Entity\PaymentMethod\Creditcard;
 use Lens\Bundle\LensApiBundle\Entity\PaymentMethod\Debit;
 use Lens\Bundle\LensApiBundle\Entity\PaymentMethod\PaymentMethod;
 use Lens\Bundle\MeilisearchBundle\Attribute\Index;
@@ -180,12 +181,16 @@ readonly class CompanySearch extends Search
 
     private function companyFromParameter(object $object): ?Company
     {
+        // Single table inheritance (multiple classes)
+        if (is_a($object, PaymentMethod::class, true)) {
+            return $object->company;
+        }
+
         return match ($object::class) {
             Company::class => $object,
             DrivingSchool::class => $object->company,
             Address::class => $object->company,
             ContactMethod::class => $object->company,
-            PaymentMethod::class => $object->company,
             Employee::class => $object->company,
             default => throw new LogicException('Doctrine listener received an unexpected entity of type '.get_debug_type($object).'. See '.__CLASS__.' for details.'),
         };
