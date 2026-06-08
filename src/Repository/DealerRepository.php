@@ -155,8 +155,8 @@ class DealerRepository extends LensServiceEntityRepository
             ->join('company.drivingSchool', 'drivingSchool')
             ->addSelect('drivingSchool')
 
-            ->join('company.suppliers', 'supplier')
-            ->andWhere('supplier.id = :supplier')
+            ->join('company.dealers', 'dealer')
+            ->andWhere('dealer.supplier = :supplier')
             ->setParameter('supplier', $supplier, 'ulid')
 
             ->join('company.addresses', 'address')
