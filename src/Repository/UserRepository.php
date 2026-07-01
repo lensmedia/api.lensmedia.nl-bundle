@@ -117,7 +117,7 @@ class UserRepository extends LensServiceEntityRepository
 
         $results = $qb->getQuery()->getResult();
         foreach ($results as $index => $result) {
-            $result->weight = $weights[$index]['weight'];
+            $result->weight = (int)$weights[$index]['weight'];
         }
 
         return $results;
