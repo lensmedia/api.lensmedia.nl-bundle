@@ -10,6 +10,7 @@ use Egulias\EmailValidator\Validation\RFCValidation;
 use Lens\Bundle\LensApiBundle\Entity\Company\Company;
 use Lens\Bundle\LensApiBundle\Entity\Personal\Personal;
 use Lens\Bundle\LensApiBundle\Repository\ContactMethodRepository;
+use libphonenumber\NumberParseException;
 use libphonenumber\PhoneNumberUtil;
 use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -216,7 +217,12 @@ class ContactMethod
     private function isValidPhoneNumber(ExecutionContextInterface $context, $payload): void
     {
         $phoneUtils = PhoneNumberUtil::getInstance();
-        $phoneProto = $phoneUtils->parse($this->value);
+
+        try {
+            $phoneProto = $phoneUtils->parse($this->value, 'nl');
+        } catch (NumberParseException) {
+            $phoneProto = null;
+        }
 
         if (!$phoneProto || !$phoneUtils->isValidNumber($phoneProto)) {
             $context->buildViolation('Given number "{{ phone_number }}" is not a valid phone number.')
