@@ -16,6 +16,7 @@ use Lens\Bundle\LensApiBundle\Entity\Company\Company;
 use Lens\Bundle\LensApiBundle\Entity\ContactMethod;
 use Lens\Bundle\LensApiBundle\Entity\Personal\Personal;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
  * Synchronize personal with Brevo when doctrine updates entities/collections.
@@ -39,12 +40,14 @@ class UpdateBrevoListener
     public function __construct(
         private readonly ?Brevo $brevo,
         private readonly LoggerInterface $logger,
+        #[Autowire(param: 'kernel.debug')]
+        private bool $isDebug = false,
     ) {
     }
 
     public function onFlush(OnFlushEventArgs $event): void
     {
-        if (!$this->brevo) {
+        if (!$this->brevo || $this->isDebug) {
             return;
         }
 
@@ -128,7 +131,7 @@ class UpdateBrevoListener
 
     private function markAsHandled(Personal $personal, string $operation): void
     {
-        if ($this->isHandled[(string)$personal->id]['operation'] ?? null === self::DELETE) {
+        if (($this->isHandled[(string)$personal->id]['operation'] ?? null) === self::DELETE) {
             return;
         }
 
