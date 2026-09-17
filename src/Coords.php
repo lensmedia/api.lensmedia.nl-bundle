@@ -8,6 +8,7 @@ use Brick\Math\BigDecimal;
 use Brick\Math\BigNumber;
 use OutOfRangeException;
 
+use function is_float;
 use function sprintf;
 
 class Coords
@@ -50,12 +51,12 @@ class Coords
 
     public function setLatitude(BigNumber|int|float|string $latitude): void
     {
-        $latitude = BigDecimal::of($latitude);
+        $latitude = BigDecimal::of(is_float($latitude) ? (string)$latitude : $latitude);
         if ($latitude->isLessThan(self::LATITUDE_MIN) || $latitude->isGreaterThan(self::LATITUDE_MAX)) {
             throw new OutOfRangeException('Latitude must be between -90 and 90.');
         }
 
-        $this->latitude = (string)BigDecimal::of($latitude);
+        $this->latitude = (string)$latitude;
     }
 
     public function getLatitude(): BigDecimal
@@ -65,12 +66,12 @@ class Coords
 
     public function setLongitude(BigNumber|int|float|string $longitude): void
     {
-        $longitude = BigDecimal::of($longitude);
+        $longitude = BigDecimal::of(is_float($longitude) ? (string)$longitude : $longitude);
         if ($longitude->isLessThan(self::LONGITUDE_MIN) || $longitude->isGreaterThan(self::LONGITUDE_MAX)) {
             throw new OutOfRangeException('Longitude must be between -180 and 180.');
         }
 
-        $this->longitude = (string)BigDecimal::of($longitude);
+        $this->longitude = (string)$longitude;
     }
 
     public function getLongitude(): BigDecimal
