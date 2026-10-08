@@ -12,7 +12,6 @@
         "egulias/email-validator": "^4.0",
         "getbrevo/brevo-php": "^2.0",
         "giggsey/libphonenumber-for-php": "^9.0.20",
-        "lensmedia/symfony-meilisearch": "dev-main",
         "symfony/cache": "*",
         "symfony/form": "*",
         "symfony/framework-bundle": "*",
@@ -25,7 +24,8 @@
     },
     "require-dev": {
         "ergebnis/composer-normalize": "*",
-        "friendsofphp/php-cs-fixer": "*"
+        "friendsofphp/php-cs-fixer": "*",
+        "lensmedia/symfony-meilisearch": "dev-main"
     },
     "autoload": {
         "psr-4": {
@@ -41,7 +41,7 @@
     "scripts": {
         "fix": "php vendor/bin/php-cs-fixer fix src"
     },
-    "recommend": {
+    "suggest": {
         "lensmedia/symfony-meilisearch": "If you are editing lens-api data, you should install this package to automatically update the search indexes on entity changes"
     }
 }
