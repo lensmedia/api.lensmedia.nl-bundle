@@ -46,9 +46,6 @@ class User implements RecoveryInterface
     #[ORM\Column]
     public string $password;
 
-    #[ORM\Column]
-    public string $plainPassword;
-
     #[Assert\NotBlank]
     #[ORM\Column(type: 'simple_array')]
     public array $roles = [Role::User->value];
@@ -107,12 +104,6 @@ class User implements RecoveryInterface
         PasswordHasherInterface $passwordHasher,
         string $plainPassword,
     ): void {
-        /**
-         * @todo remove plain password with legacy thing or write custom authenticator
-         *
-         * @see https://github.com/lensmedia/itheorie.nl/blob/46aae3d1e09daa519a01a53781e5b2c4a6976fc9/symfony/apps/web/src/Controller/Admin/CompanyController.php#L141-L147
-         */
-        $this->plainPassword = $plainPassword;
         $this->password = $passwordHasher->hash($plainPassword);
     }
 
