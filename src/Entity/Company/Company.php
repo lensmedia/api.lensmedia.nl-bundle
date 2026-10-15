@@ -46,6 +46,9 @@ class Company
     #[ORM\Column(unique: true, nullable: true)]
     public ?string $chamberOfCommerce = null;
 
+    #[ORM\Column(nullable: true)]
+    public ?string $vatNumber = null;
+
     #[Assert\NotBlank]
     #[ORM\Column]
     public string $name;
