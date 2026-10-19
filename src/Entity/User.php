@@ -46,6 +46,8 @@ class User implements RecoveryInterface
     #[ORM\Column]
     public string $password;
 
+    public ?string $plainPassword = null;
+
     #[Assert\NotBlank]
     #[ORM\Column(type: 'simple_array')]
     public array $roles = [Role::User->value];
