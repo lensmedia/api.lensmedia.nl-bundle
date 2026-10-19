@@ -10,6 +10,7 @@ use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Lens\Bundle\LensApiBundle\Entity\Personal\Personal;
 use Lens\Bundle\LensApiBundle\Repository\UserRepository;
+use SensitiveParameter;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 use Symfony\Component\Uid\Ulid;
@@ -91,12 +92,12 @@ class User implements RecoveryInterface
             return;
         }
 
-        if ($this->personal) {
-            $this->personal->user = null;
+        $previous = $this->personal;
+        if ($previous) {
+            $previous->user = null;
         }
 
         $this->personal = $personal;
-
         if ($this->personal) {
             $this->personal->user = $this;
         }
@@ -104,6 +105,7 @@ class User implements RecoveryInterface
 
     public function updatePassword(
         PasswordHasherInterface $passwordHasher,
+        #[SensitiveParameter]
         string $plainPassword,
     ): void {
         $this->password = $passwordHasher->hash($plainPassword);
