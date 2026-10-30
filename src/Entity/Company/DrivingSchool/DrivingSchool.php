@@ -60,7 +60,7 @@ class DrivingSchool
     public function instructsForLicence(string $name): bool
     {
         return $this->driversLicences->exists(
-            static fn (int $index, DriversLicence $drivingLicence) => strcasecmp($name, $drivingLicence->label),
+            static fn (int $index, DriversLicence $drivingLicence) => 0 === strcasecmp($name, $drivingLicence->label),
         );
     }
 
