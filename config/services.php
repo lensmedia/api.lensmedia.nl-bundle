@@ -106,6 +106,7 @@ return static function (ContainerConfigurator $container): void {
         ->args([
             param('lens_lens_api.brevo.api_key'),
             param('lens_lens_api.brevo.subscriber_list'),
+            service(Repository\DriversLicenceRepository::class),
         ])
 
         ->set(UpdateBrevoListener::class)->autoWire()->autoConfigure()
