@@ -33,6 +33,9 @@ class Brevo
     /** @var string[]|null */
     private ?array $driversLicenceOptions = null;
 
+    /** @var string[]|null */
+    private ?array $driversLicenceLabels = null;
+
     public function __construct(
         #[SensitiveParameter]
         private readonly string $apikey,
@@ -293,7 +296,7 @@ class Brevo
      */
     private function driversLicenceLabels(): array
     {
-        return array_values(array_unique(array_map(
+        return $this->driversLicenceLabels ??= array_values(array_unique(array_map(
             static fn (DriversLicence $driversLicence) => mb_strtoupper($driversLicence->label),
             $this->driversLicenceRepository->findAll(),
         )));
