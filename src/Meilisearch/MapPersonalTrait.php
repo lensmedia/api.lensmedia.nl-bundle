@@ -32,6 +32,8 @@ trait MapPersonalTrait
         }
 
         if ($mapCompanies) {
+            // getValues() as a removed company leaves a gap in the collection keys, which JSON encodes as an
+            // object instead of a list.
             $entry['companies'] = $personal->companies->map(static fn (Employee $employee) => [
                 'id' => $employee->id,
                 'function' => $employee->function,
@@ -39,7 +41,7 @@ trait MapPersonalTrait
                     'id' => $employee->company->id,
                     'name' => $employee->company->name,
                 ],
-            ])->toArray();
+            ])->getValues();
         }
 
         if ($mapUser) {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lens\Bundle\LensApiBundle\Entity\Company\DrivingSchool;
 
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -12,6 +13,7 @@ use Lens\Bundle\LensApiBundle\Repository\DrivingSchoolRepository;
 
 #[ORM\Entity(repositoryClass: DrivingSchoolRepository::class)]
 #[ORM\Index(fields: ['cbr'])]
+#[ORM\Index(fields: ['brevoSyncedAt'])]
 class DrivingSchool
 {
     #[ORM\Id]
@@ -30,6 +32,15 @@ class DrivingSchool
      */
     #[ORM\ManyToMany(targetEntity: DriversLicence::class, inversedBy: 'drivingSchools')]
     public Collection $driversLicences;
+
+    /**
+     * When the drivers licences of the employees were last sent to Brevo, null when they are due first.
+     *
+     * Only written through DrivingSchoolRepository, which updates it without loading the entity so no
+     * listener (Meilisearch reindex, Brevo) fires.
+     */
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    public ?DateTimeImmutable $brevoSyncedAt = null;
 
     public function __construct()
     {

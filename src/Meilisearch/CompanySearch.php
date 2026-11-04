@@ -113,9 +113,11 @@ readonly class CompanySearch extends Search
             'employees' => $this->mapEmployees($data->employees),
 
             'cbr' => $data->drivingSchool?->cbr,
+            // getValues() as a removed licence leaves a gap in the collection keys, which JSON encodes as an
+            // object instead of a list and breaks filtering on licenses.
             'licenses' => $data->drivingSchool?->driversLicences->map(
                 static fn (DriversLicence $licence) => $licence->label
-            )->toArray() ?? [],
+            )->getValues() ?? [],
 
             'createdAt' => $data->createdAt->getTimestamp(),
             'createdAtDate' => $data->createdAt->format('c'),

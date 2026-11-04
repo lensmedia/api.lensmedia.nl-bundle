@@ -13,6 +13,7 @@ use Doctrine\Persistence\ObjectManager;
 use Exception;
 use Lens\Bundle\LensApiBundle\Brevo\Brevo;
 use Lens\Bundle\LensApiBundle\Entity\Company\Company;
+use Lens\Bundle\LensApiBundle\Entity\Company\DrivingSchool\DrivingSchool;
 use Lens\Bundle\LensApiBundle\Entity\ContactMethod;
 use Lens\Bundle\LensApiBundle\Entity\Personal\Personal;
 use Psr\Log\LoggerInterface;
@@ -26,6 +27,7 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
  * Personal email contact method is added, updated or deleted
  * Email advertise option is added or removed
  * Company where personal works at start or stops becoming a dealer
+ * Driving school where personal works at gains or loses a drivers licence
  */
 #[AsDoctrineListener(event: Events::onFlush, connection: 'lens_api')]
 class UpdateBrevoListener
@@ -124,6 +126,10 @@ class UpdateBrevoListener
             $this->markAsHandled($owner, self::UPDATE);
         } elseif ($owner instanceof Company) {
             foreach ($owner->employees as $employee) {
+                $this->markAsHandled($employee->personal, self::UPDATE);
+            }
+        } elseif ($owner instanceof DrivingSchool) {
+            foreach ($owner->company->employees as $employee) {
                 $this->markAsHandled($employee->personal, self::UPDATE);
             }
         }
